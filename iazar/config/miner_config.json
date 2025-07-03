@@ -1,0 +1,16 @@
+{
+  "pool_address": "127.0.0.1:3333",
+  "wallet": "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc",
+  "threads": 2,
+  "mode": "pool",
+  "reports_path": "iazar/logs/reports",
+  "log_level": "INFO",
+  "kl_divergence": {
+    "threshold_jsd": 0.15,
+    "window_size": 1000,
+    "step": 500
+  },
+  "data_path": "iazar/data/nonce_training_data.csv",
+  "models_path": "src/iazar/models/",
+  "metrics_file": "metrics.csv"  // COMA SOBRANTE ELIMINADA
+}

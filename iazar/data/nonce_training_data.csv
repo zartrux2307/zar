@@ -1,0 +1,4 @@
+timestamp,nonce,nonce_hex,major_ver,minor_ver,block_timestamp,block_size,block_hash,accepted,predicted_by_ia
+1727447825,1324456678,0x4ef321aa,18,1,1727447820,299512,"fd9b7fa1a23de6...",1,1
+1727447840,1094382598,0x413fee46,18,1,1727447835,288334,"b5fd0e81faede2...",0,1
+1727447853,1000055555,0x3bde1113,18,1,1727447847,299999,"b1a7da82fc1aa7...",1,0
