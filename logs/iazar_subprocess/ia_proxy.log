@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "C:\zarturxia\src\iazar\proxy\ia_proxy_main.py", line 286, in <module>
+    proxy = IAZarProxy(wallet, pool_host=pool_host, pool_port=pool_port, pool_tls=True, listen_port=3333, listen_tls_port=3334)
+  File "C:\zarturxia\src\iazar\proxy\ia_proxy_main.py", line 45, in __init__
+    self.proxy_sender.bind("tcp://127.0.0.1:5555")
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Windows\system32\.venv\Lib\site-packages\zmq\sugar\socket.py", line 320, in bind
+    super().bind(addr)
+    ~~~~~~~~~~~~^^^^^^
+  File "zmq/backend/cython/_zmq.py", line 998, in zmq.backend.cython._zmq.Socket.bind
+    _check_rc(rc)
+    
+  File "zmq/backend/cython/_zmq.py", line 187, in zmq.backend.cython._zmq._check_rc
+    raise ZMQError(errno)
+    
+zmq.error.ZMQError: Address in use (addr='tcp://127.0.0.1:5555')
