@@ -1,0 +1,89 @@
+/C:\zarturxia\
+├── README.md
+├── arranque.txt
+├── estructura.txt
+├── readme2.txt
+├── requirements.txt
+├── src/
+│   ├── __init__.py
+│   ├── iazar/
+│   │   ├── __init__.py
+│   │   ├── analytics/
+│   │   │   ├── ├── __init__.py
+                ├── entropy_tools.py          ✅
+                ├── fourier_analyzer.py       ✅ OK
+                ├── lmdb_nonce_extractor.py   ✅
+                ├── time_series_analyzer.py   ✅
+│   │   bridge/
+│   ├── __init__.py                       ✅ Básico, correcto
+│   ├── ethical_nonce_adapter.py         ✅ Correcto – aplica filtros éticos avanzados
+│   ├── inject_nonces_from_ia.py         ✅ Correcto – inyección robusta con validación y logs
+│   ├── predict_nonce_server.py          ✅ Correcto – servidor ZMQ para nonces
+│   ├── predict_nonce_inference.py       ✅ FUNCIONAL – integrado con RandomForest (OK ✔️)
+│   ├── nonces_ready.json                ✅ Archivo de entrada de prueba (estático)
+│   └── generated/
+│       └── nonces_ready.json            ✅ Copia temporal generada (gestión por IA)
+│   │   
+
+            ├── config/
+│   │   │   ├── ia_config.json
+│   │   │   └── miner_config.json
+│   │   ├── data/
+│   │   │    ├── __init__.py                   ✅ OK (puede quedar vacío, declara paquete)
+             ├── nonce_training_data.csv      ✅ OK (archivo CSV cargado, 170+ filas) 
+                  data_collection.py  
+│   │   ├── evaluation/
+│   │   │ ├── __init__.py                             # Inicializador del paquete
+               ├── calculatenonce.py                      # Herramientas para cómputo de nonces
+               ├── correlation_analysis.py                # Análisis de correlación
+               ├── distribution_analyzer.py               # Análisis de distribuciones estadísticas
+               ├── entropy_analysis.py                    # Análisis de entropía
+               ├── nonce_quality_filter.py                # Filtro de calidad de nonces
+               ├── nonce_stats.py                         # Estadísticas de los nonces  ✅ [incluye función global]
+               ├── survival_analyzer.py                   # Análisis de supervivencia de nonces  ✅ [modelo Cox + Kaplan-Meier]
+│   │   ├── logs/
+│   │   │   ├── inyectados.log
+│   │   │   ├── nonces_exitosos.txt
+│   │   │   └── nonces_hash.csv
+│   │   ├
+│   │   │   iazar/models/
+                       ├── __init__.py              ✅ Importación del modelo
+                       ├── rf_predictor.py          ✅ Lógica de predicción con RandomForest
+                       └── rf_nonce_model.joblib    ✅ Modelo entrenado persistente
+│   │   ├── security/
+│   │   │   ├── __init__.py
+│   │   │   └── AESNonceEncryptor.py
+│   │   ├── training/
+│   │   │   ├── __init__.py
+│   │   │   └──train_model_randomforest.py ✅ OK
+│   │   ├── utils/
+│   │   │   ├── __init__.py                     ✅ Importa todas las utilidades clave
+            ├── feature_engineer.py             ✅ Extracción de features temporales y frecuencia
+            ├── config_manager.py               ✅ Acceso centralizado a configuración
+            ├── config.yaml                     ✅ Config actual del sistema (Zartrux)
+            ├── data_loader.py                  ✅ Funciones base para leer y guardar
+            ├── data_preprocessing.py           ✅ Preprocesamiento estándar para RandomForest
+            ├── hex_validator.py                ✅ Validador hexadecimal de nonces
+            ├── nonce_loader.py                 ✅ Carga CSV/JSON/parquet y logs mineros
+            ├── nonce_validator.py              ✅ Interfaz de validación para usar en el sistema
+                randomx_wrapper.py
+
+               iazar/proxy/
+                   ├── __init__.py                ✅ OK (paquete proxy declarado)
+                   └── ia_proxy_main.py           ✅ COMPLETO y FUNCIONAL
+
+├── monitor/   
+       __init__.py                    # Sistema de monitoreo IA
+│   ├── server.py                 # Servidor Flask principal ok
+│   ├── templates/
+│   │   └── index.html            # Plantilla HTML  ok
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── styles.css        # Estilos CSS ok
+│   │   ├── js/
+│   │   │   └── main.js           # JavaScript del cliente ok
+│   │   └── img/
+│   │       └── logo_zar.png      # Logo ok
+├── xmrig-proxy/
+│   ├── xmrig-proxy
+│   └── xmrig-proxy.json

@@ -1,0 +1,448 @@
+2025-06-26 17:00:29,487 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-26 17:00:29,489 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-26 17:00:33,463 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:00:33] "GET / HTTP/1.1" 200 -
+2025-06-26 17:00:34,409 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:00:34] "GET /static/img/logo_zar.png HTTP/1.1" 200 -
+2025-06-26 17:00:34,475 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:00:34] "GET /static/css/styles.css HTTP/1.1" 200 -
+2025-06-26 17:00:34,886 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:00:34] "GET /socket.io/?EIO=4&transport=polling&t=PUimJsV HTTP/1.1" 200 -
+2025-06-26 17:00:35,208 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:00:35] "POST /socket.io/?EIO=4&transport=polling&t=PUimJxd&sid=tRFdcAuluIJMVBzCAAAA HTTP/1.1" 200 -
+2025-06-26 17:00:35,234 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:00:35] "GET /socket.io/?EIO=4&transport=polling&t=PUimJxj&sid=tRFdcAuluIJMVBzCAAAA HTTP/1.1" 200 -
+2025-06-26 17:00:35,245 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:00:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-26 17:02:18,688 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:02:18] "GET /socket.io/?EIO=4&transport=websocket&sid=tRFdcAuluIJMVBzCAAAA HTTP/1.1" 200 -
+2025-06-26 17:03:06,888 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:03:06] "GET /socket.io/?EIO=4&transport=polling&t=PUimuzt HTTP/1.1" 200 -
+2025-06-26 17:03:07,026 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:03:07] "POST /socket.io/?EIO=4&transport=polling&t=PUimv0F&sid=kGirfYhpH4dvsdqgAAAC HTTP/1.1" 200 -
+2025-06-26 17:03:07,080 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:03:07] "GET /socket.io/?EIO=4&transport=polling&t=PUimv0H&sid=kGirfYhpH4dvsdqgAAAC HTTP/1.1" 200 -
+2025-06-26 17:03:07,260 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:03:07] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-26 17:05:39,418 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:05:39] "POST /api/start_mining HTTP/1.1" 200 -
+2025-06-26 17:05:39,619 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 17:05:49,659 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 17:05:55,762 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:05:55] "POST /api/stop_mining HTTP/1.1" 200 -
+2025-06-26 17:05:57,689 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:05:57] "POST /api/stop_mining HTTP/1.1" 200 -
+2025-06-26 17:06:11,526 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 17:06:11] "GET /socket.io/?EIO=4&transport=websocket&sid=kGirfYhpH4dvsdqgAAAC HTTP/1.1" 200 -
+2025-06-26 23:41:40,574 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-26 23:41:40,575 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-26 23:41:44,513 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:44] "GET / HTTP/1.1" 200 -
+2025-06-26 23:41:47,928 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:47] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-26 23:41:47,936 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:47] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-06-26 23:41:48,111 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "GET /socket.io/?EIO=4&transport=polling&t=PUkC97B HTTP/1.1" 200 -
+2025-06-26 23:41:48,143 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "POST /socket.io/?EIO=4&transport=polling&t=PUkC97h&sid=3U4mP7LrNUkMDNA_AAAA HTTP/1.1" 200 -
+2025-06-26 23:41:48,160 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "GET /socket.io/?EIO=4&transport=polling&t=PUkC97v&sid=3U4mP7LrNUkMDNA_AAAA HTTP/1.1" 200 -
+2025-06-26 23:41:48,230 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "POST /socket.io/?EIO=4&transport=polling&t=PUkC992&sid=3U4mP7LrNUkMDNA_AAAA HTTP/1.1" 200 -
+2025-06-26 23:41:48,237 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "GET /socket.io/?EIO=4&transport=polling&t=PUkC995&sid=3U4mP7LrNUkMDNA_AAAA HTTP/1.1" 200 -
+2025-06-26 23:41:48,528 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "POST /socket.io/?EIO=4&transport=polling&t=PUkC9Db&sid=3U4mP7LrNUkMDNA_AAAA HTTP/1.1" 200 -
+2025-06-26 23:41:48,529 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "GET /socket.io/?EIO=4&transport=polling&t=PUkC9Dc&sid=3U4mP7LrNUkMDNA_AAAA HTTP/1.1" 200 -
+2025-06-26 23:41:48,569 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:41:48] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-26 23:42:10,300 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:10] "GET /socket.io/?EIO=4&transport=websocket&sid=3U4mP7LrNUkMDNA_AAAA HTTP/1.1" 200 -
+2025-06-26 23:42:10,311 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:10] "GET / HTTP/1.1" 200 -
+2025-06-26 23:42:10,327 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:10] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-26 23:42:10,347 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:10] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-06-26 23:42:10,358 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:10] "GET /socket.io/?EIO=4&transport=polling&t=PUkCEYa HTTP/1.1" 200 -
+2025-06-26 23:42:10,433 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:10] "POST /socket.io/?EIO=4&transport=polling&t=PUkCEZ2&sid=qdZm1JseVT0bD5EDAAAC HTTP/1.1" 200 -
+2025-06-26 23:42:10,461 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:10] "GET /socket.io/?EIO=4&transport=polling&t=PUkCEZ3&sid=qdZm1JseVT0bD5EDAAAC HTTP/1.1" 200 -
+2025-06-26 23:42:23,031 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:23] "GET /socket.io/?EIO=4&transport=websocket&sid=qdZm1JseVT0bD5EDAAAC HTTP/1.1" 200 -
+2025-06-26 23:42:45,861 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:45] "GET /socket.io/?EIO=4&transport=polling&t=PUkCNC4 HTTP/1.1" 200 -
+2025-06-26 23:42:46,294 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:42:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-26 23:43:06,479 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:43:06] "GET /socket.io/?EIO=4&transport=polling&t=PUkCSFi HTTP/1.1" 200 -
+2025-06-26 23:43:29,941 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:43:29] "GET /socket.io/?EIO=4&transport=polling&t=PUkCX-H HTTP/1.1" 200 -
+2025-06-26 23:43:30,866 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:43:30] "GET / HTTP/1.1" 200 -
+2025-06-26 23:46:01,019 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-26 23:46:01,019 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-26 23:46:03,423 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:46:03] "GET / HTTP/1.1" 200 -
+2025-06-26 23:46:03,718 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:46:03] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-06-26 23:46:03,762 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:46:03] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-26 23:46:03,964 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:46:03] "GET /socket.io/?EIO=4&transport=polling&t=PUkD7aX HTTP/1.1" 200 -
+2025-06-26 23:46:04,127 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:46:04] "POST /socket.io/?EIO=4&transport=polling&t=PUkD7dB&sid=VjagZkNXRrQ1uTirAAAA HTTP/1.1" 200 -
+2025-06-26 23:46:04,153 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:46:04] "GET /socket.io/?EIO=4&transport=polling&t=PUkD7dE&sid=VjagZkNXRrQ1uTirAAAA HTTP/1.1" 200 -
+2025-06-26 23:46:04,158 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:46:04] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-26 23:52:31,203 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:52:31] "POST /api/start_mining HTTP/1.1" 200 -
+2025-06-26 23:52:31,229 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:52:41,231 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:52:51,232 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:53:01,234 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:53:11,235 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:53:21,236 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:53:31,236 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:53:41,237 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:53:51,238 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:54:01,246 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:54:11,255 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:54:21,256 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:54:31,257 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:54:41,258 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:54:51,259 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:55:01,260 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:55:11,262 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:55:21,275 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:55:31,277 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:55:41,293 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:55:51,295 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:56:01,296 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:56:11,297 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:56:21,303 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:56:31,307 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:56:41,309 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:56:51,310 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:57:01,312 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:57:11,313 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:57:21,314 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:57:31,315 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:57:41,317 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:57:51,318 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:57:59,235 - werkzeug - INFO - 127.0.0.1 - - [26/Jun/2025 23:57:59] "POST /api/start_mining HTTP/1.1" 200 -
+2025-06-26 23:58:01,319 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:58:11,320 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:58:21,324 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:58:31,325 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:58:41,327 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:58:51,327 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:59:01,329 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:59:11,330 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:59:21,331 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:59:31,348 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:59:41,383 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-26 23:59:51,384 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:00:01,386 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:00:11,387 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:00:21,388 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:00:31,389 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:00:40,076 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:00:40] "POST /api/stop_mining HTTP/1.1" 200 -
+2025-06-27 00:03:24,714 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:24] "GET /socket.io/?EIO=4&transport=websocket&sid=VjagZkNXRrQ1uTirAAAA HTTP/1.1" 200 -
+2025-06-27 00:03:24,725 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:24] "GET / HTTP/1.1" 200 -
+2025-06-27 00:03:24,742 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:24] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 00:03:24,753 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:24] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-06-27 00:03:24,781 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:24] "GET /socket.io/?EIO=4&transport=polling&t=PUkH5hg HTTP/1.1" 200 -
+2025-06-27 00:03:24,877 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:24] "POST /socket.io/?EIO=4&transport=polling&t=PUkH5iS&sid=HGMzxpP7ejupiUjgAAAC HTTP/1.1" 200 -
+2025-06-27 00:03:24,888 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:24] "GET /socket.io/?EIO=4&transport=polling&t=PUkH5iX&sid=HGMzxpP7ejupiUjgAAAC HTTP/1.1" 200 -
+2025-06-27 00:03:38,643 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:03:38] "GET /socket.io/?EIO=4&transport=websocket&sid=HGMzxpP7ejupiUjgAAAC HTTP/1.1" 200 -
+2025-06-27 00:16:47,322 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-27 00:16:47,322 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-27 00:16:49,680 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:16:49] "GET / HTTP/1.1" 200 -
+2025-06-27 00:16:49,850 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:16:49] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-06-27 00:16:49,921 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:16:49] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 00:16:50,091 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:16:50] "GET /socket.io/?EIO=4&transport=polling&t=PUkKAIR HTTP/1.1" 200 -
+2025-06-27 00:16:50,374 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:16:50] "POST /socket.io/?EIO=4&transport=polling&t=PUkKAMw&sid=QhyrcWiaRqAHMI_AAAAA HTTP/1.1" 200 -
+2025-06-27 00:16:50,383 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:16:50] "GET /socket.io/?EIO=4&transport=polling&t=PUkKAMy&sid=QhyrcWiaRqAHMI_AAAAA HTTP/1.1" 200 -
+2025-06-27 00:16:50,388 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:16:50] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-27 00:17:37,858 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:17:37] "POST /api/start_mining HTTP/1.1" 200 -
+2025-06-27 00:17:42,306 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:17:52,307 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:18:02,322 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:18:12,344 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:18:22,345 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:18:32,347 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:18:42,348 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:18:52,350 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:19:02,355 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:19:12,357 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:19:22,358 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:19:32,391 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:19:42,401 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:19:52,402 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:20:02,403 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:20:12,409 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:20:22,410 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:20:32,419 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:20:42,423 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:20:52,425 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:21:02,426 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:21:12,428 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:21:22,429 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:21:32,430 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:21:42,432 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:21:52,435 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:22:02,465 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:22:12,466 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:22:22,468 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:22:32,470 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:22:42,471 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:22:52,473 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:23:02,478 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:23:12,499 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:23:22,502 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:23:32,527 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:23:42,529 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:23:52,536 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:24:02,563 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:24:12,564 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:24:22,567 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:24:32,568 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:24:42,570 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:24:52,572 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:25:02,573 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:25:12,581 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:25:22,584 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:25:32,587 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:25:42,614 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:25:52,630 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:26:02,631 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:26:12,634 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:26:22,645 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:26:32,669 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:26:42,670 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:26:52,672 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:27:02,681 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:27:12,697 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:27:22,698 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:27:32,700 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:27:42,703 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:27:52,713 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:28:02,715 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:28:10,918 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:10] "GET /socket.io/?EIO=4&transport=websocket&sid=QhyrcWiaRqAHMI_AAAAA HTTP/1.1" 200 -
+2025-06-27 00:28:10,932 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:10] "GET / HTTP/1.1" 200 -
+2025-06-27 00:28:10,951 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:10] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 00:28:10,953 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:10] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-06-27 00:28:11,008 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:11] "GET /socket.io/?EIO=4&transport=polling&t=PUkMmXy HTTP/1.1" 200 -
+2025-06-27 00:28:11,064 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:11] "POST /socket.io/?EIO=4&transport=polling&t=PUkMmYR&sid=PvcQ8B0SLT-E6geKAAAC HTTP/1.1" 200 -
+2025-06-27 00:28:11,096 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:11] "GET /socket.io/?EIO=4&transport=polling&t=PUkMmYT&sid=PvcQ8B0SLT-E6geKAAAC HTTP/1.1" 200 -
+2025-06-27 00:28:11,118 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:11] "POST /socket.io/?EIO=4&transport=polling&t=PUkMmZf&sid=PvcQ8B0SLT-E6geKAAAC HTTP/1.1" 200 -
+2025-06-27 00:28:11,127 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:28:11] "GET /socket.io/?EIO=4&transport=polling&t=PUkMmZg&sid=PvcQ8B0SLT-E6geKAAAC HTTP/1.1" 200 -
+2025-06-27 00:28:12,716 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:28:22,718 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:28:32,719 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:28:42,721 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:31:11,892 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:31:11,925 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-27 00:31:11,925 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-27 00:31:14,364 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:14] "GET / HTTP/1.1" 200 -
+2025-06-27 00:31:14,722 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:14] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-06-27 00:31:14,762 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:14] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-06-27 00:31:15,202 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:15] "GET /socket.io/?EIO=4&transport=polling&t=PUkNTVw HTTP/1.1" 200 -
+2025-06-27 00:31:15,341 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:15] "POST /socket.io/?EIO=4&transport=polling&t=PUkNTY2&sid=G8JAUtHGkFq2zxIsAAAA HTTP/1.1" 200 -
+2025-06-27 00:31:15,367 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:15] "GET /socket.io/?EIO=4&transport=polling&t=PUkNTY4&sid=G8JAUtHGkFq2zxIsAAAA HTTP/1.1" 200 -
+2025-06-27 00:31:16,375 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:16] "POST /socket.io/?EIO=4&transport=polling&t=PUkNToC&sid=G8JAUtHGkFq2zxIsAAAA HTTP/1.1" 200 -
+2025-06-27 00:31:16,378 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:16] "GET /socket.io/?EIO=4&transport=polling&t=PUkNToD&sid=G8JAUtHGkFq2zxIsAAAA HTTP/1.1" 200 -
+2025-06-27 00:31:16,391 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:16] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-27 00:31:21,893 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:31:31,895 - root - ERROR - Error in status update loop: 'uptime_seconds'
+2025-06-27 00:31:36,873 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:31:36] "POST /api/start_mining HTTP/1.1" 200 -
+2025-06-27 00:31:42,904 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:31:44,938 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FCC7230>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:31:50,945 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:31:53,077 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FCE1590>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:31:59,085 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:01,200 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FCE1E50>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:32:07,209 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:09,239 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FD14640>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:32:15,245 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:17,479 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FD14D60>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:32:23,488 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:25,798 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FCFDA30>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:32:31,804 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:34,210 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FD2C160>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:32:40,216 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:42,264 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53CE0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:32:48,270 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:50,304 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53AC0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:32:56,312 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:32:58,328 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53350>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:33:04,335 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:33:06,400 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC538A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:33:12,407 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:33:14,706 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53570>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:33:20,713 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:33:22,779 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53240>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:33:28,785 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:33:31,202 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53130>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:33:37,208 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:33:39,242 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52CF0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:33:45,250 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:33:47,511 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC528B0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:33:53,534 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:33:55,878 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC529C0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:01,886 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:34:04,109 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52580>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:10,115 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:34:12,367 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC51E10>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:18,376 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:34:20,478 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52470>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:26,501 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:34:28,550 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52470>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:34,557 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:34:36,569 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC51E10>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:42,584 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:34:44,809 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52580>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:50,816 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:34:52,848 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC529C0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:34:58,856 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:00,905 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC528B0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:35:06,912 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:08,928 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52CF0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:35:14,938 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:16,956 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53130>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:35:22,962 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:24,989 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53240>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:35:30,996 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:33,012 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53570>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:35:39,020 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:41,102 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC538A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:35:47,110 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:49,175 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53350>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:35:55,182 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:35:57,481 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53AC0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:36:03,488 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:36:05,504 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53BD0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:36:11,511 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:36:13,710 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53BD0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:36:19,718 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:36:21,900 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53AC0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:36:27,908 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:36:30,007 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53350>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:36:36,015 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:36:38,029 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC538A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:36:44,037 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:36:46,202 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53570>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:36:52,209 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:36:54,325 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53240>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:00,332 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:02,765 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53130>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:08,789 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:10,906 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52CF0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:16,918 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:19,111 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC528B0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:25,119 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:27,167 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC529C0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:33,174 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:35,373 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52580>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:41,380 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:43,497 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC51E10>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:49,520 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:51,669 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52470>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:37:57,675 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:37:59,693 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53F00>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:38:05,702 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:38:07,735 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52470>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:38:13,741 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:38:16,104 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC51E10>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:38:22,111 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:38:24,144 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52580>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:38:30,150 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:38:32,399 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC529C0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:38:38,405 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:38:40,904 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC528B0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:38:46,909 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:38:49,396 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52CF0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:38:55,418 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:38:57,899 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53130>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:39:03,905 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:39:06,267 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53240>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:39:12,273 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:39:14,603 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53570>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:39:20,609 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:39:23,105 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC538A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:39:29,110 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:39:31,145 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53350>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:39:37,151 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:39:39,565 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53AC0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:39:45,572 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:39:47,809 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53BD0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:39:53,877 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:39:56,065 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53BD0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:02,072 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:40:04,104 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53AC0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:10,133 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:40:12,496 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53350>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:18,504 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:40:20,700 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC538A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:26,708 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:40:28,807 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53570>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:34,813 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:40:36,849 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53240>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:42,856 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:40:45,201 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC53130>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:51,208 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:40:53,244 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52CF0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:40:59,252 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:41:01,397 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC528B0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:41:07,404 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:41:09,770 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC529C0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:41:15,776 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:41:18,095 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52580>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:41:24,103 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:41:26,117 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC51E10>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:41:27,917 - werkzeug - INFO - 127.0.0.1 - - [27/Jun/2025 00:41:27] "GET /socket.io/?EIO=4&transport=websocket&sid=G8JAUtHGkFq2zxIsAAAA HTTP/1.1" 200 -
+2025-06-27 00:41:32,127 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:41:34,407 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52360>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-06-27 00:41:40,412 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-06-27 00:41:42,454 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002086FC52030>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:18:32,372 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-01 18:18:32,374 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-01 18:18:33,317 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:18:34,828 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:34] "GET / HTTP/1.1" 200 -
+2025-07-01 18:18:35,603 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F759140D70>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:18:35,618 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:35] "[36mGET /static/img/logo_zar.png HTTP/1.1[0m" 304 -
+2025-07-01 18:18:35,629 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:35] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2025-07-01 18:18:35,885 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:35] "GET /socket.io/?EIO=4&transport=polling&t=PV6o7RF HTTP/1.1" 200 -
+2025-07-01 18:18:35,941 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:35] "POST /socket.io/?EIO=4&transport=polling&t=PV6o7SH&sid=olZKDJgCA8Mlf2KfAAAA HTTP/1.1" 200 -
+2025-07-01 18:18:35,995 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:35] "GET /socket.io/?EIO=4&transport=polling&t=PV6o7SN&sid=olZKDJgCA8Mlf2KfAAAA HTTP/1.1" 200 -
+2025-07-01 18:18:36,478 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:36] "GET /socket.io/?EIO=4&transport=polling&t=PV6o7aY&sid=olZKDJgCA8Mlf2KfAAAA HTTP/1.1" 200 -
+2025-07-01 18:18:36,489 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:18:36] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-01 18:18:41,650 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:18:43,797 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F75914C910>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:18:49,803 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:18:52,152 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F75914DF90>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:18:58,160 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:00,191 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F75919C640>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:19:06,199 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:08,350 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F75919CD60>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:19:14,356 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:16,554 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F759175A30>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:19:22,561 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:24,910 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7591AC270>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:19:25,578 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:19:25] "GET /socket.io/?EIO=4&transport=websocket&sid=olZKDJgCA8Mlf2KfAAAA HTTP/1.1" 200 -
+2025-07-01 18:19:30,916 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:32,950 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7591AC8D0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:19:34,740 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:19:34] "GET /socket.io/?EIO=4&transport=polling&t=PV6oLpG HTTP/1.1" 200 -
+2025-07-01 18:19:34,747 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:19:34] "POST /socket.io/?EIO=4&transport=polling&t=PV6oLpO&sid=TtHRdAmm4XcCDtu_AAAC HTTP/1.1" 200 -
+2025-07-01 18:19:34,761 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:19:34] "GET /socket.io/?EIO=4&transport=polling&t=PV6oLpP&sid=TtHRdAmm4XcCDtu_AAAC HTTP/1.1" 200 -
+2025-07-01 18:19:38,959 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:41,107 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CBCE0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:19:47,113 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:49,130 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CBDF0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:19:53,331 - werkzeug - INFO - 127.0.0.1 - - [01/Jul/2025 18:19:53] "GET /socket.io/?EIO=4&transport=websocket&sid=TtHRdAmm4XcCDtu_AAAC HTTP/1.1" 200 -
+2025-07-01 18:19:55,647 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:19:58,007 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CA140>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:20:04,013 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:20:06,047 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB8A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:20:12,069 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:20:14,147 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB570>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:20:20,169 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:20:22,195 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB790>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:20:28,201 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:20:30,460 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB240>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:20:36,467 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:20:38,802 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB130>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:20:44,816 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:20:47,057 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB020>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:20:53,081 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:20:55,121 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CA9C0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:21:01,129 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:21:08,807 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CAE00>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:21:14,821 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:21:16,847 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CA690>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:21:22,872 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:21:25,002 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CA7A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:21:31,202 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:21:33,660 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CA7A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:21:39,678 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:21:41,950 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CA690>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:21:47,988 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:21:50,305 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CAE00>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:21:56,312 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:21:58,462 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CA9C0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:22:04,468 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:22:06,797 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB020>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:22:12,811 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:22:14,941 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB130>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:22:20,947 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:22:23,156 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB240>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:22:29,161 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:22:31,271 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB790>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:22:37,278 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:22:39,494 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB570>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))
+2025-07-01 18:22:45,499 - root - ERROR - Error obteniendo temperatura: module 'psutil' has no attribute 'sensors_temperatures'
+2025-07-01 18:22:47,850 - root - ERROR - Error obteniendo datos de XMRig: HTTPConnectionPool(host='127.0.0.1', port=40500): Max retries exceeded with url: /json?access-token=zartrux-ia-proxy (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001F7590CB8A0>: Failed to establish a new connection: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión'))

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZARTRUX IA MINING SYSTEM</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <img src="{{ url_for('static', filename='img/logo_zar.png') }}" alt="Logo Zartrux" class="logo-img">
+        
+        <div class="logo">
+          <i class="fas fa-brain logo-icon"></i>
+          <h1>ZARTRUX IA MINING</h1>
+        </div>
+        
+        <img src="{{ url_for('static', filename='img/logo_zar.png') }}" alt="Logo Zartrux" class="logo-img">
+      </div>
+
+      <p class="subtitle">Sistema avanzado de minería con Inteligencia Artificial</p>
+      
+      <div class="status-bar fade-in">
+        <div class="status-item">
+          <i class="fas fa-shield-alt"></i> Conexión segura
+        </div>
+        <div class="status-item">
+          <i class="fas fa-sync-alt blink"></i> Sincronizado con la red
+        </div>
+        <div class="status-item">
+          <i class="fas fa-bolt"></i> IA Activa
+        </div>
+      </div>
+      
+      <div class="performance-bar fade-in">
+        <div class="performance-item">
+          <i class="fas fa-microchip"></i> <span id="cpu-usage">CPU: 0%</span>
+        </div>
+        <div class="performance-item">
+          <i class="fas fa-tachometer-alt"></i> <span id="cpu-speed">Frecuencia: 0 GHz</span>
+        </div>
+        <div class="performance-item">
+          <i class="fas fa-thermometer-half"></i> <span id="cpu-temp">Temp: 0°C</span>
+        </div>
+      </div>
+      
+      <div class="header-stats">
+        <div class="header-stat">
+          <i class="fas fa-clock"></i>
+          <div class="header-stat-value" id="mining-time">00:00:00</div>
+          <div class="stat-progress">
+            <div class="stat-progress-inner" id="time-progress" style="width: 0%"></div>
+          </div>
+          <div class="header-stat-label">TIEMPO DE MINADO</div>
+        </div>
+        
+        <div class="header-stat">
+          <i class="fas fa-brain"></i>
+          <div class="header-stat-value" id="ia-validated">0</div>
+          <div class="stat-progress">
+            <div class="stat-progress-inner" id="ia-progress" style="width: 0%"></div>
+          </div>
+          <div class="header-stat-label">VALIDACIONES IA</div>
+        </div>
+        
+        <div class="header-stat">
+          <i class="fas fa-microchip"></i>
+          <div class="header-stat-value" id="cpu-validated">0</div>
+          <div class="stat-progress">
+            <div class="stat-progress-inner" id="cpu-progress" style="width: 0%"></div>
+          </div>
+          <div class="header-stat-label">VALIDACIONES CPU</div>
+        </div>
+      </div>
+    </header>
+    
+    <div class="dashboard">
+      <div class="card ia-validated">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-brain"></i> Modelos de IA</h2>
+        </div>
+        
+        <div class="model-card">
+          <div class="model-name">Ethical Nonce Model</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="model-1-progress" style="width: 75%"></div>
+          </div>
+          <div class="model-info">
+            <span>Precisión: <span id="model-1-accuracy">92%</span></span>
+            <span>Estado: <span class="status-green">Activo</span></span>
+          </div>
+        </div>
+        
+        <div class="model-card">
+          <div class="model-name">Hash Classifier Model</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="model-2-progress" style="width: 88%"></div>
+          </div>
+          <div class="model-info">
+            <span>Precisión: <span id="model-2-accuracy">87%</span></span>
+            <span>Estado: <span class="status-green">Activo</span></span>
+          </div>
+        </div>
+        
+        <div class="model-card">
+          <div class="model-name">Cluster Analyzer</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="model-3-progress" style="width: 65%"></div>
+          </div>
+          <div class="model-info">
+            <span>Precisión: <span id="model-3-accuracy">85%</span></span>
+            <span>Estado: <span class="status-green">Activo</span></span>
+          </div>
+        </div>
+        
+        <div class="card-header" style="margin-top: 30px;">
+          <h2 class="card-title"><i class="fas fa-chart-line"></i> Rendimiento IA</h2>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-box">
+            <i class="fas fa-percentage"></i>
+            <div class="stat-value" id="accuracy">92%</div>
+            <div class="stat-label">PRECISIÓN IA</div>
+            <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> <span id="accuracy-trend">+0.5%</span></div>
+          </div>
+          
+          <div class="stat-box">
+            <i class="fas fa-fire"></i>
+            <div class="stat-value" id="hit-rate">87%</div>
+            <div class="stat-label">TASA DE ACIERTOS</div>
+            <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> <span id="hit-trend">+1.2%</span></div>
+          </div>
+          
+          <div class="stat-box">
+            <i class="fas fa-bolt"></i>
+            <div class="stat-value" id="ia-hashrate">0.00</div>
+            <div class="stat-label">HASHRATE IA (KH/s)</div>
+            <div class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> <span id="ia-hash-trend">+0.0%</span></div>
+          </div>
+          
+          <div class="stat-box">
+            <i class="fas fa-share-alt"></i>
+            <div class="stat-value" id="ia-shares">0</div>
+            <div class="stat-label">SHARES IA</div>
+            <div class="stat-trend trend-down"><i class="fas fa-arrow-down"></i> <span id="ia-shares-trend">-0.0%</span></div>
+          </div>
+        </div>
+        
+        <div class="buttons" style="margin-top: 20px;">
+          <button class="button" id="start-btn" style="background: linear-gradient(135deg, var(--success) 0%, #1e7e34 100%);">
+            <i class="fas fa-play"></i> Iniciar Minería
+          </button>
+          <button class="button" id="stop-btn" style="background: linear-gradient(135deg, var(--danger) 0%, #a71d2a 100%);">
+            <i class="fas fa-stop"></i> Detener Minería
+          </button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="console-header">
+          <h2 class="console-title"><i class="fas fa-terminal"></i> Consola del Sistema IA</h2>
+          <div class="status-indicator">
+            <span>STATUS:</span>
+            <div class="status-dot" id="status-dot"></div>
+            <span id="status-text">Inactivo</span>
+          </div>
+        </div>
+        
+        <div class="console" id="console">
+          <!-- El contenido se llenará dinámicamente -->
+        </div>
+        
+        <div class="card-header" style="margin-top: 25px;">
+          <h2 class="card-title"><i class="fas fa-chart-area"></i> Historial de Validaciones</h2>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="validationChart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="logo-display">
+      <h2>Minería Inteligente con IA</h2>
+      <div class="logo-text">
+        <span>ZARTRUX</span>
+        <span>- IA MINING -</span>
+      </div>
+      <p class="subtext">Solución avanzada para minería con Inteligencia Artificial</p>
+    </div>
+    
+    <footer>
+      <p>ZARTRUX IA MINING v2.4.1 | © 2025 Zartrux Technologies | Todos los derechos reservados</p>
+      <div class="status-bar" style="margin-top: 15px;">
+        <div class="status-item">
+          <i class="fas fa-clock"></i> Tiempo activo: <span id="uptime">00:00:00</span>
+        </div>
+        <div class="status-item">
+          <i class="fas fa-database"></i> Datos procesados: <span id="data-processed">0 GB</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+  <script>
+    // Función para actualizar el estado
+    window.updateStatus = function (data) {
+      document.getElementById("cpu-usage").textContent = "CPU: " + data.cpu_usage;
+      document.getElementById("cpu-speed").textContent = "Frecuencia: " + data.cpu_speed;
+      document.getElementById("cpu-temp").textContent = "Temp: " + data.cpu_temp;
+      document.getElementById("mining-time").textContent = data.mining_time;
+      document.getElementById("ia-validated").textContent = data.ia_validated;
+      document.getElementById("cpu-validated").textContent = data.cpu_validated;
+      document.getElementById("ia-hashrate").textContent = data.ia_hashrate;
+      document.getElementById("ia-shares").textContent = data.ia_shares;
+      document.getElementById("accuracy").textContent = data.accuracy + "%";
+      document.getElementById("hit-rate").textContent = data.hit_rate + "%";
+      document.getElementById("uptime").textContent = new Date(data.uptime_seconds * 1000).toISOString().substr(11, 8);
+      document.getElementById("data-processed").textContent = data.data_processed + " GB";
+      
+      // Actualizar barras de progreso
+      document.getElementById("threads-progress").style.width = data.threads_progress + "%";
+      document.getElementById("ram-progress").style.width = data.ram_progress + "%";
+      document.getElementById("ia-progress").style.width = data.ia_progress + "%";
+      document.getElementById("cpu-progress").style.width = data.cpu_progress + "%";
+      
+      // Actualizar estado del sistema
+      const statusDot = document.getElementById("status-dot");
+      const statusText = document.getElementById("status-text");
+      
+      if (data.status === "running") {
+        statusDot.classList.add("active");
+        statusText.textContent = "Operativo";
+      } else if (data.status === "starting") {
+        statusDot.classList.remove("active");
+        statusText.textContent = "Iniciando";
+      } else {
+        statusDot.classList.remove("active");
+        statusText.textContent = "Inactivo";
+      }
+    };
+
+    // Función para actualizar la consola
+    window.updateConsole = function (lines) {
+      const consoleDiv = document.getElementById("console");
+      consoleDiv.innerHTML = lines.map(line =>
+        `<div class="console-line">${line.replace(/\n/g, "")}</div>`
+      ).join("");
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    };
+
+    // Inicialización al cargar la página
+    window.onload = function () {
+      // Configurar eventos de botones
+      document.getElementById("start-btn").onclick = () => {
+        const wallet = prompt("Ingrese su dirección de monedero:", "4xxxxxxxx");
+        if (wallet) {
+          fetch("/api/start_mining", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ wallet })
+          });
+        }
+      };
+      
+      document.getElementById("stop-btn").onclick = () => {
+        fetch("/api/stop_mining", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
+      };
+      
+      // Inicializar gráfico
+      initValidationChart();
+    };
+
+    function initValidationChart() {
+      const ctx = document.getElementById('validationChart').getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['00:00', '00:05', '00:10', '00:15', '00:20', '00:25', '00:30'],
+          datasets: [
+            {
+              label: 'Validaciones IA',
+              data: [5, 12, 18, 25, 30, 38, 42],
+              borderColor: '#00a8ff',
+              backgroundColor: 'rgba(0, 168, 255, 0.1)',
+              tension: 0.4,
+              fill: true
+            },
+            {
+              label: 'Validaciones CPU',
+              data: [3, 8, 12, 16, 20, 24, 28],
+              borderColor: '#f7941d',
+              backgroundColor: 'rgba(247, 148, 29, 0.1)',
+              tension: 0.4,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#b0b0b0'
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: '#b0b0b0'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: '#e6e6e6'
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Inicia conexión con el backend de Flask-SocketIO
+    const socket = io();
+
+    // Actualiza el panel de status
+    socket.on('status_update', function(data) {
+      if (window.updateStatus) {
+        window.updateStatus(data);
+      }
+    });
+
+    // Actualiza la consola/logs en tiempo real
+    socket.on('console_update', function(data) {
+      if (window.updateConsole) {
+        window.updateConsole(data.log);
+      }
+    });
+
+    // Cambios de modo de minería
+    socket.on('mode_changed', function(data) {
+      document.getElementById("status-text").innerText = "Modo cambiado a " + data.mode;
+    });
+
+    // Solicita el estado al conectar/recargar
+    socket.emit('request_status');
+    socket.emit('request_console');
+  </script>
+</body>
+</html>
