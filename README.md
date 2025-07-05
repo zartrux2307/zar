@@ -1,184 +1,134 @@
-# zar# ZARTRUX IA Mining System
+# Análisis completo del proyecto: ZARTRUX IA Mining System
 
-Bienvenido al sistema de minería inteligente **ZARTRUX**, una arquitectura modular diseñada para optimizar la minería de Monero (XMR) mediante el uso de inteligencia artificial, análisis estadístico y aprendizaje automático. Esta plataforma combina un proxy IA con un sistema de validación multicapa, entrenamiento ético y análisis avanzado de datos mineros.
+## 1. Visión general
 
----
+ZARTRUX es un sistema inteligente, modular y ético para optimizar la minería de Monero (XMR) mediante inteligencia artificial, aprendizaje automático y validaciones estadísticas. Su objetivo es **predecir nonces efectivos**, filtrar resultados inválidos, reentrenar modelos automáticamente y mantener trazabilidad del rendimiento IA.
 
-## 📌 Índice
-
-1. [Visión general del sistema](#visión-general-del-sistema)
-2. [Arquitectura general](#arquitectura-general)
-3. [Diagrama de flujo IAProxy](#diagrama-de-flujo-iaproxy)
-4. [Estructura de carpetas](#estructura-de-carpetas)
-5. [Componentes clave](#componentes-clave)
-6. [Modelos IA incluidos](#modelos-ia-incluidos)
-7. [Entrenamiento y evaluación](#entrenamiento-y-evaluación)
-8. [Requisitos y ejecución](#requisitos-y-ejecución)
-9. [Contribuciones y licencia](#contribuciones-y-licencia)
+- Se comunica con XMRig Proxy usando ZeroMQ.
+- Analiza trabajos en tiempo real de la pool.
+- Mantiene un enfoque ético y educativo.
 
 ---
 
-## 🔍 Visión general del sistema
+## 2. Arquitectura general y flujo IAProxy
 
-ZARTRUX IA Mining System está diseñado para:
+**Arquitectura:**
+```
+Pool (trabajo) → IA Proxy → Módulos IA (análisis, optimización) → XMRig Proxy → Pool (soluciones, TLS)
+```
 
-* Predecir nonces efectivos en minería XMR.
-* Filtrar resultados inválidos mediante validaciones estadísticas.
-* Reentrenar automáticamente los modelos con datos reales.
-* Mantener trazabilidad y rendimiento de cada componente IA.
-
-El sistema se comunica con el proxy de minería XMRig a través de ZeroMQ y analiza en tiempo real los trabajos recibidos de la pool.
+**Flujo:**
+1. El pool envía un trabajo al Proxy IA.
+2. El Proxy IA analiza patrones, optimiza parámetros y selecciona el mejor algoritmo.
+3. El trabajo optimizado va al proxy XMRig y se distribuye a los mineros.
+4. Los mineros resuelven el trabajo y envían la solución al XMRig.
+5. Se aplican **6 técnicas de validación** en cascada (filtrado multicapa).
+6. El resultado se transmite al pool por TLS.
+7. El modelo IA se reentrena y ajusta en tiempo real.
 
 ---
 
-## 🧠 Arquitectura general
+## 3. Estructura de carpetas
 
-```plaintext
-          ┌────────────┐
-          │   Pool     │
-          └────┬───────┘
-               │ Trabajo
-               ▼
-        ┌──────────────┐
-        │  IA Proxy    │◄──┐
-        └────┬─────────┘   │
-             │ Optimiza    │
-             ▼            │
-       ┌──────────────┐   │
-       │ IA Módulos   │   │
-       └────┬─────────┘   │
-            │ Nonces      │
-            ▼            │
-     ┌───────────────┐   │
-     │  XMRig   │───┘
-     └────┬──────────┘
-          │ Soluciones
-          ▼
-     ┌───────────────┐
-     │   Pool (TLS)  │
-     └───────────────┘
+```
+/zar/
+├── README.md / readme2.txt / arranque.txt / estructura.txt / requirements.txt
+├── src/ (o iazar/)
+│   ├── iazar/
+│   │   ├── analytics/         # Análisis series temporales, Fourier, entropía, LMDB extractor, etc.
+│   │   ├── bridge/            # Adaptadores IA ↔ minería
+│   │   ├── training/          # Entrenamiento y modelos ML
+│   │   ├── evaluation/        # Validaciones estadísticas, análisis de clusters y entropía
+│   │   ├── logs/              # Nonces, inyecciones y resultados
+│   │   ├── data/              # Dataset de entrenamiento CSV
+│   │   ├── models/            # Modelos entrenados (Joblib)
+│   │   └── utils/             # Preprocesamiento, configuración
+│   └── proxy/
+│       └── ia_proxy_main.py   # Módulo IA Proxy (funcional)
+├── monitor/                   # Interfaz web Flask de monitoreo en tiempo real
+│   ├── server.py
+│   ├── templates/ (index.html)
+│   └── static/ (CSS/JS)
+├── xmrig-proxy/               # Proxy XMRig (no incluido en detalle)
 ```
 
 ---
 
-## ⚙️ Diagrama de flujo IAProxy
+## 4. Componentes clave
 
-1. **Notificación de trabajo (Pool → IAProxy):**
-
-   * El pool envía un nuevo trabajo de minería al proxy IA.
-
-2. **Procesamiento IA:**
-
-   * Análisis de patrones de nonces.
-   * Optimización de parámetros de minería.
-   * Selección de algoritmos más eficientes.
-
-3. **Distribución a mineros:**
-
-   * El trabajo optimizado se envía al proxy XMRig.
-   * Distribución a los mineros conectados.
-
-4. **Solución de mineros:**
-
-   * Los mineros resuelven el trabajo con parámetros optimizados.
-   * Envían la solución al XMRig.
-
-5. **Validación IA:**
-
-   * Seis técnicas de validación en cascada.
-   * Filtrado multicapa antes de enviar al pool.
-
-6. **Envío al pool:**
-
-   * Transmisión segura TLS.
-   * Mantenimiento de conexión (ping/pong).
-
-7. **Actualización de modelos:**
-
-   * Reentrenamiento incremental con nuevos datos.
-   * Ajuste de parámetros en tiempo real.
-   * Optimización continua de los filtros IA.
+- **predict_nonce_server.py:** Servidor que predice nonces usando IA.
+- **inject_nonces_from_ia.py:** Inserta nonces IA validados en el flujo de minería.
+- **auto_trainer.py:** Entrenamiento automático diario de modelos.
+- **nonce_quality_filter.py:** Aplica 6 filtros estadísticos a los nonces.
+- **monitor/server.py:** Interfaz web para métricas y monitoreo en tiempo real.
 
 ---
 
-## 📁 Estructura de carpetas
+## 5. Modelos IA incluidos
 
-```plaintext
-/ia-mining-system/
-├── monitor/                 # Interfaz web de monitoreo
-├── src/
-│   ├── ia-modules/
-│   │   ├── bridge/          # Adaptadores IA ↔ minería
-│   │   ├── training/        # Entrenamiento y modelos ML
-│   │   ├── analytics/       # Análisis de series temporales y minería
-│   │   ├── evaluation/      # Validaciones estadísticas
-│   │   ├── logs/            # Nonces, inyecciones y resultados
-│   │   ├── data/            # Dataset de entrenamiento CSV
-│   │   ├── models/          # Modelos entrenados (Joblib)
-│   │   └── utils/           # Preprocesamiento, configuración
-│   └── proxy/               # Módulo IA Proxy
-
-```
+- `ethical_nonce_model.joblib`: Clasificador principal de nonces.
+- `hash_classifier_model.joblib`: Predice dificultad futura.
+- `cluster_model.joblib`: Agrupa nonces por comportamiento.
 
 ---
 
-## 🧩 Componentes clave
+## 6. Entrenamiento y evaluación
 
-* **predict\_nonce\_server.py**: Servidor que analiza y responde con nonces IA.
-* **inject\_nonces\_from\_ia.py**: Inserta los nonces filtrados dentro del flujo de minería.
-* **auto\_trainer.py**: Automatiza el entrenamiento diario del modelo IA.
-* **nonce\_quality\_filter.py**: Aplica 6 filtros estadísticos para validar nonces.
-* **monitor/server.py**: Muestra en tiempo real métricas de IA, precisión y nonces exitosos.
-
----
-
-## 🧠 Modelos IA incluidos
-
-* `ethical_nonce_model.joblib`: modelo principal de clasificación de nonces.
-* `hash_classifier_model.joblib`: estima dificultad futura con clasificación por hash.
-* `cluster_model.joblib`: segmenta grupos de nonces por comportamiento similar.
+- **Datos:** `data/nonce_training_data.csv`
+- **Ingeniería de características:** `Feature_Engineer.py`, `nonce_loader.py`
+- **Evaluación cruzada:** `pca_nonce_classifier.py`, `kl_divergence.py`, `entropy_analysis.py`
+- **Rendimiento:** `zar.py`, `monitor/server.py`
+- **Validaciones:** Métricas avanzadas de entropía, curtosis, asimetría, ratio de unicidad, etc.
 
 ---
 
-## 🧪 Entrenamiento y evaluación
+## 7. Patrones de diseño y dependencias
 
-* Datos de entrenamiento: `data/nonce_training_data.csv`.
-* Ingeniería de características: `Feature_Engineer.py`, `nonce_loader.py`.
-* Evaluación cruzada: `pca_nonce_classifier.py`, `kl_divergence.py`, `entropy_analysis.py`.
-* Métricas de rendimiento: `zar.py`, `monitor/server.py`.
+### Patrones usados:
+- **Modularidad:** Cada función (análisis, proxy, entrenamiento, validación) está en módulos separados.
+- **Proxy Pattern:** El IAProxy actúa como intermediario entre pool y mineros.
+- **Pipeline de validación:** Filtrado multicapa de nonces.
+- **Entrenamiento incremental:** Reentrena modelo automáticamente con nuevos datos.
 
----
+### Dependencias principales:
+- Python 3.10+
+- Flask (monitor web)
+- NumPy, pandas, scikit-learn, joblib (ML y datos)
+- ZeroMQ (comunicación IA ↔ Proxy)
+- TLS/SSL (seguridad)
+- matplotlib (visualización, opcional)
 
-## 🚀 Requisitos y ejecución
-
+Instalación:
 ```bash
-# Instalar requisitos
 pip install -r requirements.txt
-
-# Ejecutar el sistema completo (IA + Proxy + Monitor)
-bash run_all.sh
-
-# Entrenamiento manual
-python3 train_model.py
 ```
-
-### Requisitos clave
-
-* Python 3.10+
-* Flask, NumPy, Scikit-learn, pandas, joblib
-* ZeroMQ (para comunicación IA ↔ Proxy)
-* TLS/SSL certificados (seguridad pool)
 
 ---
 
-## 🤝 Contribuciones y licencia
+## 8. Ejecución
 
-ZARTRUX es un proyecto ético y educativo que busca mejorar la minería responsable mediante inteligencia artificial y sistemas de validación. Está abierto a contribuciones.
+- **Todo el sistema:** `bash run_all.sh`
+- **Entrenamiento manual:** `python3 train_model.py`
+- **Monitor web:** Ejecutar `monitor/server.py` (Flask)
 
-> Licencia: MIT
+---
 
-> Autor: José Luis "zartrux"
+## 9. Aspectos relevantes y éticos
 
+- El sistema está diseñado para minería responsable y ética, evitando prácticas maliciosas.
+- Todo el código y los modelos son abiertos para estudio y mejora.
+- Licencia: MIT
+- Autor: José Luis "zartrux"
+
+---
+
+## 10. Resumen técnico
+
+- El sistema integra IA, validaciones estadísticas, minería y monitorización en tiempo real.
+- Es altamente modular, extensible y seguro.
+- Permite analizar y mejorar la eficiencia de minería XMR de forma automática y ética.
+
+¿Quieres un análisis de algún módulo, código específico o flujo en más detalle?
 ---
 
 ¿Preguntas o sugerencias? Contacta a través de GitHub o el sistema de monitoreo IA.
