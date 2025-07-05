@@ -17,7 +17,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Ra
 CONFIG = {
     'lmdb_path': r"E:/monero-blockchain/lmdb",
     'csv_output': os.path.join(PROJECT_ROOT, "C:/zarturxia/src/iazar/data/datanonce_training_data.csv"),  # Ruta absoluta
-    'max_blocks': 40000,
+    'max_blocks': 10000,
     'update_interval': 3600,
     'max_retries': 5,
     'nonce_offsets': {

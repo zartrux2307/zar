@@ -1,5 +1,5 @@
 import zmq
-import json
+import jsonschema
 import logging
 from iazar.bridge.predict_nonce_inference import PredictNonceInference
 from iazar.utils.randomx_wrapper import compute_randomx_hash, hash_meets_target

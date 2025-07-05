@@ -8,11 +8,11 @@
     "logging_format": "[%(asctime)s] - %(levelname)s - %(message)s"
   },
   "paths": {
-    "model_dir": "models/",
-    "log_dir": "logs/",
-    "data_dir": "data/",
-    "cache_dir": "cache/",
-    "training_dir": "training/",
+    "model_dir": "iazar/models/",
+    "log_dir": "iazar/logs/",
+    "data_dir": "iazar/data/",
+    "cache_dir": "iazar/cache/",
+    "training_dir": "iazar/training/",
     "vmem_dir": "vmem/"
   },
   "entropy_analysis": {
@@ -31,7 +31,7 @@
   },
   "model": {
     "type": "joblib",
-    "file": "models/nonce_predictor.joblib",
+    "file": "iazar/models/nonce_predictor.joblib",
     "path": "iazar/models/rf_nonce_model.joblib",
     "confidence_threshold": 0.85,
     "batch_size": 64,
@@ -66,10 +66,10 @@
     "rotation_strategy": "fifo"
   },
   "data_paths": {
-    "successful_nonces": "data/nonces_exitosos.csv",
-    "nonce_hashes": "data/nonce_hashes.bin",
-    "injected_nonces": "logs/inyectados.log",
-    "nonce_training_data_path": "data/nonce_training_data.csv"
+    "successful_nonces": "iazar/data/nonces_exitosos.csv",
+    "nonce_hashes": "iazar/data/nonce_hashes.bin",
+    "injected_nonces": "iazar/logs/inyectados.log",
+    "nonce_training_data_path": "iazar/data/nonce_training_data.csv"
   },
   "processing_params": {
     "temporal_window": 60,

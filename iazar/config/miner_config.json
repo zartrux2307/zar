@@ -12,5 +12,5 @@
   },
   "data_path": "iazar/data/nonce_training_data.csv",
   "models_path": "src/iazar/models/",
-  "metrics_file": "metrics.csv"  // COMA SOBRANTE ELIMINADA
+  "metrics_file": "metrics.csv"
 }
