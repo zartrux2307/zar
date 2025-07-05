@@ -13,9 +13,8 @@ from dotenv import load_dotenv
 import jsonschema
 from cryptography.fernet import Fernet
 
-# Módulos de seguridad del proyecto
-from ..security.AESNonceEncryptor import AESNonceEncryptor
-
+# Import absoluto (universal, NO relativo)
+from iazar.security.AESNonceEncryptor import AESNonceEncryptor
 
 load_dotenv()
 logger = logging.getLogger('ZartruxConfigManager')
@@ -87,20 +86,22 @@ class ConfigManager:
         return cls._instance
 
     def _init_manager(self):
-        """Inicialización del gestor de configuración"""
-        self.config_dir = Path(__file__).parent.parent / 'config'
+        # Carpeta config universal
+        src_dir = Path(__file__).resolve().parent.parent
+        config_dir = src_dir / 'config'
+        if not config_dir.exists():
+            config_dir = Path(os.getcwd()) / 'config'
+        self.config_dir = config_dir
         self._load_encryption_key()
         self._load_all_schemas()
 
     def _load_encryption_key(self):
-        """Carga la clave de cifrado desde variables de entorno"""
         key = os.getenv('CONFIG_ENCRYPTION_KEY')
         if key:
             self._encryption_key = key.encode()
             logger.info("Clave de cifrado de configuración cargada desde entorno")
 
     def _load_all_schemas(self):
-        """Carga los esquemas de validación base y personalizados"""
         self._schemas = self.BASE_SCHEMAS.copy()
         custom_schemas_path = self.config_dir / 'config_schemas'
         if custom_schemas_path.exists():
@@ -110,15 +111,12 @@ class ConfigManager:
                     self._schemas[schema_name] = json.load(f)
 
     def _decrypt_config(self, encrypted_data: bytes) -> Dict:
-        """Descifra configuración usando AES-GCM"""
         if not self._encryption_key:
             raise ValueError("Clave de cifrado no disponible")
-        
         encryptor = AESNonceEncryptor(self._encryption_key)
         return encryptor.decrypt(encrypted_data)
 
     def _apply_environment_overrides(self, config: Dict, prefix: str) -> Dict:
-        """Aplica sobreescrituras desde variables de entorno"""
         for key in config.copy():
             env_key = f"{prefix}_{key.upper()}"
             if env_key in os.environ:
@@ -130,11 +128,9 @@ class ConfigManager:
         return config
 
     def _validate_config(self, config: Dict, schema_name: str) -> bool:
-        """Valida la configuración contra el esquema correspondiente"""
         schema = self._schemas.get(schema_name)
         if not schema:
             raise ConfigValidationError(f"Esquema {schema_name} no encontrado")
-
         try:
             jsonschema.validate(instance=config, schema=schema)
             return True
@@ -143,7 +139,6 @@ class ConfigManager:
             raise ConfigValidationError(f"Configuración inválida: {ve.message}") from ve
 
     def get_config(self, config_name: str, refresh: bool = False) -> Dict[str, Any]:
-        """Obtiene la configuración solicitada con caché y validación"""
         if not refresh and config_name in self._configs:
             return self._configs[config_name]
 
@@ -173,7 +168,6 @@ class ConfigManager:
             raise
 
     def generate_default_config(self, config_name: str):
-        """Genera configuración por defecto si no existe"""
         default_configs = {
             'ia_config': {
                 'data_paths': {
@@ -192,7 +186,6 @@ class ConfigManager:
                 'max_nodes': 100
             }
         }
-
         config_path = self.config_dir / f"{config_name}.json"
         if not config_path.exists():
             default_config = default_configs.get(config_name, {})
@@ -201,17 +194,14 @@ class ConfigManager:
             logger.info(f"Configuración por defecto generada para {config_name}")
 
     def update_remote_config(self, config_name: str, new_config: Dict):
-        """Actualiza configuración con el hub central"""
-        # Implementar lógica de sincronización con ZartruxHubClient
-        pass
+        pass  # Implementar si se desea sincronización remota
 
     def config_hash(self, config_name: str) -> str:
-        """Genera hash SHA256 de la configuración para verificar integridad"""
         config = self.get_config(config_name)
         config_str = json.dumps(config, sort_keys=True).encode()
         return hashlib.sha256(config_str).hexdigest()
 
-# Funciones de acceso rápido para módulos comunes
+# ==== ALIAS COMPATIBLES PARA IMPORTS ====
 def get_ia_config() -> Dict[str, Any]:
     return ConfigManager().get_config('ia_config')
 
@@ -221,19 +211,6 @@ def get_hub_config() -> Dict[str, Any]:
 def get_miner_config() -> Dict[str, Any]:
     return ConfigManager().get_config('miner_config')
 
-if __name__ == "__main__":
-    # Ejemplo de uso y prueba
-    logging.basicConfig(level=logging.INFO)
-    cm = ConfigManager()
-    
-    # Generar configs por defecto si no existen
-    cm.generate_default_config('ia_config')
-    cm.generate_default_config('hub_config')
-    
-    # Obtener configuraciones
-    ia_config = get_ia_config()
-    hub_config = get_hub_config()
-    
-    print("Configuración IA:", json.dumps(ia_config, indent=2))
-    print("\nConfiguración Hub:", json.dumps(hub_config, indent=2))
-    print("\nHash IA Config:", cm.config_hash('ia_config'))
+def get_config(config_name: str) -> Dict[str, Any]:
+    """Alias genérico compatible con los módulos que hacen import get_config"""
+    return ConfigManager().get_config(config_name)

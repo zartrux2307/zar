@@ -1,100 +1,107 @@
+# iazar/utils/nonce_loader.py
+"""
+NonceLoader: Cargador flexible de nonces y datasets para IA Zartrux.
+- Compatible con CSV, JSON, Parquet, logs de minería.
+- Integrado con ConfigManager y rutas absolutas del sistema.
+- Robusto para ejecución en Windows/Linux (uso real, no ejemplo).
+"""
+
 import os
 import pandas as pd
 import json
-import gzip
-import bz2
 import datetime
 from typing import Union
+from iazar.utils.config_manager import ConfigManager
 
 class NonceLoader:
-    def __init__(self, config: Union[dict, 'ConfigManager', str] = None):
+    def __init__(self, config: Union[dict, ConfigManager, str] = None, base_dir: str = None):
         """
         Inicializa el cargador de nonces.
         Args:
-            config (ConfigManager, dict o str): Instancia de configuración, diccionario, o ruta al archivo.
+            config: dict, ConfigManager o ruta a config. Si None, usa ia_config.
+            base_dir: Ruta raíz del proyecto (para resolver archivos relativos).
         """
-        if config is None:
-            # Valor por defecto si no se pasa nada
-            config_path = 'config/config_manager.json'
-            self.config = self.load_config(config_path)
-        elif isinstance(config, str):
-            self.config = self.load_config(config)
-        elif hasattr(config, 'get_config'):
-            # ConfigManager: usa el método para obtener la config de nonces o ruta de datos
-            # Aquí puedes cambiar el nombre 'miner_config' según tu uso real
-            self.config = config.get_config('miner_config')
+        self.base_dir = base_dir or os.getcwd()
+        if isinstance(config, ConfigManager):
+            self.config = config.get_config('ia_config')
         elif isinstance(config, dict):
             self.config = config
+        elif isinstance(config, str):
+            self.config = ConfigManager().get_config(config)
         else:
-            raise ValueError("Config debe ser ruta, dict, o instancia de ConfigManager")
+            self.config = ConfigManager().get_config('ia_config')
+        self.data_dir = self.config.get('paths', {}).get('data_dir', 'C:/zarturxia/src/iazar/data')
 
-    def load_config(self, config_path):
-        """Carga la configuración desde un archivo JSON."""
-        with open(config_path, 'r') as file:
-            config = json.load(file)
-        return config
+    def _abs(self, path: str) -> str:
+        """Convierte rutas relativas a absolutas respecto al proyecto."""
+        if os.path.isabs(path):
+            return path
+        return os.path.normpath(os.path.join(self.base_dir, path))
 
-    def load_csv(self, file_path, compression=None, **kwargs):
-        return pd.read_csv(file_path, compression=compression, **kwargs) if compression else pd.read_csv(file_path, **kwargs)
+    def load_csv(self, file_path, **kwargs):
+        return pd.read_csv(self._abs(file_path), **kwargs)
 
     def load_json(self, file_path, **kwargs):
-        return pd.read_json(file_path, **kwargs)
+        return pd.read_json(self._abs(file_path), **kwargs)
 
     def load_jsonl(self, file_path, **kwargs):
-        return pd.read_json(file_path, lines=True, **kwargs)
+        return pd.read_json(self._abs(file_path), lines=True, **kwargs)
 
     def load_parquet(self, file_path, **kwargs):
-        return pd.read_parquet(file_path, **kwargs)
+        return pd.read_parquet(self._abs(file_path), **kwargs)
 
-    def load_log_files(self, log_dir, file_extension='*.csv', compression=None, **kwargs):
+    def load_log_files(self, log_dir, file_extension='*.csv', **kwargs):
         import glob
-        file_paths = glob.glob(os.path.join(log_dir, file_extension))
+        full_dir = self._abs(log_dir)
+        file_paths = glob.glob(os.path.join(full_dir, file_extension))
         dfs = []
         for file_path in file_paths:
-            if file_path.endswith('.csv'):
-                df = self.load_csv(file_path, compression=compression, **kwargs)
-            elif file_path.endswith('.json'):
+            ext = os.path.splitext(file_path)[1].lower()
+            if ext == '.csv':
+                df = self.load_csv(file_path, **kwargs)
+            elif ext == '.json':
                 df = self.load_json(file_path, **kwargs)
-            elif file_path.endswith('.jsonl'):
+            elif ext == '.jsonl':
                 df = self.load_jsonl(file_path, **kwargs)
-            elif file_path.endswith('.parquet'):
+            elif ext == '.parquet':
                 df = self.load_parquet(file_path, **kwargs)
             else:
                 raise ValueError(f"Archivo no soportado: {file_path}")
             dfs.append(df)
+        if not dfs:
+            raise FileNotFoundError(f"No se encontraron archivos {file_extension} en {log_dir}")
         return pd.concat(dfs, ignore_index=True)
 
-    def load_data(self, data_path, data_format='csv', compression=None, **kwargs):
+    def load_data(self, data_path, data_format='csv', **kwargs):
         """
         Carga datos desde una ruta especificada.
         Args:
-            data_path (str): Ruta al archivo o directorio de datos.
-            data_format (str): Formato de los datos ('csv', 'json', 'jsonl', 'parquet').
-            compression (str): Tipo de compresión ('gzip', 'bz2', None).
-            **kwargs: Argumentos adicionales para el método de carga.
+            data_path: Ruta archivo/directorio (relativa o absoluta).
+            data_format: csv, json, jsonl, parquet.
         Returns:
-            pd.DataFrame: Datos cargados.
+            pd.DataFrame
         """
-        if os.path.isfile(data_path):
+        abs_path = self._abs(data_path)
+        if os.path.isfile(abs_path):
             if data_format == 'csv':
-                return self.load_csv(data_path, compression=compression, **kwargs)
+                return self.load_csv(abs_path, **kwargs)
             elif data_format == 'json':
-                return self.load_json(data_path, **kwargs)
+                return self.load_json(abs_path, **kwargs)
             elif data_format == 'jsonl':
-                return self.load_jsonl(data_path, **kwargs)
+                return self.load_jsonl(abs_path, **kwargs)
             elif data_format == 'parquet':
-                return self.load_parquet(data_path, **kwargs)
+                return self.load_parquet(abs_path, **kwargs)
             else:
-                raise ValueError(f"Formato de datos no soportado: {data_format}")
-        elif os.path.isdir(data_path):
-            return self.load_log_files(data_path, file_extension=f'*.{data_format}', compression=compression, **kwargs)
+                raise ValueError(f"Formato no soportado: {data_format}")
+        elif os.path.isdir(abs_path):
+            return self.load_log_files(abs_path, file_extension=f'*.{data_format}', **kwargs)
         else:
-            raise FileNotFoundError(f"No se encontró el archivo o directorio: {data_path}")
+            raise FileNotFoundError(f"No se encontró archivo/directorio: {abs_path}")
 
-# === Funciones auxiliares globales ===
+# === Funciones auxiliares ===
 
 def load_nonce_data(filepath: str):
-    """Carga nonces desde un archivo de texto plano"""
+    """Carga nonces desde un archivo de texto plano."""
     with open(filepath, 'r') as f:
         return [line.strip() for line in f if line.strip()]
 
@@ -105,9 +112,12 @@ def log_successful_nonce(nonce, confidence):
     print(f"[{datetime.datetime.now()}] SUCCESS: {nonce} (confidence: {confidence:.2f})")
 
 if __name__ == "__main__":
-    from iazar.utils.config_manager import ConfigManager
-    config = ConfigManager()
-    nonce_loader = NonceLoader(config)
-    data_path = 'data/nonce_training_data.csv'
-    df = nonce_loader.load_data(data_path, data_format='csv')
-    print(df.head())
+    # Test real: carga desde la carpeta oficial de datos definida en config
+    cm = ConfigManager()
+    loader = NonceLoader(config=cm, base_dir=os.getcwd())
+    try:
+        path = os.path.join(loader.data_dir, "C:/zarturxia/src/iazar/data/nonce_training_data.csv")
+        df = loader.load_data(path, data_format="csv")
+        print(df.head())
+    except Exception as ex:
+        print("ERROR cargando datos:", ex)

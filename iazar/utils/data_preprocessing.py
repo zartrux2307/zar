@@ -6,13 +6,15 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from typing import Optional, Dict, Any
 
-from .config_manager import get_ia_config
+from iazar.utils.config_manager import get_ia_config
 import sklearn
 from packaging import version
+
 if version.parse(sklearn.__version__) >= version.parse("1.2"):
     categorical_transformer = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
 else:
     categorical_transformer = OneHotEncoder(handle_unknown='ignore', sparse=False)
+
 class NonceDataPreprocessor:
     """
     Preprocesador de datos de nonces para el sistema Zartrux IA Mining.
@@ -29,21 +31,33 @@ class NonceDataPreprocessor:
     def _load_and_merge_data(self) -> pd.DataFrame:
         """Carga y fusiona los datos de nonces desde rutas configuradas"""
         paths = self.data_paths
-        # Ejemplo de carga mínima (adapta a tus nombres reales)
-        try:
-            df_nonces = pd.read_csv(paths['successful_nonces'])
-        except Exception as e:
-            print(f"Error cargando successful_nonces: {e}")
+        # Carga robusta de archivos principales
+        dfs = []
+        files_to_try = [
+            ('successful_nonces', 'C:/zarturxia/src/iazar/datanonces_exitosos.csv'),
+            ('training_data', 'C:/zarturxia/src/iazar/nonce_training_data.csv'),
+            ('preprocessed', 'C:/zarturxia/src/iazar/nonce_preprocessed.csv')
+        ]
+        for key, fallback in files_to_try:
+            try:
+                file_path = paths.get(key) or os.path.join('data', fallback)
+                if os.path.exists(file_path):
+                    df = pd.read_csv(file_path)
+                    dfs.append(df)
+            except Exception as e:
+                print(f"[Zartrux][data_preprocessing] Error cargando {key}: {e}")
+
+        if dfs:
+            df_nonces = pd.concat(dfs, ignore_index=True)
+        else:
+            print("[Zartrux][data_preprocessing] ⚠️ No se encontró ningún archivo de nonces, devolviendo DataFrame vacío.")
             df_nonces = pd.DataFrame()
-        # Aquí puedes agregar la carga de otros archivos según tus rutas
-        # y hacer el merge/fusión necesario.
         return df_nonces
 
     def _calculate_derived_features(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calcula características adicionales (ejemplo simple)"""
         if df.empty:
             return df
-        # Ejemplo: densidad de ceros en el nonce
         if 'nonce' in df.columns:
             df['zero_density'] = df['nonce'].astype(str).apply(lambda x: x.count('0') / len(x) if len(x) > 0 else 0)
         return df
@@ -53,8 +67,17 @@ class NonceDataPreprocessor:
         return df.dropna()
 
     def _encode_categoricals(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Codifica variables categóricas si las hubiera"""
-        # Ejemplo: no hay categóricas por defecto. Puedes ampliar aquí.
+        """
+        Codifica variables categóricas:
+        - Convierte columnas 'object' que sean verdaderamente categóricas en categoría.
+        - Deja el resto intacto para el pipeline.
+        """
+        cat_cols = df.select_dtypes(include=['object']).columns
+        for col in cat_cols:
+            unique_ratio = df[col].nunique() / len(df) if len(df) > 0 else 0
+            # Sólo convierte en 'category' si tiene pocos valores únicos
+            if unique_ratio < 0.2 or df[col].nunique() < 30:
+                df[col] = df[col].astype('category')
         return df
 
     def _generate_metadata(self, df: pd.DataFrame):
@@ -67,7 +90,6 @@ class NonceDataPreprocessor:
         numeric_features = df.select_dtypes(include=[np.number]).columns.tolist()
         categorical_features = df.select_dtypes(include=['object', 'category']).columns.tolist()
         numeric_transformer = StandardScaler()
-        categorical_transformer = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
         preprocessor = ColumnTransformer(
             transformers=[
                 ('num', numeric_transformer, numeric_features),
@@ -81,7 +103,6 @@ class NonceDataPreprocessor:
 
     def preprocess(self, data: Optional[pd.DataFrame] = None) -> np.ndarray:
         """Ejecuta el pipeline completo de preprocesamiento
-        
         Si data=None, carga automáticamente según rutas config.
         """
         print("Cargando y fusionando datos...")
