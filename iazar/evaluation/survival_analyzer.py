@@ -126,7 +126,7 @@ class SurvivalAnalyzer:
 # Ejemplo de uso de la clase SurvivalAnalyzer
 if __name__ == "__main__":
     # Cargar datos de nonces desde el archivo CSV
-    data_path = '../data/nonce_training_data.csv'
+    data_path = 'C:/zarturxia/src/iazar/data/nonce_training_data.csv'
     df = pd.read_csv(data_path)
 
     # Asumir que tenemos columnas 'duration' y 'event' en el DataFrame

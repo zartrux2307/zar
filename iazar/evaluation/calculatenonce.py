@@ -275,7 +275,7 @@ class NonceAnalyzer:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Análisis profesional de distribución de nonces en Monero')
-    parser.add_argument('--input', type=str, default='data/nonce_training_data.csv', 
+    parser.add_argument('--input', type=str, default='C:/zarturxia/src/iazar/data/nonce_training_data.csv', 
                         help='Ruta al archivo CSV con los datos de entrenamiento')
     parser.add_argument('--output', type=str, default='results', 
                         help='Directorio de salida para resultados')
