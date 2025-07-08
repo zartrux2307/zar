@@ -1,0 +1,326 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. Todos los derechos reservados.
+
+Prueba la nueva tecnología PowerShell multiplataforma https://aka.ms/pscore6
+
+PS C:\Windows\system32> .\.venv\Scripts\Activate.ps1
+(.venv) PS C:\Windows\system32> cd C:\zarturxia
+(.venv) PS C:\zarturxia> $env:PYTHONPATH="C:\zarturxia\src"
+(.venv) PS C:\zarturxia> python -m iazar.launcher_universal
+
+📋 Scripts a ejecutar:
+ • C:\zarturxia\src\iazar\utils\config_manager.py
+ • C:\zarturxia\src\iazar\utils\data_loader.py
+ • C:\zarturxia\src\iazar\utils\data_preprocessing.py
+ • C:\zarturxia\src\iazar\utils\feature_engineer.py
+ • C:\zarturxia\src\iazar\utils\feature_utils.py
+ • C:\zarturxia\src\iazar\utils\hex_validator.py
+ • C:\zarturxia\src\iazar\utils\nonce_loader.py
+ • C:\zarturxia\src\iazar\utils\nonce_stats.py
+ • C:\zarturxia\src\iazar\utils\nonce_validator.py
+ • C:\zarturxia\src\iazar\utils\randomx_wrapper.py
+ • C:\zarturxia\src\iazar\data\clean_nonce_training_data.py
+ • C:\zarturxia\src\iazar\data\create_initial_data.py
+ • C:\zarturxia\src\iazar\data\data_collection.py
+ • C:\zarturxia\src\iazar\security\AESNonceEncryptor.py
+ • C:\zarturxia\src\iazar\analytics\entropy_tools.py
+ • C:\zarturxia\src\iazar\analytics\fourier_analyzer.py
+ • C:\zarturxia\src\iazar\analytics\lmdb_nonce_extractor.py
+ • C:\zarturxia\src\iazar\analytics\time_series_analyzer.py
+ • C:\zarturxia\src\iazar\bridge\ai_proxy_adapter.py
+ • C:\zarturxia\src\iazar\bridge\ethical_nonce_adapter.py
+ • C:\zarturxia\src\iazar\bridge\inject_nonces_from_ia.py
+ • C:\zarturxia\src\iazar\bridge\job_sync.py
+ • C:\zarturxia\src\iazar\bridge\predict_nonce_inference.py
+ • C:\zarturxia\src\iazar\bridge\predict_nonce_server.py
+ • C:\zarturxia\src\iazar\bridge\shared_memory_manager.py
+ • C:\zarturxia\src\iazar\bridge\stratum_adapter.py
+ • C:\zarturxia\src\iazar\training\train_model_randomforest.py
+ • C:\zarturxia\src\iazar\evaluation\calculatenonce.py
+ • C:\zarturxia\src\iazar\evaluation\correlation_analysis.py
+ • C:\zarturxia\src\iazar\evaluation\distribution_analyzer.py
+ • C:\zarturxia\src\iazar\evaluation\entropy_analysis.py
+ • C:\zarturxia\src\iazar\evaluation\nonce_quality_filter.py
+ • C:\zarturxia\src\iazar\evaluation\survival_analyzer.py
+ • C:\zarturxia\src\iazar\models\rf_predictor.py
+ • C:\zarturxia\src\iazar\core\block_builder.py
+ • C:\zarturxia\src\iazar\core\difficulty_manager.py
+ • C:\zarturxia\src\iazar\core\hash_validator.py
+ • C:\zarturxia\src\iazar\core\randomx_handler.py
+
+🚦 Iniciando 38 procesos...
+
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\config_manager.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\data_loader.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\data_preprocessing.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\feature_engineer.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\feature_utils.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\hex_validator.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\nonce_loader.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\nonce_stats.py
+Archivo/directorio no encontrado: C:\zarturxia\iazar\data\nonce_training_data.csv
+Datos cargados:
+DataFrame vacío
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\nonce_validator.py
+▶️ Lanzando: C:\zarturxia\src\iazar\utils\randomx_wrapper.py
+▶️ Lanzando: C:\zarturxia\src\iazar\data\clean_nonce_training_data.py
+▶️ Lanzando: C:\zarturxia\src\iazar\data\create_initial_data.py
+▶️ Lanzando: C:\zarturxia\src\iazar\data\data_collection.py
+▶️ Lanzando: C:\zarturxia\src\iazar\security\AESNonceEncryptor.py
+▶️ Lanzando: C:\zarturxia\src\iazar\analytics\entropy_tools.py
+        nonce   entropy  uniqueness  zero_density  pattern_score  is_valid
+0  4088558968  3.192720    0.798272      0.035882       0.607587         0
+1  3531010464  3.272143    0.935104      0.062874       0.718192         0
+2  3664122483  3.232802    0.829756      0.064640       0.881087         0
+3   711780242  3.016524    0.929522      0.034953       0.692573         1
+4  4031689489  2.734620    0.848225      0.044973       0.768332         0
+▶️ Lanzando: C:\zarturxia\src\iazar\analytics\fourier_analyzer.py
+▶️ Lanzando: C:\zarturxia\src\iazar\analytics\lmdb_nonce_extractor.py
+▶️ Lanzando: C:\zarturxia\src\iazar\analytics\time_series_analyzer.py
+Nonce 1a2b3c4d válido?: True
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\ai_proxy_adapter.py
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\ethical_nonce_adapter.py
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\inject_nonces_from_ia.py
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\job_sync.py
+Traceback (most recent call last):
+  File "C:\zarturxia\src\iazar\data\clean_nonce_training_data.py", line 110, in <module>
+    clean_duplicates()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\data\clean_nonce_training_data.py", line 98, in clean_duplicates
+    os.rename(CSV_PATH, BACKUP_PATH)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [WinError 183] No se puede crear un archivo que ya existe: 'C:\\zarturxia\\src\\iazar\\data\\nonce_training_data.csv' -> 'C:\\zarturxia\\src\\iazar\\data\\nonce_training_data.backup.csv'
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\predict_nonce_inference.py
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\predict_nonce_server.py
+✅ Datos iniciales creados en: src/iazar/data/nonce_training_data.csv
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\shared_memory_manager.py
+▶️ Lanzando: C:\zarturxia\src\iazar\bridge\stratum_adapter.py
+INFO:ZartruxConfigManager:Usando directorio de configuración: C:\zarturxia\src\iazar\config
+INFO:ZartruxConfigManager:Configuración ia_config cargada y validada
+INFO:DataCollection:📥 Generando datos de ejemplo en: iazar\data\nonces_exitosos.csv
+INFO:DataCollection:✅ Datos generados: 3 registros guardados
+▶️ Lanzando: C:\zarturxia\src\iazar\training\train_model_randomforest.py
+▶️ Lanzando: C:\zarturxia\src\iazar\evaluation\calculatenonce.py
+▶️ Lanzando: C:\zarturxia\src\iazar\evaluation\correlation_analysis.py
+▶️ Lanzando: C:\zarturxia\src\iazar\evaluation\distribution_analyzer.py
+▶️ Lanzando: C:\zarturxia\src\iazar\evaluation\entropy_analysis.py
+▶️ Lanzando: C:\zarturxia\src\iazar\evaluation\nonce_quality_filter.py
+▶️ Lanzando: C:\zarturxia\src\iazar\evaluation\survival_analyzer.py
+▶️ Lanzando: C:\zarturxia\src\iazar\models\rf_predictor.py
+
+[2025-07-08 16:40:23.029622] Iniciando extracción...
+▶️ Lanzando: C:\zarturxia\src\iazar\core\block_builder.py
+Procesando bloques:  13%|██████▉                                               | 4212/32720 [00:00<00:01, 15535.94it/s]▶️ Lanzando: C:\zarturxia\src\iazar\core\difficulty_manager.py
+▶️ Lanzando: C:\zarturxia\src\iazar\core\hash_validator.py
+▶️ Lanzando: C:\zarturxia\src\iazar\core\randomx_handler.py
+
+✅ Todos los procesos iniciados. Ctrl+C para salir
+
+Características Dominantes: [0.00000000e+00 7.20000000e-02 2.94000000e-01 1.76000000e-01
+ 1.16000000e-01 4.23549603e+09 1.95087298e+08 1.92690104e+08
+ 1.81059137e+08 1.69414503e+08]
+2025-07-08 16:40:27,046 - EthicsProcessor - WARNING - No se encontró archivo de entrada de nonces
+2025-07-08 16:40:27,061 - EthicsProcessor - INFO - No hay nonces para procesar
+[2025-07-08 16:40:27][    INFO][inject_nonces_from_ia:227] === Inicio de inyección de nonces ===
+[2025-07-08 16:40:27][    INFO][inject_nonces_from_ia:233] Bloqueo adquirido
+[2025-07-08 16:40:27][    INFO][inject_nonces_from_ia: 79] Backup creado: src\iazar\data\backups\nonces_exitosos_20250708_164027.csv
+[2025-07-08 16:40:27][ WARNING][inject_nonces_from_ia: 87] Archivo JSON no encontrado: src\iazar\data\nonces_ready.json
+[2025-07-08 16:40:27][ WARNING][inject_nonces_from_ia:251] No se encontraron nonces válidos para inyectar
+[2025-07-08 16:40:27][    INFO][inject_nonces_from_ia:273] Proceso completado en 0.17 segundos
+Procesando bloques:  18%|██████████                                              | 5852/32720 [00:06<00:41, 650.69it/s]2025-07-08 16:40:29,738 - IA-Zar-Proxy - INFO - Conectando (intento 1) a pool.hashvault.pro:443 (TLS)
+INFO:ZartruxConfigManager:Usando directorio de configuración: C:\zarturxia\src\iazar\config
+INFO:ZartruxConfigManager:Configuración ia_config cargada y validada
+INFO:TrainModel:📥 Cargando y procesando datos desde: iazar\data\nonces_exitosos.csv
+Cargando y fusionando datos...
+Calculando características derivadas...
+Limpiando datos...
+Codificando variables...
+Construyendo pipeline de features...
+Aplicando transformaciones...
+Generando metadatos...
+INFO:TrainModel:✅ Datos preprocesados: (3, 8) dimensiones | 3 muestras
+INFO:TrainModel:🧠 Entrenando modelo RandomForest...
+INFO:TrainModel:💾 Guardando modelo en iazar\models\rf_nonce_model.joblib
+INFO:TrainModel:✅ Entrenamiento completado y modelo guardado exitosamente.
+Traceback (most recent call last):
+  File "C:\zarturxia\src\iazar\analytics\time_series_analyzer.py", line 233, in <module>
+    TimeSeriesAnalyzer.example_usage()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\analytics\time_series_analyzer.py", line 215, in example_usage
+    analyzer = cls(config_manager)
+  File "C:\zarturxia\src\iazar\analytics\time_series_analyzer.py", line 75, in __init__
+    self._initialize_parameters()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\analytics\time_series_analyzer.py", line 80, in _initialize_parameters
+    self.window_sizes = self.config.get_config_value('ia_config', 'ts_windows', [10, 50, 100])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConfigManager' object has no attribute 'get_config_value'
+2025-07-08 16:40:32,035 - ERROR - Error cargando datos: Columnas requeridas faltantes: timestamp
+2025-07-08 16:40:32,036 - ERROR - Error en el análisis: Columnas requeridas faltantes: timestamp
+INFO:ZartruxConfigManager:Usando directorio de configuración: C:\zarturxia\src\iazar\config
+INFO:ZartruxConfigManager:Configuración ia_config cargada y validada
+WARNING:Zartrux.DistributionAnalyzer:[Zartrux] Error cargando modelos:
+ERROR:Zartrux.DistributionAnalyzer:Error en análisis completo: 'NonceLoader' object has no attribute 'load_hash_data'
+Resumen del análisis:
+- Autocorrelaciones: 0 lags
+- Patrones significativos: 0
+- Insights IA: []
+Procesando bloques:  21%|███████████▌                                            | 6755/32720 [00:09<00:50, 518.97it/s]INFO:__main__:Directorio actual: C:\zarturxia
+INFO:__main__:Intentando cargar datos de: C:\zarturxia\src\iazar\data\nonce_training_data.csv
+Procesando bloques:  43%|███████████████████████▌                               | 14037/32720 [00:36<01:03, 296.10it/s]2025-07-08 16:40:59,956 - IA-Zar-Proxy - WARNING - Timeout recibiendo datos después de 15 segundos
+2025-07-08 16:40:59,956 - IA-Zar-Proxy - ERROR - Respuesta subscribe inválida: None
+2025-07-08 16:40:59,957 - IA-Zar-Proxy - INFO - Reintentando en 1.1 segundos...
+Procesando bloques:  44%|████████████████████████                               | 14310/32720 [00:37<01:27, 210.68it/s]2025-07-08 16:41:01,111 - IA-Zar-Proxy - INFO - Conectando (intento 2) a pool.hashvault.pro:443 (TLS)
+Procesando bloques:  52%|████████████████████████████▊                          | 17124/32720 [00:47<00:49, 314.82it/s]C:\Windows\system32\.venv\Lib\site-packages\lifelines\utils\__init__.py:933: UserWarning: DataFrame Index is not unique, defaulting to incrementing index instead.
+  warnings.warn("DataFrame Index is not unique, defaulting to incrementing index instead.")
+Procesando bloques:  54%|█████████████████████████████▉                         | 17799/32720 [00:50<00:41, 361.02it/s]INFO:__main__:Análisis completado: Concordance Index=0.4570479145011699
+Procesando bloques:  68%|█████████████████████████████████████▋                 | 22386/32720 [01:08<00:45, 227.25it/s]2025-07-08 16:41:31,246 - IA-Zar-Proxy - WARNING - Timeout recibiendo datos después de 15 segundos
+2025-07-08 16:41:31,247 - IA-Zar-Proxy - ERROR - Respuesta subscribe inválida: None
+2025-07-08 16:41:31,247 - IA-Zar-Proxy - INFO - Reintentando en 2.5 segundos...
+Procesando bloques:  70%|██████████████████████████████████████▌                | 22970/32720 [01:10<00:52, 186.47it/s]2025-07-08 16:41:33,759 - IA-Zar-Proxy - INFO - Conectando (intento 3) a pool.hashvault.pro:443 (TLS)
+Procesando bloques:  92%|██████████████████████████████████████████████████▋    | 30147/32720 [01:40<00:13, 187.88it/s]2025-07-08 16:42:03,935 - IA-Zar-Proxy - WARNING - Timeout recibiendo datos después de 15 segundos
+2025-07-08 16:42:03,935 - IA-Zar-Proxy - ERROR - Respuesta subscribe inválida: None
+2025-07-08 16:42:03,935 - IA-Zar-Proxy - INFO - Reintentando en 4.6 segundos...
+Procesando bloques:  96%|████████████████████████████████████████████████████▊  | 31430/32720 [01:45<00:03, 327.31it/s]2025-07-08 16:42:08,532 - IA-Zar-Proxy - INFO - Conectando (intento 4) a pool.hashvault.pro:443 (TLS)
+Procesando bloques: 100%|███████████████████████████████████████████████████████| 32720/32720 [01:50<00:00, 297.20it/s]
+[Éxito] 32720 nuevos registros añadidos en: C:\zarturxia\src\iazar\iazar/data/nonce_training_data.csv
+Tiempo ejecución: 111.33s
+Esperando próxima ejecución (3600s)...
+
+Windows PowerShell
+Copyright (C) Microsoft Corporation. Todos los derechos reservados.
+
+Prueba la nueva tecnología PowerShell multiplataforma https://aka.ms/pscore6
+
+PS C:\Windows\system32> .\.venv\Scripts\Activate.ps1
+(.venv) PS C:\Windows\system32> cd C:\zarturxia
+(.venv) PS C:\zarturxia> $env:PYTHONPATH="C:\zarturxia\src"
+(.venv) PS C:\zarturxia> python -m src.iazar.proxy.ia_proxy_main 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc pool.hashvault.pro 443
+2025-07-08 16:40:12,363 - IA-Zar-Proxy - INFO -
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+
+2025-07-08 16:40:12,368 - ZartruxConfigManager - INFO - Usando directorio de configuración: C:\zarturxia\src\iazar\config
+2025-07-08 16:40:12,373 - ZartruxConfigManager - ERROR - Error de sintaxis en C:\zarturxia\src\iazar\config\shared_memory.json: Expecting ',' delimiter: line 7 column 3 (char 115)
+2025-07-08 16:40:12,378 - ZartruxConfigManager - ERROR - Error cargando shared_memory: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_164012.json'
+Traceback (most recent call last):
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 233, in get_config
+    config_data = json.load(f)
+  File "C:\Python313\Lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "C:\Python313\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python313\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 7 column 3 (char 115)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\zarturxia\src\iazar\proxy\ia_proxy_main.py", line 582, in <module>
+    proxy = IAZarProxy(
+        wallet,
+    ...<4 lines>...
+        listen_tls_port=3334
+    )
+  File "C:\zarturxia\src\iazar\proxy\ia_proxy_main.py", line 87, in __init__
+    self.config = get_shm_config()
+                  ~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 361, in get_shm_config
+    return ConfigManager().get_shm_config()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 331, in get_shm_config
+    return self.get_config('shared_memory')
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 240, in get_config
+    config_path.rename(backup_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Python313\Lib\pathlib\_local.py", line 767, in rename
+    os.rename(self, target)
+    ~~~~~~~~~^^^^^^^^^^^^^^
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_164012.json'
+(.venv) PS C:\zarturxia> .\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1 : El término '.\.venv\Scripts\Activate.ps1' no se reconoce como nombre de un cmdlet,
+función, archivo de script o programa ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta
+de acceso, compruebe que dicha ruta es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 1
++ .\.venv\Scripts\Activate.ps1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (.\.venv\Scripts\Activate.ps1:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+(.venv) PS C:\zarturxia> cd C:\zarturxia
+(.venv) PS C:\zarturxia> $env:PYTHONPATH="C:\zarturxia\src"
+(.venv) PS C:\zarturxia> python -m src.iazar.proxy.ia_proxy_main 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc pool.hashvault.pro 443
+2025-07-08 16:42:25,794 - IA-Zar-Proxy - INFO -
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+
+2025-07-08 16:42:25,795 - ZartruxConfigManager - INFO - Usando directorio de configuración: C:\zarturxia\src\iazar\config
+2025-07-08 16:42:25,799 - ZartruxConfigManager - ERROR - Error de sintaxis en C:\zarturxia\src\iazar\config\shared_memory.json: Expecting ',' delimiter: line 7 column 3 (char 115)
+2025-07-08 16:42:25,799 - ZartruxConfigManager - ERROR - Error cargando shared_memory: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_164225.json'
+Traceback (most recent call last):
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 233, in get_config
+    config_data = json.load(f)
+  File "C:\Python313\Lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "C:\Python313\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python313\Lib\json\decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\json\decoder.py", line 361, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ~~~~~~~~~~~~~~^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 7 column 3 (char 115)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\zarturxia\src\iazar\proxy\ia_proxy_main.py", line 582, in <module>
+    proxy = IAZarProxy(
+        wallet,
+    ...<4 lines>...
+        listen_tls_port=3334
+    )
+  File "C:\zarturxia\src\iazar\proxy\ia_proxy_main.py", line 87, in __init__
+    self.config = get_shm_config()
+                  ~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 361, in get_shm_config
+    return ConfigManager().get_shm_config()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 331, in get_shm_config
+    return self.get_config('shared_memory')
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 240, in get_config
+    config_path.rename(backup_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Python313\Lib\pathlib\_local.py", line 767, in rename
+    os.rename(self, target)
+    ~~~~~~~~~^^^^^^^^^^^^^^
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_164225.json'
+(.venv) PS C:\zarturxia>
+
+2

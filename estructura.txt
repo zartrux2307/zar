@@ -1,0 +1,101 @@
+/C:\zarturxia/
+├── monitor/   
+       __init__.py                    # Sistema de monitoreo IA
+│   ├── server.py                 # Servidor Flask principal ok
+│   ├── templates/
+│   │   └── index.html            # Plantilla HTML  ok
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── styles.css        # Estilos CSS ok
+│   │   ├── js/
+│   │   │   └── main.js           # JavaScript del cliente ok
+│   │   └── img/
+│   │       └── logo_zar.png      # Logo ok
+│   └── status/
+│       ├── ia_mining_status.json # Estado de la minería IA
+│       └── ia_console.log        # Logs de la consola
+│
+├── src/ __init__.py
+│   ├── iazar/
+        └── security/
+            ├── __init__.py
+            └── AESNonceEncryptor.py
+
+│   │   ├── bridge/  
+
+                     generated/
+                              nonces_ready.json  
+               __init__.py     # Conexión y adaptadores IA ↔ minería
+│   │   │   ├── inject_nonces_from_ia.py  
+│   │   │   ├── ethical_nonce_adapter.py
+                test_inference.py
+│   │   │   ├── predict_nonce_server.py ok
+│   │   │   ├── predict_nonce_success.py
+│   │   │   └── predict_nonce_inference.py 
+│   │   │
+│   │   ├── training/  
+               __init__.py       # Entrenamiento IA
+│   │   │   ├── train_model.py
+│   │   │   ├── advanced_hash_classifier.py
+│   │   │   ├── auto_trainer.py
+│   │   │   └──regression_model.py
+│   │   │
+│   │   ├── analytics/     
+                 __init__.py                 # Análisis de datos mineros
+│   │   │   ├── time_series_analyzer.py
+                entropy_tools.py
+│   │   │   ├── fourier_analyzer.py
+│   │   │   ├── cluster_analyzer.py
+│   │   │   ├── NoncePatternAnalyzer.py
+│   │   │   ├── hash_rate_predictor.py
+│   │   │   ├── lmdb_nonce_extractor.py
+│   │   │  
+│   │   │
+│   │   ├── evaluation/   
+             __init__.py
+             nonce_quality_filter.py                   # Evaluación estadística avanzada
+│   │   │   ├── distribution_analyzer.py
+│   │   │   ├── Survival_Analyzer.py
+│   │   │   ├── nonce_stats.py
+│   │   │   ├── entropy_analysis.py
+│   │   │   ├── correlation_analysis.py
+│   │   │   ├── pca_nonce_classifier.py
+│   │   │   ├── kl_divergence.py
+│   │   │   └── lorenz_entropy.py
+                calculatenonce.py
+│   │   │
+│   │   ├── logs/
+│   │   │   ├── nonces_exitosos.txt  ok
+│   │   │   ├── nonces_hash.csv  ok
+│   │   │   └── inyectados.log  ok
+│   │   │        reports/kl_analysis
+│   │   ├── data/
+│   │   │   └── nonce_training_data.csv
+│   │   │
+│   │   ├── models/
+            __init__.py
+│   │   │   ├── ethical_nonce_model.joblib
+│   │   │   ├── hash_classifier_model.joblib
+│   │   │   └── cluster_model.joblib
+                regression_model.joblib
+               label_encoder.joblib
+│   │   │
+│   │   └── utils/ # Configuración global IA
+                __init__.py
+              data_loader.py
+│   │       ├── Feature_Engineer.py
+│   │       ├── nonce_loader.py
+│   │       ├── data_preprocessing.py
+│   │       └── config_manager.py
+            └──config.yaml
+               nonce_validator. py 
+               hex_validator . py                        
+│   │
+│   └── proxy/
+            __init__.py
+│       └── ia_proxy_main.py                # Proxy IA principal ok
+│
+├── xmrig-proxy/                            # XMRig Proxy
+│   ├── xmrig-proxy                         # Binario    ok
+│   └── xmrig-proxy.json                    # Configuración
+│

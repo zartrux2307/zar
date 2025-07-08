@@ -1,0 +1,49 @@
+2. Crear el entorno virtual
+powershell
+# Crear entorno virtual
+python -m venv .venv
+3. Activar el entorno virtual
+
+
+
+
+
+
+python -m iazar.src.proxy.ia_proxy_main 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+
+python -m iazar.bridge.predict_nonce_server
+python -m iazar.proxy.ia_orchestrator
+python -m iazar.training.train_model_randomforest
+python start_mining.py
+ C:\zarturxia\xmrig-proxy> ./xmrig-proxy --config=xmrig-proxy.json
+
+.\.venv\Scripts\Activate.ps1
+tree /F "C:\zarturxia"
+
+python -m src.iazar.launcher_universal.py
+
+.\.venv\Scripts\Activate.ps1
+cd C:\zarturxia
+$env:PYTHONPATH="C:\zarturxia\src"
+# Ejecutar para generar configuraciones por defecto
+python -c "from iazar.utils.config_manager import ConfigManager; ConfigManager().generate_default_config('ia_config')"
+python -m iazar.bridge.predict_nonce_server
+python -m iazar.launcher_universal
+
+tree /F "C:\zarturxia\src"
+
+.\.venv\Scripts\Activate.ps1
+cd C:\zarturxia
+$env:PYTHONPATH="C:\zarturxia\src"
+python -m iazar.launcher_universal
+
+.\.venv\Scripts\Activate.ps1
+cd C:\zarturxia
+$env:PYTHONPATH="C:\zarturxia\src"
+python -m src.iazar.proxy.ia_proxy_main 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc pool.hashvault.pro 443
+
+.\.venv\Scripts\Activate.ps1
+cd C:\zarturxia
+$env:PYTHONPATH="C:\zarturxia\src"
+python -m iazar.data.create_initial_data
+python -m iazar.bridge.predict_nonce_server

@@ -1,0 +1,605 @@
+Microsoft Windows [Versión 10.0.19045.5965]
+(c) Microsoft Corporation. Todos los derechos reservados.
+
+C:\Windows\system32>tree /F "C:\zarturxia\src"
+Listado de rutas de carpetas
+El número de serie del volumen es 00000068 84CB:DAB5
+C:\ZARTURXIA\SRC
+│   estructura.txt
+│   src.zip
+│   __init__.py
+│
+├───certs
+│       iazar_proxy.crt
+│       iazar_proxy.key
+│
+├───data
+│       datanonce_training_data.csv
+│       ia_config.json
+│       nonces_exitosos.csv
+│       nonce_hashes.bin
+│       nonce_preprocessed.csv
+│       nonce_training_data.csv
+│
+├───iazar
+│   │   config.json
+│   │   iazar.zip
+│   │   ia_config.json
+│   │   launcher_universal.py
+│   │   nonce_analysis.log
+│   │   __init__.py
+│   │
+│   ├───analytics
+│   │       entropy_tools.py
+│   │       fourier_analyzer.py
+│   │       lmdb_nonce_extractor.py
+│   │       time_series_analyzer.py
+│   │       __init__.py
+│   │
+│   ├───bridge
+│   │   │   ai_proxy_adapter.py
+│   │   │   ethical_nonce_adapter.py
+│   │   │   inject_nonces_from_ia.py
+│   │   │   job_sync.py
+│   │   │   nonces_ready.json
+│   │   │   predict_nonce_inference.py
+│   │   │   predict_nonce_server.py
+│   │   │   shared_memory_manager.py
+│   │   │   stratum_adapter.py
+│   │   │   __init__.py
+│   │   │
+│   │   ├───generated
+│   │   │       nonces_ready.json
+│   │   │
+│   │   └───__pycache__
+│   │           ai_proxy_adapter.cpython-313.pyc
+│   │           ethical_nonce_adapter.cpython-313.pyc
+│   │           inject_nonces_from_ia.cpython-313.pyc
+│   │           predict_nonce_inference.cpython-313.pyc
+│   │           predict_nonce_server.cpython-313.pyc
+│   │           shared_memory_manager.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───cache
+│   ├───config
+│   │       hub_config.json
+│   │       ia_config.json
+│   │       miner_config.json
+│   │       shared_memory.json
+│   │
+│   ├───core
+│   │   │   block_builder.py
+│   │   │   difficulty_manager.py
+│   │   │   hash_validator.py
+│   │   │   randomx_handler.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           block_builder.cpython-313.pyc
+│   │           difficulty_manager.cpython-313.pyc
+│   │           hash_validator.cpython-313.pyc
+│   │           randomx_handler.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───data
+│   │   │   clean_nonce_training_data.py
+│   │   │   config.json
+│   │   │   create_initial_data.py
+│   │   │   datanonce_training_data.csv
+│   │   │   data_collection.py
+│   │   │   ia_config.json
+│   │   │   nonces_exitosos.csv
+│   │   │   nonce_hashes.bin
+│   │   │   nonce_preprocessed.csv
+│   │   │   nonce_training_data.csv
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           create_initial_data.cpython-313.pyc
+│   │           data_collection.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───evaluation
+│   │   │   calculatenonce.py
+│   │   │   correlation_analysis.py
+│   │   │   distribution_analyzer.py
+│   │   │   entropy_analysis.py
+│   │   │   nonce_quality_filter.py
+│   │   │   survival_analyzer.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           correlation_analysis.cpython-313.pyc
+│   │           entropy_analysis.cpython-313.pyc
+│   │           nonce_quality_filter.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───logs
+│   │   │   inyectados.log
+│   │   │   nonces_exitosos.txt
+│   │   │   nonces_hash.csv
+│   │   │   __init__.py
+│   │   │
+│   │   ├───iazar_subprocess
+│   │   └───reports
+│   │           correlation_matrix.csv
+│   │
+│   ├───models
+│   │       cluster_model.joblib
+│   │       ethical_nonce_model.joblib
+│   │       hash_classifier_model.joblib
+│   │       label_encoder.joblib
+│   │       regression_model.joblib
+│   │       rf_nonce_model.joblib
+│   │       rf_predictor.py
+│   │       __init__.py
+│   │
+│   ├───proxy
+│   │   │   cert.pem
+│   │   │   cert_key.pem
+│   │   │   ia_proxy_main.py
+│   │   │   __init__.py
+│   │   │
+│   │   ├───logs
+│   │   └───__pycache__
+│   │           ia_orchestrator.cpython-313.pyc
+│   │           ia_proxy_main.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───results
+│   ├───security
+│   │   │   AESNonceEncryptor.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           AESNonceEncryptor.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───status
+│   ├───training
+│   │   │   train_model_randomforest.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           train_model_randomforest.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───utils
+│   │   │   config.json
+│   │   │   config.yaml
+│   │   │   config_manager.py
+│   │   │   data_loader.py
+│   │   │   data_preprocessing.py
+│   │   │   feature_engineer.py
+│   │   │   hex_validator.py
+│   │   │   nonce_loader.py
+│   │   │   nonce_stats.py
+│   │   │   nonce_validator.py
+│   │   │   randomx_wrapper.py
+│   │   │   __init__.py
+│   │   │
+│   │   └───__pycache__
+│   │           config_manager.cpython-313.pyc
+│   │           data_loader.cpython-313.pyc
+│   │           data_preprocessing.cpython-313.pyc
+│   │           feature_engineer.cpython-313.pyc
+│   │           hex_validator.cpython-313.pyc
+│   │           nonce_loader.cpython-313.pyc
+│   │           nonce_validator.cpython-313.pyc
+│   │           randomx_wrapper.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   └───__pycache__
+│           launcher_universal.cpython-313.pyc
+│           __init__.cpython-313.pyc
+│
+├───libs
+│   │   CMakeLists.txt
+│   │   LICENSE
+│   │   randomx.dll
+│   │   randomx.exp
+│   │   randomx.lib
+│   │   randomx.pdb
+│   │   randomx.sln
+│   │   README.md
+│   │
+│   ├───.github
+│   │   └───workflows
+│   │           c-cpp.yml
+│   │
+│   ├───doc
+│   │       configuration.md
+│   │       design.md
+│   │       program.asm
+│   │       specs.md
+│   │       tevador.asc
+│   │
+│   ├───iazar
+│   │   │   launcher_universal.py
+│   │   │   __init__.py
+│   │   │
+│   │   ├───analytics
+│   │   │       entropy_tools.py
+│   │   │       fourier_analyzer.py
+│   │   │       lmdb_nonce_extractor.py
+│   │   │       main.py
+│   │   │       time_series_analyzer.py
+│   │   │       __init__.py
+│   │   │
+│   │   ├───bridge
+│   │   │   │   ethical_nonce_adapter.py
+│   │   │   │   inject_nonces_from_ia.py
+│   │   │   │   main.py
+│   │   │   │   nonces_ready.json
+│   │   │   │   predict_nonce_inference.py
+│   │   │   │   predict_nonce_server.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   ├───generated
+│   │   │   │       nonces_ready.json
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           ethical_nonce_adapter.cpython-313.pyc
+│   │   │           inject_nonces_from_ia.cpython-313.pyc
+│   │   │           predict_nonce_inference.cpython-313.pyc
+│   │   │           predict_nonce_server.cpython-313.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───config
+│   │   │       ia_config.json
+│   │   │       miner_config.json
+│   │   │
+│   │   ├───core
+│   │   │       block_builder.py
+│   │   │       difficulty_manager.py
+│   │   │       hash_validator.py
+│   │   │       randomx_handler.py
+│   │   │       __init__.py
+│   │   │
+│   │   ├───data
+│   │   │   │   datanonce_training_data.csv
+│   │   │   │   data_collection.py
+│   │   │   │   main.py
+│   │   │   │   nonces_exitosos.csv
+│   │   │   │   nonce_preprocessed.csv
+│   │   │   │   nonce_training_data.csv
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           data_collection.cpython-313.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───evaluation
+│   │   │   │   calculatenonce.py
+│   │   │   │   correlation_analysis.py
+│   │   │   │   distribution_analyzer.py
+│   │   │   │   entropy_analysis.py
+│   │   │   │   main.py
+│   │   │   │   nonce_quality_filter.py
+│   │   │   │   survival_analyzer.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           correlation_analysis.cpython-313.pyc
+│   │   │           entropy_analysis.cpython-313.pyc
+│   │   │           nonce_quality_filter.cpython-313.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───logs
+│   │   │   │   inyectados.log
+│   │   │   │   nonces_exitosos.txt
+│   │   │   │   nonces_hash.csv
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   ├───iazar_subprocess
+│   │   │   └───reports
+│   │   │           correlation_matrix.csv
+│   │   │
+│   │   ├───models
+│   │   │       cluster_model.joblib
+│   │   │       ethical_nonce_model.joblib
+│   │   │       hash_classifier_model.joblib
+│   │   │       label_encoder.joblib
+│   │   │       main.py
+│   │   │       regression_model.joblib
+│   │   │       rf_nonce_model.joblib
+│   │   │       rf_predictor.py
+│   │   │       __init__.py
+│   │   │
+│   │   ├───proxy
+│   │   │   │   cert.pem
+│   │   │   │   cert_key.pem
+│   │   │   │   ia_orchestrator.py
+│   │   │   │   ia_proxy_main.py
+│   │   │   │   main.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   ├───logs
+│   │   │   └───__pycache__
+│   │   │           ia_orchestrator.cpython-313.pyc
+│   │   │           ia_proxy_main.cpython-313.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───security
+│   │   │   │   AESNonceEncryptor.py
+│   │   │   │   main.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           AESNonceEncryptor.cpython-313.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───status
+│   │   ├───training
+│   │   │   │   main.py
+│   │   │   │   train_model_randomforest.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           train_model_randomforest.cpython-313.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   ├───utils
+│   │   │   │   config.yaml
+│   │   │   │   config_manager.py
+│   │   │   │   data_loader.py
+│   │   │   │   data_preprocessing.py
+│   │   │   │   feature_engineer.py
+│   │   │   │   hex_validator.py
+│   │   │   │   main.py
+│   │   │   │   nonce_loader.py
+│   │   │   │   nonce_stats.py
+│   │   │   │   nonce_validator.py
+│   │   │   │   randomx_wrapper.py
+│   │   │   │   __init__.py
+│   │   │   │
+│   │   │   └───__pycache__
+│   │   │           config_manager.cpython-313.pyc
+│   │   │           data_loader.cpython-313.pyc
+│   │   │           data_preprocessing.cpython-313.pyc
+│   │   │           feature_engineer.cpython-313.pyc
+│   │   │           hex_validator.cpython-313.pyc
+│   │   │           nonce_loader.cpython-313.pyc
+│   │   │           nonce_validator.cpython-313.pyc
+│   │   │           randomx_wrapper.cpython-313.pyc
+│   │   │           __init__.cpython-313.pyc
+│   │   │
+│   │   └───__pycache__
+│   │           launcher_universal.cpython-313.pyc
+│   │           __init__.cpython-313.pyc
+│   │
+│   ├───src
+│   │   │   aes_hash.cpp
+│   │   │   aes_hash.hpp
+│   │   │   allocator.cpp
+│   │   │   allocator.hpp
+│   │   │   argon2.h
+│   │   │   argon2_avx2.c
+│   │   │   argon2_core.c
+│   │   │   argon2_core.h
+│   │   │   argon2_ref.c
+│   │   │   argon2_ssse3.c
+│   │   │   assembly_generator_x86.cpp
+│   │   │   assembly_generator_x86.hpp
+│   │   │   blake2_generator.cpp
+│   │   │   blake2_generator.hpp
+│   │   │   bytecode_machine.cpp
+│   │   │   bytecode_machine.hpp
+│   │   │   common.hpp
+│   │   │   configuration.h
+│   │   │   cpu.cpp
+│   │   │   cpu.hpp
+│   │   │   dataset.cpp
+│   │   │   dataset.hpp
+│   │   │   instruction.cpp
+│   │   │   instruction.hpp
+│   │   │   instructions_portable.cpp
+│   │   │   instruction_weights.hpp
+│   │   │   intrin_portable.h
+│   │   │   jit_compiler.hpp
+│   │   │   jit_compiler_a64.cpp
+│   │   │   jit_compiler_a64.hpp
+│   │   │   jit_compiler_a64_static.hpp
+│   │   │   jit_compiler_a64_static.S
+│   │   │   jit_compiler_fallback.hpp
+│   │   │   jit_compiler_rv64.cpp
+│   │   │   jit_compiler_rv64.hpp
+│   │   │   jit_compiler_rv64_static.hpp
+│   │   │   jit_compiler_rv64_static.S
+│   │   │   jit_compiler_x86.cpp
+│   │   │   jit_compiler_x86.hpp
+│   │   │   jit_compiler_x86_static.asm
+│   │   │   jit_compiler_x86_static.hpp
+│   │   │   jit_compiler_x86_static.S
+│   │   │   program.hpp
+│   │   │   randomx.cpp
+│   │   │   randomx.h
+│   │   │   reciprocal.c
+│   │   │   reciprocal.h
+│   │   │   soft_aes.cpp
+│   │   │   soft_aes.h
+│   │   │   superscalar.cpp
+│   │   │   superscalar.hpp
+│   │   │   superscalar_program.hpp
+│   │   │   virtual_machine.cpp
+│   │   │   virtual_machine.hpp
+│   │   │   virtual_memory.c
+│   │   │   virtual_memory.h
+│   │   │   vm_compiled.cpp
+│   │   │   vm_compiled.hpp
+│   │   │   vm_compiled_light.cpp
+│   │   │   vm_compiled_light.hpp
+│   │   │   vm_interpreted.cpp
+│   │   │   vm_interpreted.hpp
+│   │   │   vm_interpreted_light.cpp
+│   │   │   vm_interpreted_light.hpp
+│   │   │
+│   │   ├───asm
+│   │   │       configuration.asm
+│   │   │       program_epilogue_linux.inc
+│   │   │       program_epilogue_store.inc
+│   │   │       program_epilogue_win64.inc
+│   │   │       program_loop_load.inc
+│   │   │       program_loop_store.inc
+│   │   │       program_prologue_linux.inc
+│   │   │       program_prologue_win64.inc
+│   │   │       program_read_dataset.inc
+│   │   │       program_read_dataset_sshash_fin.inc
+│   │   │       program_read_dataset_sshash_init.inc
+│   │   │       program_sshash_constants.inc
+│   │   │       program_sshash_load.inc
+│   │   │       program_sshash_prefetch.inc
+│   │   │       program_xmm_constants.inc
+│   │   │       randomx_reciprocal.inc
+│   │   │
+│   │   ├───blake2
+│   │   │       blake2-impl.h
+│   │   │       blake2.h
+│   │   │       blake2b.c
+│   │   │       blamka-round-avx2.h
+│   │   │       blamka-round-ref.h
+│   │   │       blamka-round-ssse3.h
+│   │   │       endian.h
+│   │   │
+│   │   └───tests
+│   │           affinity.cpp
+│   │           affinity.hpp
+│   │           api-example1.c
+│   │           api-example2.cpp
+│   │           benchmark.cpp
+│   │           code-generator.cpp
+│   │           jit-performance.cpp
+│   │           perf-simulation.cpp
+│   │           riscv64_zba.s
+│   │           riscv64_zbb.s
+│   │           rng-tests.cpp
+│   │           runtime-distr.cpp
+│   │           scratchpad-entropy.cpp
+│   │           stopwatch.hpp
+│   │           superscalar-avalanche.cpp
+│   │           superscalar-init.cpp
+│   │           superscalar-stats.cpp
+│   │           tests.cpp
+│   │           utility.hpp
+│   │
+│   ├───vcxproj
+│   │   │   api-example1.vcxproj
+│   │   │   api-example1.vcxproj.filters
+│   │   │   api-example2.vcxproj
+│   │   │   api-example2.vcxproj.filters
+│   │   │   benchmark.vcxproj
+│   │   │   benchmark.vcxproj.filters
+│   │   │   code-generator.vcxproj
+│   │   │   code-generator.vcxproj.filters
+│   │   │   h2inc.ps1
+│   │   │   jit-performance.vcxproj
+│   │   │   jit-performance.vcxproj.filters
+│   │   │   perf-simulation.vcxproj
+│   │   │   perf-simulation.vcxproj.filters
+│   │   │   randomx-dll.vcxproj
+│   │   │   randomx-dll.vcxproj.filters
+│   │   │   randomx.vcxproj
+│   │   │   randomx.vcxproj.filters
+│   │   │   randomx.vcxproj.user
+│   │   │   runtime-distr.vcxproj
+│   │   │   runtime-distr.vcxproj.filters
+│   │   │   scratchpad-entropy.vcxproj
+│   │   │   scratchpad-entropy.vcxproj.filters
+│   │   │   superscalar-avalanche.vcxproj
+│   │   │   superscalar-avalanche.vcxproj.filters
+│   │   │   superscalar-init.vcxproj
+│   │   │   superscalar-init.vcxproj.filters
+│   │   │   superscalar-stats.vcxproj
+│   │   │   superscalar-stats.vcxproj.filters
+│   │   │   tests.vcxproj
+│   │   │   tests.vcxproj.filters
+│   │   │
+│   │   └───x64
+│   │       └───Release
+│   │           │   aes_hash.obj
+│   │           │   allocator.obj
+│   │           │   argon2_avx2.obj
+│   │           │   argon2_core.obj
+│   │           │   argon2_ref.obj
+│   │           │   argon2_ssse3.obj
+│   │           │   assembly_generator_x86.obj
+│   │           │   blake2b.obj
+│   │           │   blake2_generator.obj
+│   │           │   bytecode_machine.obj
+│   │           │   cpu.obj
+│   │           │   dataset.obj
+│   │           │   instruction.obj
+│   │           │   instructions_portable.obj
+│   │           │   jit_compiler_x86.obj
+│   │           │   jit_compiler_x86_static.obj
+│   │           │   randomx-dll.log
+│   │           │   randomx.dll.recipe
+│   │           │   randomx.iobj
+│   │           │   randomx.ipdb
+│   │           │   randomx.lib.recipe
+│   │           │   randomx.log
+│   │           │   randomx.obj
+│   │           │   reciprocal.obj
+│   │           │   soft_aes.obj
+│   │           │   superscalar.obj
+│   │           │   vc143.pdb
+│   │           │   vcpkg.applocal.log
+│   │           │   virtual_machine.obj
+│   │           │   virtual_memory.obj
+│   │           │   vm_compiled.obj
+│   │           │   vm_compiled_light.obj
+│   │           │   vm_interpreted.obj
+│   │           │   vm_interpreted_light.obj
+│   │           │
+│   │           ├───randomx-dll.tlog
+│   │           │       CL.command.1.tlog
+│   │           │       Cl.items.tlog
+│   │           │       CL.read.1.tlog
+│   │           │       CL.write.1.tlog
+│   │           │       link.command.1.tlog
+│   │           │       link.read.1.tlog
+│   │           │       link.secondary.1.tlog
+│   │           │       link.write.1.tlog
+│   │           │       Masm.read.1u.tlog
+│   │           │       Masm.write.1u.tlog
+│   │           │       randomx-dll.lastbuildstate
+│   │           │
+│   │           └───randomx.tlog
+│   │                   CL.command.1.tlog
+│   │                   Cl.items.tlog
+│   │                   CL.read.1.tlog
+│   │                   CL.write.1.tlog
+│   │                   Lib-link.read.1.tlog
+│   │                   Lib-link.write.1.tlog
+│   │                   Lib.command.1.tlog
+│   │                   Masm.read.1u.tlog
+│   │                   Masm.write.1u.tlog
+│   │                   randomx.lastbuildstate
+│   │
+│   └───x64
+│       └───Release
+│               randomx.lib
+│
+├───logs
+│   │   ethics_processor.log
+│   │   inyectados.log
+│   │
+│   └───iazar_subprocess
+│           analytics.log
+│           bridge.log
+│           evaluation.log
+│           ia_proxy.log
+│           models.log
+│           security.log
+│           training.log
+│           utils.log
+│
+├───monitor
+│   └───status
+│           ia_mining_status.json
+│
+└───__pycache__
+        __init__.cpython-313.pyc
+
+
+C:\Windows\system32>
