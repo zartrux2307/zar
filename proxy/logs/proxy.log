@@ -1,0 +1,129 @@
+2025-07-08 02:09:29,157 - ZartruxConfigManager - INFO - Usando directorio de configuraci髇: C:\zarturxia\src\iazar\config
+2025-07-08 02:09:29,177 - ZartruxConfigManager - INFO - Configuraci髇 shared_memory cargada y validada
+2025-07-08 02:21:19,538 - ZartruxConfigManager - INFO - Usando directorio de configuraci髇: C:\zarturxia\src\iazar\config
+2025-07-08 02:21:19,546 - ZartruxConfigManager - INFO - Configuraci髇 shared_memory cargada y validada
+2025-07-08 02:23:32,895 - ZartruxConfigManager - INFO - Usando directorio de configuraci髇: C:\zarturxia\src\iazar\config
+2025-07-08 02:23:32,904 - ZartruxConfigManager - INFO - Configuraci髇 shared_memory cargada y validada
+2025-07-08 14:13:40,998 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 14:13:41,001 - ZartruxConfigManager - INFO - Usando directorio de configuraci贸n: C:\zarturxia\src\iazar\config
+2025-07-08 14:13:41,020 - ZartruxConfigManager - INFO - Configuraci贸n shared_memory cargada y validada
+2025-07-08 14:13:41,021 - IA-Zar-Proxy - INFO - Memoria compartida inicializada para comunicacion IA-Proxy
+2025-07-08 14:13:41,260 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1028)
+2025-07-08 14:13:43,408 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1028)
+2025-07-08 14:13:47,577 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1028)
+2025-07-08 14:13:55,796 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1028)
+2025-07-08 14:14:12,003 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1028)
+2025-07-08 14:14:12,004 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool despues de 5 intentos
+2025-07-08 14:54:04,894 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 14:54:04,897 - ZartruxConfigManager - INFO - Usando directorio de configuraci贸n: C:\zarturxia\src\iazar\config
+2025-07-08 14:54:04,907 - ZartruxConfigManager - INFO - Configuraci贸n shared_memory cargada y validada
+2025-07-08 14:54:04,918 - IA-Zar-Proxy - INFO - Memoria compartida inicializada para comunicacion IA-Proxy
+2025-07-08 14:54:06,350 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:54:06,351 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:54:21,594 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:54:23,787 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:54:23,787 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:54:38,849 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:54:43,002 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:54:43,002 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:54:58,082 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:55:06,266 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:55:06,267 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:55:21,343 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:55:37,465 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:55:37,465 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:55:52,569 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:55:52,569 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool despues de 5 intentos
+2025-07-08 14:56:18,085 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 14:56:18,086 - ZartruxConfigManager - INFO - Usando directorio de configuraci贸n: C:\zarturxia\src\iazar\config
+2025-07-08 14:56:18,096 - ZartruxConfigManager - INFO - Configuraci贸n shared_memory cargada y validada
+2025-07-08 14:56:18,097 - IA-Zar-Proxy - INFO - Memoria compartida inicializada para comunicacion IA-Proxy
+2025-07-08 14:56:18,306 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:56:18,306 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:56:33,474 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:56:35,674 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:56:35,674 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:56:50,781 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:56:54,935 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:56:54,936 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:57:10,028 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:57:18,213 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:57:18,213 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:57:33,278 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:57:50,463 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 14:57:50,463 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 14:58:05,561 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 14:58:05,562 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool despues de 5 intentos
+2025-07-08 15:11:23,944 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 15:11:23,949 - ZartruxConfigManager - INFO - Usando directorio de configuraci贸n: C:\zarturxia\src\iazar\config
+2025-07-08 15:11:23,962 - ZartruxConfigManager - INFO - Configuraci贸n shared_memory cargada y validada
+2025-07-08 15:11:23,968 - IA-Zar-Proxy - INFO - Memoria compartida inicializada para comunicacion IA-Proxy
+2025-07-08 15:11:24,195 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 15:11:24,196 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 15:11:39,369 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 15:11:41,501 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 15:11:41,518 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 15:11:56,525 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 15:12:00,679 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 15:12:00,679 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 15:12:15,842 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 15:12:23,995 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 15:12:23,995 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 15:12:39,187 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 15:12:55,371 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-08 15:12:55,372 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-08 15:13:10,465 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibi贸 respuesta a mining.subscribe
+2025-07-08 15:13:10,465 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool despues de 5 intentos
+2025-07-08 16:00:08,641 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 16:00:08,649 - ZartruxConfigManager - INFO - Usando directorio de configuraci贸n: C:\zarturxia\src\iazar\config
+2025-07-08 16:00:08,652 - ZartruxConfigManager - ERROR - Error cargando shared_memory: Expecting ',' delimiter: line 7 column 3 (char 115)
+2025-07-08 16:40:12,363 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 16:40:12,368 - ZartruxConfigManager - INFO - Usando directorio de configuraci贸n: C:\zarturxia\src\iazar\config
+2025-07-08 16:40:12,373 - ZartruxConfigManager - ERROR - Error de sintaxis en C:\zarturxia\src\iazar\config\shared_memory.json: Expecting ',' delimiter: line 7 column 3 (char 115)
+2025-07-08 16:40:12,378 - ZartruxConfigManager - ERROR - Error cargando shared_memory: [WinError 32] El proceso no tiene acceso al archivo porque est谩 siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_164012.json'
+2025-07-08 16:42:25,794 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 16:42:25,795 - ZartruxConfigManager - INFO - Usando directorio de configuraci贸n: C:\zarturxia\src\iazar\config
+2025-07-08 16:42:25,799 - ZartruxConfigManager - ERROR - Error de sintaxis en C:\zarturxia\src\iazar\config\shared_memory.json: Expecting ',' delimiter: line 7 column 3 (char 115)
+2025-07-08 16:42:25,799 - ZartruxConfigManager - ERROR - Error cargando shared_memory: [WinError 32] El proceso no tiene acceso al archivo porque est谩 siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_164225.json'
