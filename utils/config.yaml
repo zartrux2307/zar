@@ -1,0 +1,75 @@
+# config.yaml (secciones relevantes)
+# src/iazar/utils/config.yaml
+
+
+model_path: "src/iazar/models/randomforest_nonce_model.joblib"
+training_data_path: "src/iazar/data/nonce_training_data.csv"
+target_column: "nonce_score"
+
+random_state: 42
+n_jobs: -1
+
+hyperparam_space:
+  model__n_estimators: [100, 200, 300]
+  model__max_depth: [null, 10, 20, 30]
+  model__max_features: ["auto", "sqrt"]
+  model__min_samples_split: [2, 5, 10]
+  model__min_samples_leaf: [1, 2, 4]
+
+general:
+  models_dir: "/path/to/models"
+  logs_dir: "/path/to/logs"
+
+proxy:
+  zmq:
+    internal_channel: "ia-modules"
+    xmrig_host: "127.0.0.1"
+    xmrig_send_port: 5555
+    xmrig_recv_port: 5556
+
+pool:
+  host: "127.0.0.1"
+  port: 3333
+  wallet: "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc"      # Reemplaza por tu wallet Monero
+  
+  timeout: 30
+  verify_cert: false
+
+
+bridge:
+  predict_nonce_inference:
+    batch_size: 64
+    confidence_threshold: 0.85
+  ethical_adapter:
+    min_entropy: 4.0
+    max_correlation: 0.3
+  inject_nonces:
+    batch_size: 100
+    cool_down: 0.5
+
+evaluation:
+  NonceQualityFilter:
+    min_entropy: 3.8
+    max_correlation: 0.35
+training:
+  retrain_interval: 86400  # Reentrenar cada 24 horas
+  min_accuracy_gain: 0.01
+
+ia:
+  entropy_analysis:
+    enabled: true
+    min_entropy: 3.50
+    min_uniqueness: 0.80
+    min_zero_density: 0.05
+# Configuración global del sistema
+data_paths:
+  nonce_training: 'src/iazar/data/nonce_training_data.csv'
+  mining_logs: 'src/iazar/logs/nonces_hash.csv'
+
+analysis:
+  sample_size: 10000
+  output_dir: 'src/iazar/logs/analytics_results'
+
+logging:
+  level: INFO
+  file_path: 'system_analytics.log'
