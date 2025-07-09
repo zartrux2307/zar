@@ -1,13 +1,15 @@
 import os
 import pandas as pd
 import numpy as np
+import sklearn
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from typing import Optional, Dict, Any
 
 from iazar.utils.config_manager import get_ia_config
-import sklearn
+from iazar.utils.nonce_loader import NonceLoader
+
 from packaging import version
 
 if version.parse(sklearn.__version__) >= version.parse("1.2"):
@@ -22,30 +24,43 @@ class NonceDataPreprocessor:
     """
     def __init__(self):
         self.config = get_ia_config()
-        self.data_paths = self.config['data_paths']
-        self.processing_params = self.config['processing_params']
+        self.data_paths = self.config.get('data_paths', {})
+        self.processing_params = self.config.get('processing_params', {})
         self.feature_pipeline = None
         self.data = None
         self.metadata = {}
+        self.loader = NonceLoader()  # Usamos el cargador de nonces
 
     def _load_and_merge_data(self) -> pd.DataFrame:
         """Carga y fusiona los datos de nonces desde rutas configuradas"""
-        paths = self.data_paths
-        # Carga robusta de archivos principales
         dfs = []
+        # Lista priorizada de archivos con rutas relativas
         files_to_try = [
-            ('successful_nonces', 'C:/zarturxia/src/iazar/datanonces_exitosos.csv'),
-            ('training_data', 'C:/zarturxia/src/iazar/nonce_training_data.csv'),
-            ('preprocessed', 'C:/zarturxia/src/iazar/nonce_preprocessed.csv')
+            ('successful_nonces', 'nonces_exitosos.csv'),
+            ('training_data', 'nonce_training_data.csv'),
+            ('preprocessed', 'nonce_preprocessed.csv')
         ]
-        for key, fallback in files_to_try:
-            try:
-                file_path = paths.get(key) or os.path.join('data', fallback)
-                if os.path.exists(file_path):
-                    df = pd.read_csv(file_path)
+        
+        for key, default_filename in files_to_try:
+            # Primero intenta con la ruta configurada
+            config_path = self.data_paths.get(key)
+            if config_path:
+                try:
+                    df = self.loader.load_data(config_path, data_format='csv')
                     dfs.append(df)
+                    print(f"[Zartrux][data_preprocessing] Cargado {key} desde: {config_path}")
+                    continue  # Si se carga, pasamos al siguiente
+                except Exception as e:
+                    print(f"[Zartrux][data_preprocessing] Error cargando {key} ({config_path}): {e}")
+            
+            # Fallback: intenta en el directorio de datos por defecto
+            try:
+                fallback_path = os.path.join(self.loader.data_dir, default_filename)
+                df = self.loader.load_data(fallback_path, data_format='csv')
+                dfs.append(df)
+                print(f"[Zartrux][data_preprocessing] Cargado {key} desde fallback: {fallback_path}")
             except Exception as e:
-                print(f"[Zartrux][data_preprocessing] Error cargando {key}: {e}")
+                print(f"[Zartrux][data_preprocessing] Error cargando fallback para {key} ({fallback_path}): {e}")
 
         if dfs:
             df_nonces = pd.concat(dfs, ignore_index=True)

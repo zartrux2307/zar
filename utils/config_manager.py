@@ -8,7 +8,7 @@ import json
 import hashlib
 import logging
 import jsonschema
-from datetime import datetime  # Añadido para manejar timestamps
+from datetime import datetime
 from typing import Dict, Any, Optional
 from pathlib import Path
 from dotenv import load_dotenv
@@ -42,9 +42,8 @@ class ConfigManager:
                         "successful_nonces": {"type": "string"},
                         "nonce_hashes": {"type": "string"},
                         "injected_nonces": {"type": "string"},
-                        "nonce_training_data_path": {"type": "string"}  # Nueva clave añadida
+                        "nonce_training_data_path": {"type": "string"}
                     },
-                    # Hacemos data_paths obligatorio con todas sus claves
                     "required": [
                         "successful_nonces", 
                         "nonce_hashes",
@@ -72,7 +71,6 @@ class ConfigManager:
                     "required": ["name", "enabled"]
                 }
             },
-            # Añadimos data_paths a los campos obligatorios
             "required": ["data_paths", "processing_params", "shared_memory"]
         },
         'hub_config': {
@@ -162,6 +160,14 @@ class ConfigManager:
         if key:
             self._encryption_key = key.encode()
             logger.info("Clave de cifrado de configuración cargada desde entorno")
+        else:
+            # Generar clave por defecto si no está configurada
+            logger.warning("No se encontró clave de cifrado, generando una temporal")
+            self._encryption_key = Fernet.generate_key()
+            # Guardar en .env para uso futuro
+            with open('.env', 'a') as env_file:
+                env_file.write(f"\nCONFIG_ENCRYPTION_KEY={self._encryption_key.decode()}")
+            logger.info("Clave temporal guardada en .env")
 
     def _load_all_schemas(self):
         self._schemas = self.BASE_SCHEMAS.copy()
@@ -264,10 +270,10 @@ class ConfigManager:
         default_configs = {
             'ia_config': {
                 'data_paths': {
-                    'successful_nonces': 'iazar/data/nonces_exitosos.csv',
-                    'nonce_hashes': 'iazar/data/nonce_hashes.bin',
-                    'injected_nonces': 'iazar/logs/injected.csv',
-                    'nonce_training_data_path': 'iazar/data/nonce_training_data.csv'
+                    'successful_nonces': 'src/iazar/data/nonces_exitosos.csv',
+                    'nonce_hashes': 'src/iazar/data/nonce_hashes.bin',
+                    'injected_nonces': 'src/iazar/logs/injected.csv',
+                    'nonce_training_data_path': 'src/iazar/data/nonce_training_data.csv'
                 },
                 'processing_params': {
                     'temporal_window': 60,
@@ -290,7 +296,7 @@ class ConfigManager:
             'miner_config': {
                 'pool_address': 'pool.hashvault.pro:443',
                 'wallet': '44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc',
-                'threads': os.cpu_count(),
+                'threads': os.cpu_count() or 4,  # Valor por defecto si no se detectan cores
                 'mode': 'hybrid',
                 'ia_enabled': True,
                 'ia_timeout': 0.5
@@ -319,9 +325,12 @@ class ConfigManager:
             logger.info(f"Configuración por defecto generada para {config_name} en {config_path}")
 
     def update_remote_config(self, config_name: str, new_config: Dict):
-        pass  # Implementar si se desea sincronización remota
+        """Sincronización remota de configuraciones (implementación futura)"""
+        # TODO: Implementar sincronización con servidor central
+        logger.warning("Sincronización remota no implementada aún")
 
     def config_hash(self, config_name: str) -> str:
+        """Genera hash SHA256 de la configuración para verificar integridad"""
         config = self.get_config(config_name)
         config_str = json.dumps(config, sort_keys=True).encode()
         return hashlib.sha256(config_str).hexdigest()
@@ -340,20 +349,40 @@ class ConfigManager:
         shm_config = self.get_shm_config()
         segments = shm_config.get('segments', {})
         return segments.get(segment_name, 0)
+    
+    def get_config_value(self, section: str, key: str, default=None) -> Any:
+        """Obtiene un valor de configuración con soporte para rutas anidadas"""
+        try:
+            config = self.get_config(section)
+            # Soporte para claves anidadas
+            keys = key.split('.')
+            value = config
+            for k in keys:
+                if isinstance(value, dict) and k in value:
+                    value = value[k]
+                else:
+                    return default
+            return value
+        except Exception as e:
+            logger.debug(f"Error obteniendo {section}.{key}: {str(e)}")
+            return default
 
 # ==== ALIAS COMPATIBLES PARA IMPORTS ====
 
 def get_ia_config() -> Dict[str, Any]:
+    """Alias para configuración de IA"""
     return ConfigManager().get_config('ia_config')
 
 def get_hub_config() -> Dict[str, Any]:
+    """Alias para configuración de hub"""
     return ConfigManager().get_config('hub_config')
 
 def get_miner_config() -> Dict[str, Any]:
+    """Alias para configuración de minero"""
     return ConfigManager().get_config('miner_config')
 
 def get_config(config_name: str) -> Dict[str, Any]:
-    """Alias genérico compatible con los módulos que hacen import get_config"""
+    """Alias genérico para obtener configuración por nombre"""
     return ConfigManager().get_config(config_name)
 
 def get_shm_config() -> Dict[str, Any]:
@@ -365,17 +394,5 @@ def get_ia_params() -> Dict[str, Any]:
     return ConfigManager().get_ia_params()
 
 def get_config_value(section: str, key: str, default=None) -> Any:
-    """Obtiene un valor de configuración con soporte para rutas anidadas (ej. 'data_paths.successful_nonces')"""
-    try:
-        config = ConfigManager().get_config(section)
-        # Soporte para claves anidadas
-        keys = key.split('.')
-        value = config
-        for k in keys:
-            if isinstance(value, dict) and k in value:
-                value = value[k]
-            else:
-                return default
-        return value
-    except Exception:
-        return default
+    """Alias público para acceso a valores de configuración anidados"""
+    return ConfigManager().get_config_value(section, key, default)
