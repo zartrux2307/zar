@@ -10,50 +10,67 @@ from typing import Any, List, Optional, Union
 import os
 import pandas as pd
 import json
-from iazar.utils.feature_utils import calc_nonce_features, guardar_nonces_csv, COLUMNS
 
-# Columnas estándar globales
+# Columnas estándar globales - eliminada importación conflictiva
 COLUMNS = ["nonce", "entropy", "uniqueness", "zero_density", "pattern_score", "is_valid"]
 
 def leer_nonces_csv(path):
     """Lee un CSV de nonces y garantiza estructura/cabecera estándar."""
     if not os.path.exists(path):
-        pd.DataFrame(columns=COLUMNS).to_csv(path, index=False)
         return pd.DataFrame(columns=COLUMNS)
-    df = pd.read_csv(path)
-    missing = [col for col in COLUMNS if col not in df.columns]
-    for col in missing:
-        df[col] = 0
-    df = df[COLUMNS]
-    df = df.dropna()  # Opcional, borra filas incompletas
-    return df
+    
+    try:
+        df = pd.read_csv(path)
+        # Manejar CSV vacío
+        if df.empty:
+            return pd.DataFrame(columns=COLUMNS)
+        
+        # Asegurar columnas requeridas
+        missing = [col for col in COLUMNS if col not in df.columns]
+        for col in missing:
+            df[col] = 0
+        return df[COLUMNS].dropna()
+    except Exception as e:
+        logging.error(f"Error leyendo CSV: {e}")
+        return pd.DataFrame(columns=COLUMNS)
 
 def guardar_nonces_csv(df, path):
     """Guarda un DataFrame de nonces con la cabecera y orden estándar."""
-    if not set(COLUMNS).issubset(df.columns):
-        for col in COLUMNS:
-            if col not in df.columns:
-                df[col] = 0
-    df = df[COLUMNS]
-    df.to_csv(path, index=False)
+    # Crear directorio si es necesario
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    
+    # Asegurar columnas requeridas
+    for col in COLUMNS:
+        if col not in df.columns:
+            df[col] = 0
+    df[COLUMNS].to_csv(path, index=False)
 
 def leer_nonces_json(path):
     """Lee un JSON de nonces como lista de dicts."""
     if not os.path.exists(path):
-        with open(path, 'w') as f:
-            json.dump([], f)
         return []
-    with open(path, 'r') as f:
-        data = json.load(f)
-    # Completa campos faltantes
-    for item in data:
-        for col in COLUMNS:
-            if col not in item:
-                item[col] = 0
-    return data
+    
+    try:
+        with open(path, 'r') as f:
+            data = json.load(f)
+        
+        # Manejar JSON vacío/inválido
+        if not isinstance(data, list):
+            return []
+            
+        # Completar campos faltantes
+        for item in data:
+            for col in COLUMNS:
+                if col not in item:
+                    item[col] = 0
+        return data
+    except Exception as e:
+        logging.error(f"Error leyendo JSON: {e}")
+        return []
 
 def guardar_nonces_json(lista, path):
     """Guarda una lista de dicts como JSON de nonces."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w') as f:
         json.dump(lista, f, indent=2)
 
@@ -64,14 +81,7 @@ def hexstr_to_bytes(blob_hex):
 def bytes_to_hexstr(blob_bytes):
     return blob_bytes.hex() if isinstance(blob_bytes, (bytes, bytearray)) else blob_bytes
 
-# Ejemplo de uso:
-# df = leer_nonces_csv("ruta.csv")
-# guardar_nonces_csv(df, "nueva_ruta.csv")
-# nonces = leer_nonces_json("ruta.json")
-# guardar_nonces_json(nonces, "nueva_ruta.json")
-
 logger = logging.getLogger("EntropyTools")
-
 
 class ShannonEntropyCalculator:
     """
@@ -121,7 +131,6 @@ class ShannonEntropyCalculator:
             logger.error(f"Error leyendo archivo para entropía: {ex}")
             return 0.0
 
-
 class EntropyTools:
     """
     Utilidades avanzadas para cálculo y comparación de entropía.
@@ -159,7 +168,6 @@ class EntropyTools:
         entropy = EntropyTools.shannon_entropy(data)
         logger.info(f"Entropía={entropy:.3f} (umbral={threshold})")
         return entropy >= threshold
-
 
 # Exports principales para importar en otros módulos:
 __all__ = [

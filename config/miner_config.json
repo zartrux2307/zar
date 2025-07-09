@@ -1,16 +1,50 @@
 {
-  "pool_address": "127.0.0.1:3333",
-  "wallet": "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc",
-  "threads": 2,
   "mode": "pool",
-  "reports_path": "iazar/logs/reports",
-  "log_level": "INFO",
-  "kl_divergence": {
-    "threshold_jsd": 0.15,
-    "window_size": 1000,
-    "step": 500
+  "cpu": {
+    "threads": 2,
+    "max_temperature": 85,
+    "avx_optimization": true,
+    "affinity_mask": "0x3"
   },
-  "data_path": "iazar/data/nonce_training_data.csv",
-  "models_path": "src/iazar/models/",
-  "metrics_file": "metrics.csv"
+  "gpu": {
+    "enabled": false,
+    "devices": [0],
+    "intensity": 0
+  },
+  "pool": {
+    "primary": "127.0.0.1:3333",
+    "failover": "stratum+tcp://pool.monero.hashvault.pro:443",
+    "wallet": "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc",
+    "worker": "zartrux_miner",
+    "keepalive": true,
+    "tls": false,
+    "tls_fingerprint": ""
+  },
+  "monitoring": {
+    "reports_path": "src/iazar/logs/reports",
+    "metrics_file": "src/iazar/logs/metrics.csv",
+    "log_level": "INFO",
+    "health_check_interval": 60
+  },
+  "ia_integration": {
+    "enabled": true,
+    "kl_divergence": {
+      "threshold_jsd": 0.15,
+      "window_size": 1000,
+      "step": 500
+    },
+    "data_path": "src/iazar/data/nonce_training_data.csv",
+    "models_path": "src/iazar/models/",
+    "injection_threshold": 0.92
+  },
+  "power_management": {
+    "power_limit": 0,
+    "efficiency_mode": "balanced"
+  },
+  "advanced": {
+    "huge_pages": true,
+    "prefetch": true,
+    "randomx_flags": 0,
+    "hash_validation_threshold": 0.95
+  }
 }

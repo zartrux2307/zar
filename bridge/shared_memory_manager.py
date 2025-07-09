@@ -1,21 +1,20 @@
 import struct
 import logging
-import time  # Importación faltante
+import time
 from multiprocessing import shared_memory, RLock
-import numpy as np
 
-# Tamaños optimizados para Monero (bytes)
+# Tamaños corregidos para Monero (RandomX)
 SHM_SPEC = {
-    "job_id": 36,      # 32 bytes + 4 de alineación
-    "blob": 152,        # Tamaño real de blob en RandomX
+    "job_id": 36,       # 32 bytes + 4 padding
+    "blob": 84,          # Tamaño máximo de blob en RandomX
     "target": 8,         # uint64
     "height": 4,         # uint32
     "nonce_result": 4,   # uint32
     "control": 1         # Flags de estado
 }
 
-# Locks por segmento
-segment_locks = {key: RLock() for key in SHM_SPEC}
+# Gestor de bloqueo global
+lock_manager = RLock()
 
 class SharedMemoryManager:
     def __init__(self, prefix="xmr_shm"):
@@ -38,10 +37,13 @@ class SharedMemoryManager:
             self.segments[key] = shm
 
     def write_mining_job(self, job: dict):
-        """Escribe un trabajo de minería optimizado"""
-        with segment_locks["control"], segment_locks["blob"]:
-            # Blob (152 bytes)
-            self.segments["blob"].buf[:] = job["blob"]
+        """Escribe trabajo de minería optimizado"""
+        with lock_manager:  # Usar bloqueo global
+            # Blob (máx 84 bytes)
+            blob_data = job["blob"]
+            if len(blob_data) > 84:
+                blob_data = blob_data[:84]
+            self.segments["blob"].buf[:len(blob_data)] = blob_data
             
             # Target (uint64 little-endian)
             target_bytes = struct.pack('<Q', job["target"])
@@ -55,7 +57,7 @@ class SharedMemoryManager:
             job_id = job["job_id"].encode().ljust(32, b'\0')
             self.segments["job_id"].buf[:32] = job_id
             
-            # Reset result
+            # Resetear resultado
             self.segments["nonce_result"].buf[:4] = b'\0\0\0\0'
             
             # Activar bandera
@@ -65,37 +67,32 @@ class SharedMemoryManager:
         """Lee nonce resultante con timeout"""
         start = time.perf_counter()
         while (time.perf_counter() - start) * 1000 < timeout_ms:
-            with segment_locks["control"]:
+            with lock_manager:
                 if self.segments["control"].buf[0] == 2:  # Resultado listo
                     nonce_bytes = bytes(self.segments["nonce_result"].buf[:4])
                     return struct.unpack('<I', nonce_bytes)[0]
             time.sleep(0.001)
-        raise TimeoutError("No se recibió resultado en el tiempo especificado")
-
-    # Métodos especializados para acceso directo
-    def get_blob_buffer(self) -> memoryview:
-        """Devuelve vista directa al blob (evita copias)"""
-        return self.segments["blob"].buf
+        raise TimeoutError("No se recibió resultado a tiempo")
 
     def set_result_nonce(self, nonce: int):
-        """Escribe el resultado del nonce atómicamente"""
-        with segment_locks["nonce_result"], segment_locks["control"]:
+        """Escribe nonce atómicamente"""
+        with lock_manager:
             nonce_bytes = struct.pack('<I', nonce)
             self.segments["nonce_result"].buf[:] = nonce_bytes
-            self.segments["control"].buf[0] = 2  # Marcar como completo
+            self.segments["control"].buf[0] = 2  # Marcar completo
 
     def cleanup(self):
-        """Libera recursos y elimina segmentos"""
+        """Libera recursos"""
         for shm in self.segments.values():
             shm.close()
-            shm.unlink()
+            try:
+                shm.unlink()
+            except FileNotFoundError:
+                pass  # Ya liberado
             
-    # --- Métodos requeridos para la integración con el proxy ---
     def set_job(self, job_data: dict):
-        """Actualiza el trabajo en memoria compartida (alias para write_mining_job)"""
         self.write_mining_job(job_data)
 
     def is_solution_ready(self) -> bool:
-        """Verifica si hay una solución lista (control flag = 2)"""
-        with segment_locks["control"]:
+        with lock_manager:
             return self.segments["control"].buf[0] == 2

@@ -1,603 +1,390 @@
-import os
+import socket
+import ssl
 import json
 import threading
 import time
-import socket
-import ssl
 import logging
-import select
-from collections import deque, defaultdict
-from dataclasses import dataclass
-from typing import Optional, Dict, List, Tuple, Deque
-import hashlib
-import random
-import struct
-
-from iazar.bridge.ai_proxy_adapter import AIProxyAdapter
+import os
+from datetime import datetime
+from iazar.utils.hex_validator import is_valid_hex
+from iazar.utils.config_manager import ConfigManager
 
 # Configuración avanzada de logging
-logger = logging.getLogger("StratumProxy")
-log_handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-log_handler.setFormatter(formatter)
-logger.addHandler(log_handler)
-logger.setLevel(logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("stratum_adapter.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger("StratumAdapter")
 
-@dataclass
-class MiningJob:
-    job_id: str
-    blob: str
-    target: str
-    seed_hash: str
-    difficulty: float
-    height: int
-    algo: str = "rx/0"
-    timestamp: float = time.time()
-    extra_nonce: Optional[str] = None
-
-class StratumClientHandler(threading.Thread):
-    """Manejador avanzado de conexiones mineras con soporte para protocolo Stratum completo"""
-    def __init__(self, conn, addr, proxy, worker_name=None):
-        super().__init__(daemon=True)
-        self.conn = conn
-        self.addr = addr
-        self.proxy = proxy
-        self.worker_name = worker_name
-        self.subscribed = False
-        self.authorized = False
-        self.worker_id = None
-        self.difficulty = 10000
+class StratumClient:
+    def __init__(self, pools, config=None):
+        self.pools = pools
+        self.config = config or ConfigManager().get_config('ia_config')
+        self.current_pool_index = 0
+        self.socket = None
+        self.ssl_context = None
         self.session_id = None
-        self.last_job_id = None
-        self.buffer = b""
+        self.worker_name = None
+        self.current_job = None
         self.lock = threading.Lock()
-        self.running = True
-        self.extra_nonce = None
-        self.start_time = time.time()
-        self.last_activity = time.time()
-        self.version_mask = "1fffe000"  # Máscara para version rolling
-        self.stats = {
-            "shares_submitted": 0,
-            "shares_accepted": 0,
-            "shares_rejected": 0,
-            "bytes_sent": 0,
-            "bytes_received": 0
-        }
-
-    def update_activity(self):
-        """Actualiza el timestamp de última actividad"""
-        self.last_activity = time.time()
-
-    def send(self, message: Dict):
-        """Envía mensaje seguro a un minero Stratum con manejo de errores"""
-        with self.lock:
-            try:
-                data = (json.dumps(message) + "\n").encode()
-                self.conn.sendall(data)
-                self.stats["bytes_sent"] += len(data)
-                return True
-            except (ConnectionResetError, BrokenPipeError):
-                logger.warning(f"[{self.addr}] Conexión cerrada por minero")
-                self.running = False
-                return False
-            except OSError as e:
-                logger.error(f"[{self.addr}] Error de socket: {e}")
-                self.running = False
-                return False
-            except Exception as e:
-                logger.exception(f"[{self.addr}] Error enviando mensaje: {e}")
-                return False
-
-    def set_difficulty(self, diff: float):
-        """Actualiza la dificultad para este minero"""
-        self.difficulty = diff
-        self.send({
-            "id": None,
-            "method": "mining.set_difficulty",
-            "params": [diff]
-        })
-        logger.info(f"[{self.addr}] Dificultad actualizada: {diff}")
-
-    def send_job(self, job: MiningJob):
-        """Envía un trabajo de minería al minero"""
-        if not self.authorized or not self.subscribed:
-            return False
+        self.running = False
+        self.reconnect_thread = None
+        self.last_connection_time = 0
+        self.connection_timeout = 30
+        self.reconnect_delay = 5
+        self.max_reconnect_attempts = 10
+        self.reconnect_attempts = 0
+        self.cert_dir = os.path.join(
+            self.config.get('paths', {}).get('cert_dir', 'certs')
+        )
+        os.makedirs(self.cert_dir, exist_ok=True)
         
-        self.last_job_id = job.job_id
-        params = [
-            job.job_id,
-            job.blob,
-            job.seed_hash,
-            job.target,
-            True  # clean_jobs
-        ]
-        
-        # Versión extendida para soporte de altura de bloque
-        if job.height:
-            params.append(job.height)
-        
-        notify = {
-            "id": None,
-            "method": "mining.notify",
-            "params": params
-        }
-        
-        if self.send(notify):
-            logger.debug(f"[{self.addr}] Job enviado: {job.job_id[:8]}")
-            return True
-        return False
+        self._init_ssl_context()
 
-    def validate_submit(self, params: List) -> Tuple[bool, Dict]:
-        """Valida la estructura de un submit Stratum"""
+    def _init_ssl_context(self):
+        """Inicializa contexto SSL con validación robusta de certificados"""
         try:
-            if len(params) < 4:
-                return False, {"error": "Parámetros insuficientes"}
-                
-            worker_id = params[0]
-            job_id = params[1]
-            nonce_hex = params[2]
-            result_hash = params[3]
+            self.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+            self.ssl_context.check_hostname = True
+            self.ssl_context.verify_mode = ssl.CERT_REQUIRED
             
-            # Validación básica de campos
-            if not job_id or not nonce_hex or not result_hash:
-                return False, {"error": "Campos requeridos faltantes"}
-                
-            if len(nonce_hex) != 8 or not all(c in "0123456789abcdef" for c in nonce_hex):
-                return False, {"error": "Formato nonce inválido"}
-                
-            if len(result_hash) != 64:
-                return False, {"error": "Hash resultante inválido"}
-                
-            # Convertir nonce a entero
-            try:
-                nonce = int(nonce_hex, 16)
-            except ValueError:
-                return False, {"error": "Nonce no numérico"}
-                
-            return True, {
-                "worker_id": worker_id,
-                "job_id": job_id,
-                "nonce": nonce,
-                "nonce_hex": nonce_hex,
-                "result_hash": result_hash
-            }
+            # Cargar certificados del sistema
+            self.ssl_context.load_default_certs()
+            
+            # Cargar certificados personalizados si existen
+            custom_ca_path = os.path.join(self.cert_dir, 'custom_ca_bundle.pem')
+            if os.path.exists(custom_ca_path):
+                self.ssl_context.load_verify_locations(custom_ca_path)
+                logger.info(f"Certificados personalizados cargados desde: {custom_ca_path}")
         except Exception as e:
-            return False, {"error": f"Error validación: {str(e)}"}
+            logger.exception(f"Error inicializando contexto SSL: {str(e)}")
+            self.ssl_context = None
 
-    def handle_submit(self, params: List, msg_id: int):
-        """Procesa un submit de minero con validación IA"""
-        self.stats["shares_submitted"] += 1
-        valid, data = self.validate_submit(params)
-        
-        if not valid:
-            self.stats["shares_rejected"] += 1
-            logger.warning(f"[{self.addr}] Submit inválido: {data['error']}")
-            return False
-            
-        logger.info(f"[{self.addr}] Submit recibido: job={data['job_id'][:8]} nonce={data['nonce_hex']}")
-        
-        # Pasar el submit al proxy para validación IA
-        accepted = self.proxy.process_miner_solution(
-            data['job_id'], 
-            data['nonce'], 
-            data['result_hash'], 
-            self.worker_name
-        )
-        
-        if accepted:
-            self.stats["shares_accepted"] += 1
-            logger.info(f"[{self.addr}] ✅ Solución aceptada por IA")
-        else:
-            self.stats["shares_rejected"] += 1
-            logger.info(f"[{self.addr}] ❌ Solución rechazada por IA")
-            
-        return accepted
-
-    def run(self):
-        """Bucle principal de manejo de conexión minera"""
-        logger.info(f"[{self.addr}] Conexión minera iniciada")
+    def connect(self):
+        """Establece conexión segura con el pool"""
+        pool = self.pools[self.current_pool_index]
+        host = pool['host']
+        port = pool['port']
+        use_tls = pool.get('tls', False)
         
         try:
-            while self.running:
-                # Desconectar mineros inactivos (> 10 minutos)
-                if time.time() - self.last_activity > 600:
-                    logger.info(f"[{self.addr}] Desconectando minero inactivo")
-                    break
+            # Crear conexión base
+            base_socket = socket.create_connection(
+                (host, port), timeout=self.connection_timeout)
+            
+            if use_tls:
+                if not self.ssl_context:
+                    raise RuntimeError("Contexto SSL no disponible para conexión TLS")
                 
-                # Usar select para operaciones no bloqueantes
-                r, _, _ = select.select([self.conn], [], [], 1.0)
-                if not r:
-                    continue
+                # Envolver en TLS con validación de certificado
+                self.socket = self.ssl_context.wrap_socket(
+                    base_socket,
+                    server_hostname=host
+                )
+                
+                # Verificación adicional del certificado
+                cert = self.socket.getpeercert()
+                self._validate_certificate(cert, host)
+                logger.info(f"Conexión TLS segura establecida con {host}:{port}")
+            else:
+                self.socket = base_socket
+                logger.info(f"Conexión no cifrada establecida con {host}:{port}")
+            
+            self.running = True
+            self.last_connection_time = time.time()
+            self.reconnect_attempts = 0
+            
+            # Iniciar hilo de monitorización
+            self.reconnect_thread = threading.Thread(target=self.monitor_connection)
+            self.reconnect_thread.daemon = True
+            self.reconnect_thread.start()
+            
+            # Autenticación inicial
+            self.subscribe(pool['wallet'])
+            return True
+            
+        except Exception as e:
+            logger.exception(f"Error de conexión con {host}:{port}: {str(e)}")
+            self._handle_connection_error()
+            return False
 
+    def _validate_certificate(self, cert, host):
+        """Validación avanzada del certificado del servidor"""
+        if not cert:
+            raise ssl.SSLError("El servidor no proporcionó certificado")
+        
+        # Verificar fecha de expiración
+        not_after = datetime.strptime(cert['notAfter'], '%b %d %H:%M:%S %Y %Z')
+        if datetime.now() > not_after:
+            raise ssl.SSLError(f"Certificado expirado: {not_after}")
+        
+        # Verificar nombres alternativos
+        san = cert.get('subjectAltName', [])
+        dns_names = [name[1] for name in san if name[0] == 'DNS']
+        
+        if host not in dns_names:
+            raise ssl.SSLError(f"Nombre de host {host} no coincide con certificado")
+        
+        logger.info(f"Certificado válido para: {', '.join(dns_names)}")
+
+    def disconnect(self):
+        """Cierra la conexión de manera segura"""
+        self.running = False
+        try:
+            if self.socket:
+                # Enviar mensaje de cierre cortés
                 try:
-                    data = self.conn.recv(4096)
-                    if not data:
-                        break
-                    
-                    self.stats["bytes_received"] += len(data)
-                    self.buffer += data
-                    self.last_activity = time.time()
-                    
-                    # Procesar todos los mensajes completos en el buffer
-                    while b"\n" in self.buffer:
-                        line, self.buffer = self.buffer.split(b"\n", 1)
-                        try:
-                            msg = json.loads(line.decode())
-                            self.handle_message(msg)
-                        except json.JSONDecodeError:
-                            logger.warning(f"[{self.addr}] JSON inválido: {line[:64]}")
-                        except Exception as e:
-                            logger.error(f"[{self.addr}] Error procesando mensaje: {str(e)}")
-                except socket.timeout:
-                    continue
-                except (ConnectionResetError, ConnectionAbortedError):
-                    break
-                except ssl.SSLError as e:
-                    logger.error(f"[{self.addr}] Error SSL: {e}")
-                    break
-                except Exception as e:
-                    logger.exception(f"[{self.addr}] Error en run: {str(e)}")
-                    break
-        finally:
-            self.conn.close()
-            self.proxy.remove_miner(self)
-            uptime = time.time() - self.start_time
-            logger.info(f"[{self.addr}] Minero desconectado | Uptime: {uptime:.1f}s | "
-                         f"Shares: {self.stats['shares_submitted']}")
-
-    def handle_message(self, msg: Dict):
-        """Procesa mensajes Stratum entrantes"""
-        method = msg.get("method")
-        id_ = msg.get("id")
-        params = msg.get("params", [])
+                    self.socket.sendall(b'{"id": 999, "method": "mining.close"}\n')
+                except:
+                    pass
+                
+                # Cerrar conexión
+                self.socket.close()
+                self.socket = None
+                logger.info("Conexión cerrada correctamente")
+        except Exception as e:
+            logger.warning(f"Error al cerrar conexión: {str(e)}")
         
-        logger.debug(f"[{self.addr}] Mensaje recibido: method={method}, id={id_}")
+        if self.reconnect_thread:
+            self.reconnect_thread.join(timeout=5)
 
-        if method == "mining.subscribe":
-            self.handle_subscribe(id_, params)
-        elif method == "mining.authorize":
-            self.handle_authorize(id_, params)
-        elif method == "mining.submit":
-            self.handle_mining_submit(id_, params)
-        elif method == "mining.configure":
-            self.handle_configure(id_, params)
-        elif method == "mining.extranonce.subscribe":
-            self.handle_extranonce_subscribe(id_)
-        else:
-            logger.warning(f"[{self.addr}] Método no soportado: {method}")
-            self.send_error(id_, 500, "Método no implementado")
-
-    def handle_subscribe(self, id_: int, params: List):
-        """Maneja solicitud de suscripción Stratum"""
-        self.subscribed = True
-        self.worker_id = params[0] if params else None
-        self.session_id = f"stratum-{os.urandom(4).hex()}"
-        
-        response = {
-            "id": id_,
-            "result": [
-                [["mining.notify", self.session_id], ["mining.set_difficulty", self.session_id]],
-                "08000000",  # Extra nonce 1
-                4            # Extra nonce 2 size
-            ],
-            "error": None
-        }
-        self.send(response)
-        logger.info(f"[{self.addr}] Cliente suscrito | Session ID: {self.session_id}")
-
-    def handle_authorize(self, id_: int, params: List):
-        """Autentica al minero con el proxy"""
-        worker_name = params[0] if len(params) > 0 else ""
-        password = params[1] if len(params) > 1 else ""
-        
-        if self.proxy.validate_worker(worker_name, password):
-            self.authorized = True
-            self.worker_name = worker_name
-            self.send({"id": id_, "result": True, "error": None})
-            logger.info(f"[{self.addr}] Minero autorizado: {worker_name}")
-            self.proxy.send_initial_job(self)
-        else:
-            self.send_error(id_, 401, "Autorización fallida")
-            logger.warning(f"[{self.addr}] Intento de autorización fallido: {worker_name}")
-
-    def handle_mining_submit(self, id_: int, params: List):
-        """Procesa solución de minero"""
-        success = self.handle_submit(params, id_)
-        response = {
-            "id": id_,
-            "result": success,
-            "error": None if success else [400, "Solución inválida"]
-        }
-        self.send(response)
-
-    def handle_configure(self, id_: int, params: List):
-        """Maneja configuración de minero (version rolling)"""
-        logger.info(f"[{self.addr}] Solicitud de configuración: {params}")
-        response = {
-            "id": id_,
-            "result": {
-                "version-rolling": True,
-                "version-rolling.mask": self.version_mask,
-                "version-rolling.min-bit-count": 16
-            },
-            "error": None
-        }
-        self.send(response)
-
-    def handle_extranonce_subscribe(self, id_: int):
-        """Maneja solicitud de extra nonce"""
-        self.send({"id": id_, "result": True, "error": None})
-        logger.info(f"[{self.addr}] Suscripción a extranonce confirmada")
-
-    def send_error(self, id_: Optional[int], code: int, message: str):
-        """Envía mensaje de error estandarizado"""
-        self.send({
-            "id": id_,
-            "result": None,
-            "error": [code, message]
-        })
-
-class StratumProxy:
-    """Proxy Stratum de alto rendimiento con integración IA"""
-    def __init__(self, host: str, port: int, wallet_address: str, pool_host: str, pool_port: int,
-                 shm_prefix: str = "zartrux_shared", feature_log_path: Optional[str] = None,
-                 use_tls: bool = False, certfile: Optional[str] = None, keyfile: Optional[str] = None,
-                 worker_password: str = "x", difficulty_levels: List[float] = None):
-        self.host = host
-        self.port = port
-        self.use_tls = use_tls
-        self.certfile = certfile
-        self.keyfile = keyfile
-        self.worker_password = worker_password
-        self.difficulty_levels = difficulty_levels or [10000, 50000, 100000]
-        
-        # Conexión con el pool real
-        self.pool_host = pool_host
-        self.pool_port = pool_port
-        self.wallet_address = wallet_address
-        
-        # Integración IA
-        self.ia_bridge = AIProxyAdapter(
-            wallet_address=wallet_address,
-            pool_host=pool_host,
-            pool_port=pool_port,
-            shm_prefix=shm_prefix,
-            feature_log_path=feature_log_path
-        )
-        
-        # Gestión de mineros
-        self.miners = []
-        self.active_jobs = deque(maxlen=50)
-        self.job_counter = 0
-        self.lock = threading.Lock()
-        self.running = True
-        self.metrics = {
-            "miners_connected": 0,
-            "miners_total": 0,
-            "jobs_broadcast": 0,
-            "shares_accepted": 0,
-            "shares_rejected": 0,
-            "start_time": time.time()
-        }
-        
-        # Inicializar IA bridge
-        self.ia_bridge.start()
-        logger.info("🔌 Adaptador IA iniciado")
-
-    def validate_worker(self, worker_name: str, password: str) -> bool:
-        """Valida credenciales de minero"""
-        # Validación básica: cualquier worker con password correcta
-        return password == self.worker_password
-
-    def generate_job_id(self) -> str:
-        """Genera ID de trabajo único"""
-        self.job_counter += 1
-        timestamp = int(time.time() * 1000)
-        rand_suffix = os.urandom(4).hex()
-        return f"job-{timestamp}-{self.job_counter}-{rand_suffix}"
-
-    def create_job(self, blob: str, target: str, seed_hash: str, height: int, 
-                 difficulty: Optional[float] = None) -> MiningJob:
-        """Crea un nuevo trabajo de minería"""
-        job = MiningJob(
-            job_id=self.generate_job_id(),
-            blob=blob,
-            target=target,
-            seed_hash=seed_hash,
-            difficulty=difficulty or self.difficulty_levels[0],
-            height=height
-        )
-        with self.lock:
-            self.active_jobs.append(job)
-        return job
-
-    def broadcast_new_job(self, job: MiningJob):
-        """Difunde un nuevo trabajo a todos los mineros conectados"""
-        with self.lock:
-            miners_to_remove = []
-            for miner in self.miners:
-                if not miner.send_job(job):
-                    miners_to_remove.append(miner)
-            
-            # Eliminar mineros desconectados
-            for miner in miners_to_remove:
-                self.miners.remove(miner)
-        
-        self.metrics["jobs_broadcast"] += 1
-        logger.info(f"📢 Trabajo {job.job_id[:8]} difundido a {len(self.miners)} mineros")
-
-    def send_initial_job(self, miner: StratumClientHandler):
-        """Envía el trabajo más reciente a un nuevo minero"""
-        if self.active_jobs:
-            miner.send_job(self.active_jobs[-1])
-
-    def process_miner_solution(self, job_id: str, nonce: int, result_hash: str, 
-                              worker_name: str) -> bool:
-        """Valida solución con IA y reenvía al pool"""
-        # Aquí la IA decide si la solución es válida
-        # En producción, esto se conectaría con el módulo de IA
-        logger.debug(f"Validando solución con IA: job={job_id[:8]}, nonce={nonce:08x}")
-        
-        # Simulación: 95% de aceptación
-        accepted = random.random() < 0.95
-        
-        if accepted:
-            self.metrics["shares_accepted"] += 1
-        else:
-            self.metrics["shares_rejected"] += 1
-            
-        return accepted
-
-    def add_miner(self, miner: StratumClientHandler):
-        """Registra un nuevo minero"""
-        with self.lock:
-            self.miners.append(miner)
-            self.metrics["miners_connected"] = len(self.miners)
-            self.metrics["miners_total"] += 1
-
-    def remove_miner(self, miner: StratumClientHandler):
-        """Elimina un minero desconectado"""
-        with self.lock:
-            if miner in self.miners:
-                self.miners.remove(miner)
-                self.metrics["miners_connected"] = len(self.miners)
-                logger.info(f"⛏️ Minero desconectado: {miner.addr}")
-
-    def report_metrics(self):
-        """Reporta métricas de operación"""
-        uptime = time.time() - self.metrics["start_time"]
-        miners = self.metrics["miners_connected"]
-        shares_acc = self.metrics["shares_accepted"]
-        shares_rej = self.metrics["shares_rejected"]
-        shares_total = shares_acc + shares_rej
-        
-        accept_rate = (shares_acc / shares_total * 100) if shares_total > 0 else 0
-        
-        logger.info(
-            f"📊 Métricas: Mineros={miners} | "
-            f"Shares={shares_total} (A:{shares_acc} R:{shares_rej}) | "
-            f"Tasa aceptación={accept_rate:.1f}% | "
-            f"Uptime={uptime:.0f}s"
-        )
-
-    def start_server(self):
-        """Inicia el servidor Stratum principal"""
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind((self.host, self.port))
-        server_socket.listen(512)  # Mayor capacidad de cola
-        server_socket.settimeout(5)
-
-        ssl_context = None
-        if self.use_tls:
-            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            ssl_context.verify_mode = ssl.CERT_NONE
-            ssl_context.load_cert_chain(certfile=self.certfile, keyfile=self.keyfile)
-            logger.info("🔒 Certificado TLS cargado")
-
-        logger.info(f"🚀 Proxy Stratum iniciado en {self.host}:{self.port} "
-                    f"{'con TLS' if self.use_tls else 'sin encriptación'}")
-
-        last_metrics_time = time.time()
+    def monitor_connection(self):
+        """Monitoriza la conexión y maneja reconexiones automáticas"""
+        buffer = b''
         
         while self.running:
             try:
-                # Reportar métricas periódicas
-                if time.time() - last_metrics_time > 60:
-                    self.report_metrics()
-                    last_metrics_time = time.time()
+                # Verificar timeout
+                if time.time() - self.last_connection_time > self.connection_timeout * 2:
+                    raise socket.timeout("Timeout de inactividad excedido")
                 
-                # Aceptar nuevas conexiones
-                try:
-                    conn, addr = server_socket.accept()
-                    conn.settimeout(30)
-                    
-                    if ssl_context:
-                        try:
-                            conn = ssl_context.wrap_socket(conn, server_side=True)
-                        except ssl.SSLError as e:
-                            logger.error(f"Error SSL con {addr}: {e}")
-                            conn.close()
-                            continue
-                    
-                    logger.info(f"🔌 Nueva conexión de {addr}")
-                    miner = StratumClientHandler(conn, addr, self)
-                    self.add_miner(miner)
-                    miner.start()
-                except socket.timeout:
-                    continue
-                except OSError as e:
-                    if e.errno == 9:  # Bad file descriptor (socket closed)
-                        break
-                    logger.error(f"Error aceptando conexión: {e}")
-            except KeyboardInterrupt:
-                logger.info("Recibida señal de interrupción")
-                break
+                # Recibir datos
+                data = self.socket.recv(4096)
+                if not data:
+                    raise ConnectionError("Conexión cerrada por el servidor")
+                
+                self.last_connection_time = time.time()
+                buffer += data
+                
+                # Procesar mensajes completos
+                while b'\n' in buffer:
+                    line, buffer = buffer.split(b'\n', 1)
+                    if line:
+                        self.handle_message(line)
+                
+            except (socket.timeout, ConnectionError) as e:
+                logger.warning(f"Error de conexión: {str(e)}")
+                self.reconnect()
             except Exception as e:
-                logger.exception(f"Error inesperado en servidor: {e}")
-                time.sleep(1)
+                logger.exception(f"Error inesperado en monitor_connection: {str(e)}")
+                self.reconnect()
 
-        # Limpieza final
-        server_socket.close()
-        logger.info("🛑 Servidor Stratum detenido")
-
-    def start(self):
-        """Inicia el proxy en modo no bloqueante"""
-        self.server_thread = threading.Thread(
-            target=self.start_server,
-            daemon=True,
-            name="StratumServer"
-        )
-        self.server_thread.start()
-        logger.info("⏱️ Proxy iniciado en segundo plano")
-
-    def stop(self):
-        """Detiene el proxy de manera controlada"""
-        logger.info("Iniciando secuencia de parada...")
-        self.running = False
+    def reconnect(self):
+        """Maneja la reconexión con backoff exponencial"""
+        if not self.running:
+            return
+            
+        self.reconnect_attempts += 1
         
-        # Detener integración IA
-        self.ia_bridge.stop()
+        if self.reconnect_attempts > self.max_reconnect_attempts:
+            logger.error("Máximo de intentos de reconexión alcanzado. Abortando.")
+            self.running = False
+            return
+            
+        # Calcular retraso exponencial
+        delay = min(self.reconnect_delay * (2 ** (self.reconnect_attempts - 1)), 300)
+        logger.info(f"Reconectando en {delay} segundos (intento {self.reconnect_attempts}/{self.max_reconnect_attempts})")
         
-        # Cerrar conexiones mineras
+        time.sleep(delay)
+        
+        # Rotar al siguiente pool
+        self.current_pool_index = (self.current_pool_index + 1) % len(self.pools)
+        
+        try:
+            self.disconnect()
+            self.connect()
+        except Exception as e:
+            logger.error(f"Error en reconexión: {str(e)}")
+
+    def subscribe(self, wallet_address):
+        """Envía solicitud de suscripción al pool"""
+        message = {
+            "id": 1,
+            "method": "mining.subscribe",
+            "params": ["ZarMiner/2.0.0"]
+        }
+        self._send_message(message)
+        response = self._receive_response()
+        if response and 'result' in response:
+            self.session_id = response['result'][0]
+            self.worker_name = wallet_address
+            self.authorize(wallet_address)
+
+    def authorize(self, wallet_address):
+        """Autentica al minero en el pool"""
+        message = {
+            "id": 2,
+            "method": "mining.authorize",
+            "params": [wallet_address, "x"]
+        }
+        self._send_message(message)
+        self._receive_response()
+
+    def handle_message(self, data):
+        """Procesa un mensaje recibido"""
+        try:
+            message = json.loads(data.decode().strip())
+            self.process_message(message)
+        except json.JSONDecodeError:
+            logger.warning(f"Mensaje JSON inválido recibido: {data.decode()}")
+        except Exception as e:
+            logger.exception(f"Error procesando mensaje: {str(e)}")
+
+    def process_message(self, message):
+        """Distribuye mensajes según su tipo"""
+        try:
+            method = message.get('method')
+            if method == 'mining.notify':
+                self.handle_job(message['params'])
+            elif method == 'mining.set_difficulty':
+                self.handle_difficulty(message['params'][0])
+            elif method == 'mining.set_version_mask':
+                self.handle_version_mask(message['params'][0])
+            elif message.get('result') is not None:
+                self.handle_result(message)
+            elif message.get('error') is not None:
+                self.handle_error(message)
+        except KeyError as e:
+            logger.warning(f"Falta clave en mensaje: {e}")
+        except Exception as e:
+            logger.exception(f"Error en process_message: {str(e)}")
+
+    def handle_job(self, params):
+        """Actualiza el trabajo actual"""
         with self.lock:
-            for miner in self.miners:
-                miner.running = False
-                try:
-                    miner.conn.close()
-                except:
-                    pass
-            self.miners.clear()
-        
-        # Reportar métricas finales
-        self.report_metrics()
-        logger.info("✅ Proxy detenido correctamente")
+            try:
+                self.current_job = {
+                    'id': params[0],
+                    'prev_hash': params[1],
+                    'coinb1': params[2],
+                    'coinb2': params[3],
+                    'extra_nonce': params[4],
+                    'version': params[5],
+                    'nbits': params[6],
+                    'ntime': params[7],
+                    'clean_jobs': params[8],
+                    'target': int(params[9], 16) if len(params) > 9 else None
+                }
+                logger.info(f"Nuevo trabajo recibido: ID={self.current_job['id']}")
+            except (IndexError, ValueError) as e:
+                logger.error(f"Parámetros de trabajo inválidos: {e}")
 
-# --- Ejemplo de uso desde ia_proxy_main.py ---
-if __name__ == "__main__":
-    # Configuración profesional
-    proxy = StratumProxy(
-        host="0.0.0.0",
-        port=3333,
-        wallet_address="44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc",
-        pool_host="pool.hashvault.pro",
-        pool_port= 443,
-        shm_prefix="zartrux_shared",
-        feature_log_path="data/nonces_exitosos.csv",
-        use_tls=True,
-        certfile="certs/proxy.crt",
-        keyfile="certs/proxy.key",
-        worker_password="zar21",
-        difficulty_levels=[5000, 20000, 50000, 100000]
-    )
-    
-    try:
-        proxy.start()
-        logger.info("Proxy en ejecución. Presione Ctrl+C para detener.")
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        proxy.stop()
-    except Exception as e:
-        logger.critical(f"Error fatal: {e}")
-        proxy.stop()
+    def handle_difficulty(self, difficulty):
+        """Actualiza la dificultad actual"""
+        with self.lock:
+            if self.current_job:
+                self.current_job['difficulty'] = difficulty
+                logger.info(f"Dificultad actualizada: {difficulty}")
+
+    def handle_version_mask(self, version_mask):
+        """Actualiza la máscara de versión"""
+        with self.lock:
+            if self.current_job:
+                self.current_job['version_mask'] = version_mask
+                logger.info(f"Máscara de versión actualizada: {version_mask}")
+
+    def handle_result(self, message):
+        """Procesa resultados exitosos"""
+        logger.info(f"Respuesta exitosa del servidor: {message.get('result')}")
+
+    def handle_error(self, message):
+        """Procesa mensajes de error"""
+        error = message.get('error')
+        logger.error(f"Error del servidor: {error}")
+
+    def get_current_job(self):
+        """Obtiene el trabajo actual de manera segura"""
+        with self.lock:
+            return self.current_job.copy() if self.current_job else None
+
+    def submit_share(self, job_id, nonce, hash_result):
+        """Envía una solución al pool con validación robusta"""
+        if not is_valid_hex(nonce) or not is_valid_hex(hash_result):
+            logger.error(f"Nonce o hash inválido: nonce={nonce}, hash={hash_result}")
+            return False
+        
+        if not self.socket or not self.running:
+            logger.warning("Intento de envío sin conexión activa")
+            return False
+        
+        message = {
+            "id": 3,
+            "method": "mining.submit",
+            "params": [
+                self.worker_name,
+                job_id,
+                nonce,
+                hash_result
+            ]
+        }
+        
+        try:
+            self._send_message(message)
+            response = self._receive_response(timeout=10)
+            
+            if response and response.get('result'):
+                logger.info("Share aceptada por el pool")
+                return True
+            else:
+                error = response.get('error', 'Respuesta inválida') if response else 'Sin respuesta'
+                logger.warning(f"Share rechazada: {error}")
+                return False
+        except Exception as e:
+            logger.exception(f"Error enviando share: {str(e)}")
+            return False
+
+    def _send_message(self, message):
+        """Envía un mensaje de manera segura"""
+        if not self.socket:
+            raise ConnectionError("Socket no disponible para enviar")
+        
+        try:
+            payload = json.dumps(message) + '\n'
+            self.socket.sendall(payload.encode())
+            logger.debug(f"Mensaje enviado: {message}")
+        except (BrokenPipeError, ConnectionResetError):
+            logger.warning("Conexión perdida durante envío")
+            self.reconnect()
+            raise
+        except Exception as e:
+            logger.exception(f"Error enviando mensaje: {str(e)}")
+            raise
+
+    def _receive_response(self, timeout=5):
+        """Recibe una respuesta con timeout controlado"""
+        if not self.socket:
+            return None
+        
+        original_timeout = self.socket.gettimeout()
+        self.socket.settimeout(timeout)
+        
+        try:
+            data = self.socket.recv(4096)
+            if data:
+                response = json.loads(data.decode().strip())
+                logger.debug(f"Respuesta recibida: {response}")
+                return response
+        except socket.timeout:
+            logger.warning(f"Timeout esperando respuesta ({timeout}s)")
+        except json.JSONDecodeError:
+            logger.warning(f"Respuesta JSON inválida: {data.decode()}")
+        except Exception as e:
+            logger.exception(f"Error recibiendo respuesta: {str(e)}")
+        finally:
+            self.socket.settimeout(original_timeout)
+        
+        return None

@@ -1,11 +1,18 @@
 {
-    "shm_enabled": true,
-    "shm_name": "zartrux_shared",
-    "shm_polling_interval": 0.001,
-    "ia_model_path": "src/iazar/models/rf_nonce_model.joblib",
+    "shared_memory": {
+        "enabled": true,
+        "name": "zartrux_shared",
+        "polling_interval": 0.001
+    },
+    "ia": {
+        "model_path": "src/iazar/models/rf_nonce_model.joblib",
+        "polling_interval": 0.01,
+        "candidate_count": 10000,
+        "top_candidates": 300,
+        "timeout": 5.0
+    },
     "randomx_flags": 0,
     "hash_validation_threshold": 0.95,
-    "max_ia_candidates": 300,
     "mining": {
         "pool_address": "pool.hashvault.pro:443",
         "wallet_address": "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc",
@@ -18,16 +25,5 @@
     "logging": {
         "level": "INFO",
         "path": "src/iazar/logs/mining_operations.log"
-    }
-}
-{
-    "shared_memory": {
-        "name": "zartrux_shared"
-    },
-    "ia": {
-        "polling_interval": 0.01,
-        "candidate_count": 10000,
-        "top_candidates": 300,
-        "timeout": 5.0
     }
 }

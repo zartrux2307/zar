@@ -5,17 +5,18 @@ import ssl
 import os
 import json
 import threading
-from enum import IntEnum
-from typing import Optional, Dict, Any, List
-from collections import deque
+import struct
 import random
 import concurrent.futures
+from enum import IntEnum
+from typing import Optional, Dict, Any, List, Tuple
+from collections import deque
+import multiprocessing.shared_memory as shm
 
 from iazar.core.randomx_handler import RandomXHandler
 from iazar.core.hash_validator import HashValidator
 from iazar.utils.config_manager import get_ia_config
-from iazar.utils.feature_utils import COLUMNS
-from iazar.bridge.shared_memory_manager import SharedMemoryManager
+from iazar.utils.feature_utils import COLUMNS, guardar_nonces_csv
 
 # Configuración avanzada de logging
 logger = logging.getLogger("IA-Zar-Proxy")
@@ -25,6 +26,12 @@ log_handler.setFormatter(formatter)
 logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)
 
+# Tamaños de estructuras binarias
+JOB_STRUCT_SIZE = 176  # 84 + 8 + 32 + 32 + 4 + 16
+SOLUTION_STRUCT_SIZE = 69  # 4 + 1 + (8*8)
+SHM_JOB_SIZE = JOB_STRUCT_SIZE + 1  # +1 byte para bandera
+SHM_SOLUTION_SIZE = SOLUTION_STRUCT_SIZE + 1  # +1 byte para bandera
+
 class ConnectionState(IntEnum):
     DISCONNECTED = 0
     CONNECTING = 1
@@ -32,10 +39,145 @@ class ConnectionState(IntEnum):
     ERROR = 3
     SHUTTING_DOWN = 4
 
+class BinSharedMemoryManager:
+    """Gestión eficiente de memoria compartida con protocolo binario"""
+    def __init__(self, prefix: str):
+        self.prefix = prefix
+        self.job_shm = None
+        self.solution_shm = None
+        self._initialize_shm()
+
+    def _initialize_shm(self):
+        """Crea o conecta a la memoria compartida con nombres únicos"""
+        job_shm_name = f"{self.prefix}_job"
+        solution_shm_name = f"{self.prefix}_solution"
+        
+        try:
+            self.job_shm = shm.SharedMemory(name=job_shm_name, create=False)
+        except FileNotFoundError:
+            self.job_shm = shm.SharedMemory(
+                name=job_shm_name, 
+                create=True, 
+                size=SHM_JOB_SIZE
+            )
+            self.job_shm.buf[SHM_JOB_SIZE-1] = 0  # Inicializar bandera
+        
+        try:
+            self.solution_shm = shm.SharedMemory(name=solution_shm_name, create=False)
+        except FileNotFoundError:
+            self.solution_shm = shm.SharedMemory(
+                name=solution_shm_name, 
+                create=True, 
+                size=SHM_SOLUTION_SIZE
+            )
+            self.solution_shm.buf[SHM_SOLUTION_SIZE-1] = 0  # Inicializar bandera
+
+    @staticmethod
+    def serialize_job(job: Dict) -> bytes:
+        """Serializa un trabajo a formato binario"""
+        try:
+            # Convertir campos a formatos binarios
+            blob_bytes = bytes.fromhex(job['blob'])
+            target_bytes = struct.pack('>Q', int(job['target'], 16))
+            seed_hash_bytes = bytes.fromhex(job['seed_hash'])
+            job_id_bytes = job['job_id'].encode('utf-8').ljust(32, b'\0')
+            height_bytes = struct.pack('>I', job.get('height', 0))
+            algo_bytes = job.get('algo', 'rx/0').encode('utf-8').ljust(16, b'\0')
+            
+            return blob_bytes + target_bytes + seed_hash_bytes + job_id_bytes + height_bytes + algo_bytes
+        except Exception as e:
+            logger.error(f"Error serializando job: {str(e)}")
+            return b''
+
+    @staticmethod
+    def deserialize_job(data: bytes) -> Dict:
+        """Deserializa datos binarios a un diccionario de trabajo"""
+        try:
+            return {
+                'blob': data[0:84].hex(),
+                'target': hex(struct.unpack('>Q', data[84:92])[0]),
+                'seed_hash': data[92:124].hex(),
+                'job_id': data[124:156].decode('utf-8').rstrip('\0'),
+                'height': struct.unpack('>I', data[156:160])[0],
+                'algo': data[160:176].decode('utf-8').rstrip('\0')
+            }
+        except Exception as e:
+            logger.error(f"Error deserializando job: {str(e)}")
+            return {}
+
+    @staticmethod
+    def serialize_solution(solution: Dict) -> bytes:
+        """Serializa una solución a formato binario"""
+        try:
+            nonce_bytes = struct.pack('>I', solution['nonce'])
+            is_valid_bytes = bytes([solution['is_valid']])
+            features_bytes = b''.join(
+                struct.pack('>d', solution[col]) for col in COLUMNS
+            )
+            return nonce_bytes + is_valid_bytes + features_bytes
+        except Exception as e:
+            logger.error(f"Error serializando solución: {str(e)}")
+            return b''
+
+    @staticmethod
+    def deserialize_solution(data: bytes) -> Dict:
+        """Deserializa datos binarios a un diccionario de solución"""
+        try:
+            solution = {
+                'nonce': struct.unpack('>I', data[0:4])[0],
+                'is_valid': data[4]
+            }
+            # Extraer características
+            for i, col in enumerate(COLUMNS):
+                start = 5 + i*8
+                solution[col] = struct.unpack('>d', data[start:start+8])[0]
+            return solution
+        except Exception as e:
+            logger.error(f"Error deserializando solución: {str(e)}")
+            return {}
+
+    def set_job(self, job: Dict):
+        """Envía un trabajo a la IA a través de memoria compartida"""
+        if not self.job_shm:
+            return
+            
+        # Esperar hasta que la IA haya procesado el trabajo anterior
+        while self.job_shm.buf[SHM_JOB_SIZE-1] == 1:
+            time.sleep(0.001)
+        
+        # Serializar y escribir en memoria compartida
+        job_data = self.serialize_job(job)
+        if job_data:
+            self.job_shm.buf[:JOB_STRUCT_SIZE] = job_data
+            self.job_shm.buf[SHM_JOB_SIZE-1] = 1  # Bandera de nuevo trabajo
+
+    def get_solution(self, timeout: float) -> Optional[Dict]:
+        """Obtiene solución de la IA con timeout"""
+        if not self.solution_shm:
+            return None
+            
+        start_time = time.monotonic()
+        while time.monotonic() - start_time < timeout:
+            if self.solution_shm.buf[SHM_SOLUTION_SIZE-1] == 1:
+                # Leer datos binarios
+                solution_data = bytes(self.solution_shm.buf[:SOLUTION_STRUCT_SIZE])
+                # Resetear bandera
+                self.solution_shm.buf[SHM_SOLUTION_SIZE-1] = 0
+                return self.deserialize_solution(solution_data)
+            time.sleep(0.001)
+        return None
+
+    def close(self):
+        """Libera recursos de memoria compartida"""
+        if self.job_shm:
+            self.job_shm.close()
+        if self.solution_shm:
+            self.solution_shm.close()
+
 class AIProxyAdapter:
     """
     Adaptador profesional para integración IA ↔ Proxy ↔ Pool de minería
-    con manejo avanzado de conexiones, métricas y optimización de recursos.
+    con protocolo binario de memoria compartida
     """
     def __init__(self, wallet_address: str, pool_host: str, pool_port: int, 
                  shm_prefix: str = "zartrux_shared", feature_log_path: Optional[str] = None, 
@@ -75,8 +217,8 @@ class AIProxyAdapter:
             "start_time": time.monotonic()
         }
 
-        # Memoria compartida con gestión de conexión segura
-        self.shm = SharedMemoryManager(prefix=shm_prefix)
+        # Memoria compartida con protocolo binario
+        self.shm = BinSharedMemoryManager(prefix=shm_prefix)
         self.shutdown_event = threading.Event()
 
         # Thread pool para operaciones concurrentes
@@ -172,7 +314,7 @@ class AIProxyAdapter:
                 "params": {
                     "login": self.wallet_address,
                     "pass": self.pool_password,
-                    "agent": "IA-Zar-Proxy/v2.0"
+                    "agent": "IA-Zar-Proxy/v3.0"
                 }
             }
             self._send_json(login_msg)
@@ -312,7 +454,7 @@ class AIProxyAdapter:
             return None
 
     def request_nonce_from_ai(self, job_data: Dict) -> Optional[Dict]:
-        """Solicita nonce a IA con timeout configurable y validación"""
+        """Solicita nonce a IA con protocolo binario de memoria compartida"""
         t0 = time.monotonic()
         
         try:
@@ -320,19 +462,18 @@ class AIProxyAdapter:
             self.shm.set_job(job_data)
             
             # Esperar solución con timeout
-            while time.monotonic() - t0 < self.ai_timeout:
-                if self.shm.is_solution_ready():
-                    solution = self.shm.get_solution()
-                    if self._validate_solution(solution):
-                        latency = time.monotonic() - t0
-                        self.metrics["ai_response_time"].append(latency)
-                        logger.info("Nonce IA recibido en %.3fs: %d", latency, solution['nonce'])
-                        return solution
-                time.sleep(0.01)
+            solution = self.shm.get_solution(self.ai_timeout)
+            if solution:
+                if self._validate_solution(solution):
+                    latency = time.monotonic() - t0
+                    self.metrics["ai_response_time"].append(latency)
+                    logger.info("Nonce IA recibido en %.3fs: %d", latency, solution['nonce'])
+                    return solution
+            else:
+                # Timeout
+                self.metrics["ai_timeouts"] += 1
+                logger.warning("Timeout esperando solución de IA (%.1fs)", self.ai_timeout)
             
-            # Timeout
-            self.metrics["ai_timeouts"] += 1
-            logger.warning("Timeout esperando solución de IA (%.1fs)", self.ai_timeout)
             return None
             
         except Exception as e:
@@ -402,7 +543,7 @@ class AIProxyAdapter:
                 self.metrics["shares_rejected"] += 1
                 error = resp.get('error', ['-1', 'Error desconocido'])
                 error_msg = error[1] if isinstance(error, list) and len(error) > 1 else str(error)
-                logger.warning("❌ Share rechazado: %s", error_msg)
+                logger.warning(" Share rechazado: %s", error_msg)
         
         except Exception as e:
             logger.exception("Error crítico enviando share: %s", str(e))
@@ -428,7 +569,7 @@ class AIProxyAdapter:
                 # Actualizar métricas
                 if job.get("height") and job["height"] > self.metrics["last_block_height"]:
                     self.metrics["last_block_height"] = job["height"]
-                    logger.info("🔨 Nuevo bloque: %d", job["height"])
+                    logger.info("Nuevo bloque: %d", job["height"])
                 
                 # Solicitar nonce a IA
                 solution = self.request_nonce_from_ai(job)
@@ -523,6 +664,7 @@ class AIProxyAdapter:
         
         # Esperar a que los hilos terminen
         self.executor.shutdown(wait=True)
+        self.shm.close()
         
         # Reportar métricas finales
         self.report_metrics()
@@ -533,10 +675,10 @@ def start_proxy(wallet_address: str, pool_host: str, pool_port: int, shm_prefix:
     proxy = None
     try:
         logger.info(
-            "\n%s\n🚀 Iniciando IA-Zar Proxy (v2.0)\n"
-            "👛 Wallet: %s\n"
-            "🌐 Pool: %s:%d\n"
-            "🧠 SHM Prefix: %s\n%s",
+            "\n%s\n🚀 Iniciando IA-Zar Proxy (v3.0)\n"
+            " Wallet: %s\n"
+            " Pool: %s:%d\n"
+            " SHM Prefix: %s\n%s",
             "=" * 50, wallet_address, pool_host, pool_port, shm_prefix, "=" * 50
         )
         

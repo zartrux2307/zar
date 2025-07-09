@@ -11,13 +11,16 @@ from typing import Optional, Dict, Any, Tuple, List
 from collections import deque
 import random
 import concurrent.futures
-import hashlib  # Added for TLS fingerprint validation
+import hashlib
+import numpy as np
+import multiprocessing as mp
+from multiprocessing.shared_memory import SharedMemory
+from multiprocessing.managers import SharedMemoryManager
 
 from iazar.core.randomx_handler import RandomXHandler
 from iazar.core.hash_validator import HashValidator
 from iazar.utils.config_manager import get_ia_config
 from iazar.utils.feature_utils import COLUMNS
-from iazar.bridge.shared_memory_manager import SharedMemoryManager
 
 # Configuración avanzada de logging
 logger = logging.getLogger("IA-Zar-Proxy")
@@ -27,6 +30,12 @@ log_handler.setFormatter(formatter)
 logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)
 
+# Estructura de segmentos en memoria compartida
+class SHMSegments:
+    JOB = "job_data"
+    SOLUTION = "ia_solution"
+    STATUS = "system_status"
+
 class ConnectionState(IntEnum):
     DISCONNECTED = 0
     CONNECTING = 1
@@ -34,13 +43,85 @@ class ConnectionState(IntEnum):
     ERROR = 3
     SHUTTING_DOWN = 4
 
+class SHMAdapter:
+    """Adaptador profesional para gestión de memoria compartida"""
+    def __init__(self, shm_name: str = "zartrux_shared"):
+        self.shm_name = shm_name
+        self.manager = SharedMemoryManager()
+        self.manager.start()
+        self.segments = {}
+        self.lock = threading.Lock()
+        
+        # Inicializar segmentos críticos
+        self._init_segment(SHMSegments.JOB, 1024)
+        self._init_segment(SHMSegments.SOLUTION, 512)
+        self._init_segment(SHMSegments.STATUS, 16)
+        
+    def _init_segment(self, name: str, size: int):
+        """Crea o conecta un segmento de memoria compartida"""
+        try:
+            self.segments[name] = self.manager.SharedMemory(size=size, name=f"{self.shm_name}_{name}")
+            return True
+        except FileExistsError:
+            # Conectar a segmento existente
+            try:
+                self.segments[name] = self.manager.SharedMemory(name=f"{self.shm_name}_{name}")
+                return True
+            except Exception as e:
+                logger.error(f"Error conectando a segmento {name}: {str(e)}")
+                return False
+    
+    def write_segment(self, segment: str, data: bytes):
+        """Escribe datos en un segmento de forma segura"""
+        with self.lock:
+            try:
+                if segment not in self.segments:
+                    logger.error(f"Segmento no inicializado: {segment}")
+                    return False
+                    
+                shm = self.segments[segment]
+                if len(data) > shm.size:
+                    logger.error(f"Datos exceden tamaño de segmento {segment} ({len(data)} > {shm.size})")
+                    return False
+                    
+                shm.buf[:len(data)] = data
+                return True
+            except Exception as e:
+                logger.error(f"Error escribiendo en segmento {segment}: {str(e)}")
+                return False
+    
+    def read_segment(self, segment: str) -> bytes:
+        """Lee datos de un segmento de forma segura"""
+        with self.lock:
+            try:
+                if segment not in self.segments:
+                    logger.error(f"Segmento no inicializado: {segment}")
+                    return b''
+                
+                shm = self.segments[segment]
+                # Encontrar fin de datos (primer byte nulo)
+                data = bytes(shm.buf)
+                if b'\x00' in data:
+                    return data.split(b'\x00', 1)[0]
+                return data
+            except Exception as e:
+                logger.error(f"Error leyendo segmento {segment}: {str(e)}")
+                return b''
+    
+    def close(self):
+        """Cierra y libera todos los recursos"""
+        try:
+            self.manager.shutdown()
+        except Exception as e:
+            logger.error(f"Error cerrando SHM manager: {str(e)}")
+
 class AIProxyAdapter:
     """
     Adaptador profesional para integración IA ↔ Proxy ↔ Pool de minería
-    con manejo avanzado de conexiones, métricas y optimización de recursos.
+    con memoria compartida y optimización de rendimiento
     """
     def __init__(self, wallet_address: str, pool_host: str, pool_port: int, 
-                 shm_prefix: str = "zartrux_shared", feature_log_path: Optional[str] = None, 
+                 shm_name: str = "zartrux_shared", feature_log_path: Optional[str] = None, 
                  password: str = "x", tls: bool = True, ai_timeout: float = 3.0):
         self.wallet_address = wallet_address
         self.pool_host = pool_host
@@ -65,6 +146,9 @@ class AIProxyAdapter:
         self.backoff_factor = 1
         self.max_backoff = 60
         
+        # Gestor de memoria compartida
+        self.shm = SHMAdapter(shm_name)
+        
         # Estadísticas avanzadas
         self.metrics = {
             "shares_submitted": 0,
@@ -77,8 +161,10 @@ class AIProxyAdapter:
             "start_time": time.monotonic()
         }
 
-        # Memoria compartida con gestión de conexión segura
-        self.shm = SharedMemoryManager(prefix=shm_prefix)
+        # Configuración de TLS
+        self.ssl_context = ssl.create_default_context()
+        self.ssl_context.check_hostname = False
+        self.ssl_context.verify_mode = ssl.CERT_NONE
         self.shutdown_event = threading.Event()
 
         # Thread pool para operaciones concurrentes
@@ -86,11 +172,6 @@ class AIProxyAdapter:
             max_workers=4,
             thread_name_prefix="ProxyWorker"
         )
-
-        # Configuración de TLS
-        self.ssl_context = ssl.create_default_context()
-        self.ssl_context.check_hostname = False
-        self.ssl_context.verify_mode = ssl.CERT_NONE
 
     def safe_connect(self) -> bool:
         """Establece conexión con backoff exponencial y manejo robusto de errores"""
@@ -220,8 +301,6 @@ class AIProxyAdapter:
             logger.error(str(e))
             return False
 
-    # ... (rest of the methods remain unchanged) ...
-
     def _send_json(self, data: Dict):
         """Envía datos JSON con manejo robusto de errores de conexión"""
         try:
@@ -325,19 +404,90 @@ class AIProxyAdapter:
             logger.exception(f"Error parseando trabajo: {str(e)}")
             return None
 
+    def _pack_job_data(self, job_data: Dict) -> bytes:
+        """Serializa datos de trabajo para SHM con formato binario optimizado"""
+        try:
+            # Formato: [job_id_len:1B][job_id][height:4B][blob_len:2B][blob][target:8B][seed_hash:32B]
+            job_id = job_data["job_id"].encode()
+            blob = bytes.fromhex(job_data["blob"])
+            target = struct.pack(">Q", int(job_data["target"], 16))
+            seed_hash = bytes.fromhex(job_data["seed_hash"])
+            
+            return (
+                struct.pack("B", len(job_id)) +
+                job_id +
+                struct.pack(">I", job_data["height"]) +
+                struct.pack(">H", len(blob)) +
+                blob +
+                target +
+                seed_hash
+            )
+        except Exception as e:
+            logger.error(f"Error serializando trabajo: {str(e)}")
+            return b''
+
+    def _unpack_solution(self, data: bytes) -> Optional[Dict]:
+        """Deserializa solución desde SHM con validación"""
+        try:
+            # Formato: [nonce:4B][entropy:f4][uniqueness:f4][zero_density:f4][pattern_score:f4]
+            if len(data) < 20:
+                logger.error("Datos de solución incompletos")
+                return None
+                
+            nonce = struct.unpack(">I", data[0:4])[0]
+            entropy = struct.unpack("f", data[4:8])[0]
+            uniqueness = struct.unpack("f", data[8:12])[0]
+            zero_density = struct.unpack("f", data[12:16])[0]
+            pattern_score = struct.unpack("f", data[16:20])[0]
+            
+            return {
+                "nonce": nonce,
+                "entropy": entropy,
+                "uniqueness": uniqueness,
+                "zero_density": zero_density,
+                "pattern_score": pattern_score,
+                "is_valid": 1
+            }
+        except Exception as e:
+            logger.error(f"Error deserializando solución: {str(e)}")
+            return None
+
+    def set_job(self, job_data: Dict):
+        """Envía trabajo a la IA a través de memoria compartida"""
+        packed_data = self._pack_job_data(job_data)
+        if packed_data:
+            self.shm.write_segment(SHMSegments.JOB, packed_data)
+            # Indicar que hay un nuevo trabajo disponible
+            self.shm.write_segment(SHMSegments.STATUS, b'JOB_READY')
+
+    def is_solution_ready(self) -> bool:
+        """Verifica si hay solución disponible en SHM"""
+        status = self.shm.read_segment(SHMSegments.STATUS)
+        return status == b'SOLUTION_READY'
+
+    def get_solution(self) -> Optional[Dict]:
+        """Obtiene solución desde SHM"""
+        solution_data = self.shm.read_segment(SHMSegments.SOLUTION)
+        if solution_data:
+            solution = self._unpack_solution(solution_data)
+            # Resetear estado
+            self.shm.write_segment(SHMSegments.STATUS, b'IDLE')
+            return solution
+        return None
+
     def request_nonce_from_ai(self, job_data: Dict) -> Optional[Dict]:
         """Solicita nonce a IA con timeout configurable y validación"""
         t0 = time.monotonic()
         
         try:
             # Enviar trabajo a la IA
-            self.shm.set_job(job_data)
+            self.set_job(job_data)
             
             # Esperar solución con timeout
             while time.monotonic() - t0 < self.ai_timeout:
-                if self.shm.is_solution_ready():
-                    solution = self.shm.get_solution()
-                    if self._validate_solution(solution):
+                if self.is_solution_ready():
+                    solution = self.get_solution()
+                    if solution:
                         latency = time.monotonic() - t0
                         self.metrics["ai_response_time"].append(latency)
                         logger.info(f"Nonce IA recibido en {latency:.3f}s: {solution['nonce']}")
@@ -353,27 +503,29 @@ class AIProxyAdapter:
             logger.exception(f"Error solicitando nonce a IA: {str(e)}")
             return None
 
-    def _validate_solution(self, solution: Dict) -> bool:
-        """Validación avanzada de solución de IA"""
+    def append_to_csv(self, solution: Dict, file_path: str):
+        """Añade una solución al archivo CSV de características"""
         try:
-            # Validación básica de estructura
-            if not all(key in solution for key in ["nonce", "is_valid"] + COLUMNS):
-                logger.warning("Solución de IA incompleta")
-                return False
+            # Crear dataframe con los datos
+            df = pd.DataFrame([{
+                "timestamp": datetime.utcnow().isoformat(),
+                "nonce": solution["nonce"],
+                "entropy": solution.get("entropy", 0.0),
+                "uniqueness": solution.get("uniqueness", 0.0),
+                "zero_density": solution.get("zero_density", 0.0),
+                "pattern_score": solution.get("pattern_score", 0.0),
+                "height": self.metrics["last_block_height"],
+                "accepted": 0  # Temporal hasta confirmación
+            }])
+            
+            # Añadir al archivo existente o crear nuevo
+            if os.path.exists(file_path):
+                df.to_csv(file_path, mode='a', header=False, index=False)
+            else:
+                df.to_csv(file_path, index=False)
                 
-            # Validación de tipos
-            if not isinstance(solution["nonce"], int) or solution["nonce"] < 0 or solution["nonce"] > 0xFFFFFFFF:
-                logger.warning(f"Nonce inválido: {solution['nonce']}")
-                return False
-                
-            # Validación de bandera
-            if not isinstance(solution["is_valid"], int) or solution["is_valid"] not in (0, 1):
-                logger.warning(f"Bandera is_valid inválida: {solution['is_valid']}")
-                return False
-                
-            return True
-        except Exception:
-            return False
+        except Exception as e:
+            logger.error(f"Error guardando features: {str(e)}")
 
     def submit_share(self, job_id: str, solution: Dict):
         """Envía share al pool con manejo de errores y registro de features"""
@@ -389,7 +541,6 @@ class AIProxyAdapter:
                     "job_id": job_id,
                     "nonce": f"{solution['nonce']:08x}",
                     "result": "",  # Pool calculará el hash
-                    "extra": {col: solution[col] for col in COLUMNS}
                 }
             }
             
@@ -398,7 +549,7 @@ class AIProxyAdapter:
             resp = self._recv_json(timeout=10)
             
             # Registrar features independientemente del resultado
-            guardar_nonces_csv([solution], self.feature_log_path)
+            self.append_to_csv(solution, self.feature_log_path)
             
             # Interpretar respuesta
             if resp and resp.get("result") == "OK":
@@ -442,8 +593,11 @@ class AIProxyAdapter:
                 if not solution:
                     solution = {
                         "nonce": random.randint(0, 0xFFFFFFFF),
-                        "is_valid": 0,
-                        **{col: 0.0 for col in COLUMNS}
+                        "entropy": 0.0,
+                        "uniqueness": 0.0,
+                        "zero_density": 0.0,
+                        "pattern_score": 0.0,
+                        "is_valid": 0
                     }
                     logger.info("Usando nonce aleatorio como fallback")
                 
@@ -523,6 +677,12 @@ class AIProxyAdapter:
         except Exception:
             pass
         
+        # Cerrar recursos SHM
+        try:
+            self.shm.close()
+        except Exception as e:
+            logger.error(f"Error cerrando SHM: {str(e)}")
+        
         # Esperar a que los hilos terminen
         self.executor.shutdown(wait=True)
         
@@ -530,20 +690,20 @@ class AIProxyAdapter:
         self.report_metrics()
         logger.info("Proxy detenido correctamente")
 
-def start_proxy(wallet_address: str, pool_host: str, pool_port: int, shm_prefix: str = "zartrux_shared"):
+def start_proxy(wallet_address: str, pool_host: str, pool_port: int, shm_name: str = "zartrux_shared"):
     """Función de inicio con manejo profesional de excepciones"""
     proxy = None
     try:
         logger.info(f"""
         {'='*50}
-         Iniciando IA-Zar Proxy (v2.0)
+         Iniciando IA-Zar Proxy (v3.0)
          Wallet: {wallet_address}
          Pool: {pool_host}:{pool_port}
-         SHM Prefix: {shm_prefix}
+         SHM: {shm_name}
         {'='*50}
         """)
         
-        proxy = AIProxyAdapter(wallet_address, pool_host, pool_port, shm_prefix)
+        proxy = AIProxyAdapter(wallet_address, pool_host, pool_port, shm_name)
         proxy.start()
         
         # Mantener el hilo principal activo

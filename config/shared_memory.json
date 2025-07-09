@@ -1,14 +1,16 @@
 {
-  "name": "zartrux_shared",
-  "enabled": true,
-   "size": 8192,
-  "polling_interval": 0.001,
-  "timeout": 5.0 
-  "segments": {
-    "blob": 152,
-    "target": 8,
-    "seed": 32,
-    "status": 1,
-    "nonce": 4
-  }
+    "name": "zartrux_shared",
+    "enabled": true,
+    "size": 8192,
+    "polling_interval": 0.001,
+    "timeout": 5.0,
+    "segments": {
+        "blob": 152,
+        "target": 8,
+        "seed": 32,
+        "status": 1,
+        "nonce": 4,
+        "algorithm": 4,
+        "timestamp": 8
+    }
 }

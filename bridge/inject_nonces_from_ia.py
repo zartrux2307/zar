@@ -1,29 +1,31 @@
 import os
 import json
 import logging
-import logging.handlers  # Added missing import
+import logging.handlers
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any
-from filelock import FileLock, Timeout
-import pandas as pd
 import hashlib
-import time  # Added for time operations
+import time
+import struct
+import numpy as np
+import pandas as pd
 
+# Importar el gestor de memoria compartida
+from iazar.bridge.shared_memory_manager import SharedMemoryManager
 from iazar.utils.feature_utils import COLUMNS
 
 # --- CONFIGURACIÓN MEJORADA ---
 DATA_DIR = Path("src/iazar/data")
-NONCES_JSON = DATA_DIR / "nonces_ready.json"
 INJECTION_LOG = DATA_DIR / "inyectados.log"
 NONCES_CSV = DATA_DIR / "nonces_exitosos.csv"
-LOCK_FILE = DATA_DIR / "nonces_injector.lock"
 BACKUP_DIR = DATA_DIR / "backups"
 
-# Configuración de bloqueo
-LOCK_TIMEOUT = 30  # Segundos
-MAX_RETRIES = 3
-RETRY_DELAY = 2  # Segundos
+# Configuración de memoria compartida
+SHM_NAME = "zartrux_shared"
+SEGMENT_NAME = "ia_candidates"
+POLLING_INTERVAL = 0.5  # Segundos
+TIMEOUT = 30  # Segundos para esperar datos
 
 # --- LOGGING PROFESIONAL ---
 def setup_logging():
@@ -38,7 +40,7 @@ def setup_logging():
     )
     
     # Handler para archivo (con rotación)
-    file_handler = logging.handlers.RotatingFileHandler(  # Fixed with correct import
+    file_handler = logging.handlers.RotatingFileHandler(
         str(INJECTION_LOG),
         maxBytes=10*1024*1024,  # 10 MB
         backupCount=5,
@@ -79,28 +81,6 @@ def create_backup(file_path: Path):
         logger.info(f"Backup creado: {backup_path}")
     except Exception as e:
         logger.error(f"Error al crear backup: {e}")
-
-def safe_read_json(file_path: Path) -> List[Dict]:
-    """Lee un archivo JSON con manejo robusto de errores"""
-    try:
-        if not file_path.exists():
-            logger.warning(f"Archivo JSON no encontrado: {file_path}")
-            return []
-        
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            
-        if not isinstance(data, list):
-            logger.error(f"Formato JSON inválido: Se esperaba lista, se obtuvo {type(data)}")
-            return []
-            
-        return data
-    except json.JSONDecodeError as e:
-        logger.error(f"Error de decodificación JSON: {e}")
-    except Exception as e:
-        logger.error(f"Error inesperado al leer JSON: {e}")
-    
-    return []
 
 def validate_nonce_dict(nonce_dict: Dict) -> bool:
     """Valida exhaustivamente un diccionario de nonce"""
@@ -151,6 +131,57 @@ def guardar_nonces_csv(df: pd.DataFrame, csv_path: Path):
                 temp_path.unlink()
             except:
                 pass
+
+def get_nonces_from_shm(shm_manager: SharedMemoryManager) -> List[Dict]:
+    """Obtiene nonces desde la memoria compartida"""
+    try:
+        # Verificar si hay datos disponibles
+        if not shm_manager.segment_exists(SEGMENT_NAME):
+            logger.debug("Segmento de candidatos IA no encontrado")
+            return []
+        
+        # Leer datos binarios
+        data = shm_manager.read_segment(SEGMENT_NAME)
+        if not data:
+            logger.debug("No hay datos en el segmento")
+            return []
+        
+        # Convertir datos binarios a lista de diccionarios
+        nonces = []
+        pos = 0
+        count = struct.unpack('I', data[pos:pos+4])[0]
+        pos += 4
+        
+        for _ in range(count):
+            # Leer tamaño del nonce
+            nonce_size = struct.unpack('I', data[pos:pos+4])[0]
+            pos += 4
+            
+            # Leer datos del nonce
+            nonce_data = data[pos:pos+nonce_size]
+            pos += nonce_size
+            
+            # Decodificar JSON
+            try:
+                nonce_dict = json.loads(nonce_data.decode('utf-8'))
+                nonces.append(nonce_dict)
+            except json.JSONDecodeError:
+                logger.error("Error decodificando nonce JSON")
+        
+        logger.info(f"Obtenidos {len(nonces)} candidatos desde SHM")
+        return nonces
+    
+    except Exception as e:
+        logger.error(f"Error leyendo SHM: {str(e)}")
+        return []
+
+def clear_shm_segment(shm_manager: SharedMemoryManager):
+    """Limpia el segmento de memoria compartida"""
+    try:
+        shm_manager.write_segment(SEGMENT_NAME, b'')
+        logger.info("Segmento SHM limpiado")
+    except Exception as e:
+        logger.error(f"Error limpiando SHM: {str(e)}")
 
 def inject_nonces(nonces: List[Dict], csv_path: Path):
     """Proceso principal de inyección con optimización de memoria"""
@@ -222,44 +253,63 @@ def inject_nonces(nonces: List[Dict], csv_path: Path):
         logger.error(f"Error crítico durante la inyección: {e}")
         raise
 
+def wait_for_ia_candidates(shm_manager: SharedMemoryManager):
+    """Espera activamente por nuevos candidatos de IA"""
+    logger.info("Esperando candidatos desde IA...")
+    start_time = time.time()
+    
+    while time.time() - start_time < TIMEOUT:
+        # Verificar si hay datos disponibles
+        if shm_manager.segment_exists(SEGMENT_NAME) and shm_manager.get_segment_size(SEGMENT_NAME) > 4:
+            data = shm_manager.read_segment(SEGMENT_NAME)
+            if data and len(data) > 4:
+                count = struct.unpack('I', data[:4])[0]
+                if count > 0:
+                    logger.info(f"Detectados {count} candidatos IA")
+                    return True
+        
+        time.sleep(POLLING_INTERVAL)
+    
+    logger.warning("Timeout esperando candidatos IA")
+    return False
+
 def main():
     ensure_directories()
     logger.info("=== Inicio de inyección de nonces ===")
     
-    # Bloqueo con reintentos
-    for attempt in range(MAX_RETRIES):
-        try:
-            with FileLock(str(LOCK_FILE), timeout=LOCK_TIMEOUT):
-                logger.info("Bloqueo adquirido")
-                
-                # Crear backup preventivo
-                if NONCES_CSV.exists():
-                    create_backup(NONCES_CSV)
-                
-                # Leer y procesar nonces
-                nonces = safe_read_json(NONCES_JSON)
-                if nonces:
-                    inject_nonces(nonces, NONCES_CSV)
-                    
-                    # Limpiar archivo JSON después de procesar
-                    try:
-                        NONCES_JSON.unlink()
-                        logger.info("Archivo JSON de nonces eliminado")
-                    except Exception as e:
-                        logger.error(f"Error al eliminar JSON: {e}")
-                else:
-                    logger.warning("No se encontraron nonces válidos para inyectar")
-                
-                return  # Salir después de éxito
-                
-        except Timeout:
-            logger.warning(f"Intento {attempt+1}: Bloqueo ocupado, reintentando...")
-            time.sleep(RETRY_DELAY)
-        except Exception as e:
-            logger.critical(f"Error fatal: {e}")
-            break
+    # Crear backup preventivo
+    if NONCES_CSV.exists():
+        create_backup(NONCES_CSV)
     
-    logger.error("No se pudo adquirir el bloqueo después de múltiples intentos")
+    # Conectar a memoria compartida
+    try:
+        shm_manager = SharedMemoryManager(SHM_NAME)
+        shm_manager.connect()
+        logger.info(f"Conectado a memoria compartida: {SHM_NAME}")
+        
+        # Esperar por nuevos candidatos
+        if wait_for_ia_candidates(shm_manager):
+            # Obtener nonces desde SHM
+            nonces = get_nonces_from_shm(shm_manager)
+            
+            if nonces:
+                # Procesar nonces
+                inject_nonces(nonces, NONCES_CSV)
+                
+                # Limpiar segmento SHM
+                clear_shm_segment(shm_manager)
+            else:
+                logger.warning("No se encontraron nonces válidos para inyectar")
+        else:
+            logger.warning("No se recibieron candidatos dentro del tiempo de espera")
+            
+    except Exception as e:
+        logger.critical(f"Error fatal en comunicación SHM: {e}")
+    finally:
+        try:
+            shm_manager.disconnect()
+        except:
+            pass
 
 if __name__ == "__main__":
     start_time = time.time()
