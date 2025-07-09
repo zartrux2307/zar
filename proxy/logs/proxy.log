@@ -127,3 +127,254 @@
 2025-07-08 16:42:25,795 - ZartruxConfigManager - INFO - Usando directorio de configuración: C:\zarturxia\src\iazar\config
 2025-07-08 16:42:25,799 - ZartruxConfigManager - ERROR - Error de sintaxis en C:\zarturxia\src\iazar\config\shared_memory.json: Expecting ',' delimiter: line 7 column 3 (char 115)
 2025-07-08 16:42:25,799 - ZartruxConfigManager - ERROR - Error cargando shared_memory: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_164225.json'
+2025-07-08 23:59:15,385 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    ======================================
+    
+2025-07-08 23:59:15,386 - ZartruxConfigManager - INFO - Usando directorio de configuración: C:\zarturxia\src\iazar\config
+2025-07-08 23:59:15,387 - ZartruxConfigManager - ERROR - Error de sintaxis en C:\zarturxia\src\iazar\config\shared_memory.json: Expecting ',' delimiter: line 7 column 3 (char 115)
+2025-07-08 23:59:15,388 - ZartruxConfigManager - ERROR - Error cargando shared_memory: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\shared_memory.json' -> 'C:\\zarturxia\\src\\iazar\\config\\shared_memory_corrupt_20250708_235915.json'
+2025-07-09 14:14:38,617 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 14:14:38,618 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 14:14:41,865 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:14:41,865 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:14:56,927 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:15:00,110 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:15:00,110 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:15:15,212 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:15:22,378 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:15:22,378 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:15:37,520 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:15:45,704 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:15:45,705 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:16:00,824 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:16:16,977 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:16:16,978 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:16:32,108 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:16:32,108 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool despues de 5 intentos
+2025-07-09 14:38:59,721 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 14:38:59,722 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 14:39:00,922 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:39:00,922 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:39:15,995 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:39:19,181 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:39:32,123 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:39:47,286 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:39:51,474 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:39:51,477 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:40:06,638 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:40:14,903 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:40:14,904 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:40:30,058 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:40:46,261 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 14:40:46,261 - IA-Zar-Proxy - INFO - mining.subscribe enviado a la pool
+2025-07-09 14:41:01,385 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibió respuesta a mining.subscribe
+2025-07-09 14:41:01,385 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool despues de 5 intentos
+2025-07-09 15:03:43,097 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 15:03:43,097 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 15:03:44,310 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 15:03:44,311 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 101, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 15:03:59,411 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.subscribe
+2025-07-09 15:04:02,629 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 15:04:02,630 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 102, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 15:04:17,792 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.subscribe
+2025-07-09 15:04:23,004 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 15:04:23,004 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 103, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 15:04:38,115 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.subscribe
+2025-07-09 15:04:56,039 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.supportxmr.com:443:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 15:04:56,040 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 15:04:56,045 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): [Errno 11001] getaddrinfo failed
+2025-07-09 15:04:58,046 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): [Errno 11001] getaddrinfo failed
+2025-07-09 15:05:02,047 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): [Errno 11001] getaddrinfo failed
+2025-07-09 15:05:10,048 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): [Errno 11001] getaddrinfo failed
+2025-07-09 16:22:22,103 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 16:22:22,104 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 16:22:22,337 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 16:22:22,337 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 101, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 16:22:37,443 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.subscribe
+2025-07-09 16:22:40,641 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 16:22:40,641 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 102, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 16:22:55,685 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.subscribe
+2025-07-09 16:23:00,840 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 16:23:00,841 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 103, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 16:23:15,920 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.subscribe
+2025-07-09 16:23:25,070 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 16:23:25,071 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 104, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 16:23:40,144 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibió respuesta a mining.subscribe
+2025-07-09 16:23:57,367 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 16:23:57,367 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 105, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2"]}
+2025-07-09 16:24:12,498 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibió respuesta a mining.subscribe
+2025-07-09 16:24:12,498 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool despues de 5 intentos
+2025-07-09 17:12:42,723 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 17:12:42,724 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 17:12:43,962 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:12:43,963 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 101, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:12:59,051 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:13:04,192 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:13:04,193 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 102, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:13:19,341 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:13:23,526 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:13:23,527 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 103, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:13:38,708 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:13:46,924 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:13:46,924 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 104, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:14:02,054 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:14:18,205 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:14:18,206 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 105, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:14:33,337 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:14:33,338 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool después de 5 intentos
+2025-07-09 17:16:28,497 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 17:16:28,498 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 17:16:28,709 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:16:28,710 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 101, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:16:43,802 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:16:45,987 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:16:45,988 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 102, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:17:01,072 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:17:05,217 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:17:05,218 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 103, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:17:20,369 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:17:29,580 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:17:29,580 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 104, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:17:44,769 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:18:01,935 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:18:01,935 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": 105, "jsonrpc": "2.0", "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:18:17,027 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibió respuesta a mining.subscribe
+2025-07-09 17:18:17,027 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool después de 5 intentos
+2025-07-09 17:33:57,503 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 17:33:57,503 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 17:33:58,712 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:33:58,712 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:34:28,701 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:34:28,701 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:34:43,764 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:34:45,985 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:34:45,986 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:35:15,980 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:35:15,983 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:35:31,086 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:35:35,296 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:35:35,296 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:36:05,301 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:36:05,301 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:36:20,430 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:36:29,646 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:36:29,647 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:36:59,634 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:36:59,634 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:37:14,736 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:37:30,934 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:37:30,934 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:38:00,940 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:38:00,940 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:38:16,068 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 5/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:38:16,068 - IA-Zar-Proxy - CRITICAL - No se pudo conectar al pool después de 5 intentos
+2025-07-09 17:38:55,130 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 17:38:55,131 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 17:38:56,336 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:38:56,336 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:39:26,336 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:39:26,337 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:39:41,459 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:39:44,614 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:39:44,632 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:40:14,635 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:40:14,636 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:40:29,813 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:40:34,012 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:40:34,013 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:41:04,005 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:41:04,013 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:41:19,137 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 3/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:41:27,290 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:41:27,290 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:41:57,295 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:41:57,296 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:42:12,430 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 4/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:46:49,052 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Iniciando IA-Zar Proxy v4.0
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-09 17:46:49,053 - IA-Zar-Proxy - INFO - Memoria compartida binaria inicializada para comunicacion IA-Proxy
+2025-07-09 17:46:49,262 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:46:49,262 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:47:19,273 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:47:19,273 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:47:34,416 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 1/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:47:37,643 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:47:37,643 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}
+2025-07-09 17:48:07,642 - IA-Zar-Proxy - ERROR - ⏱️ Timeout esperando respuesta del pool
+2025-07-09 17:48:07,642 - IA-Zar-Proxy - INFO - mining.authorize enviado a la pool
+2025-07-09 17:48:22,752 - IA-Zar-Proxy - ERROR - Error conectando a pool (intento 2/5): No se recibió respuesta a mining.authorize
+2025-07-09 17:48:27,963 - IA-Zar-Proxy - INFO - Conexion establecida: pool.hashvault.pro:443 (TLS)
+2025-07-09 17:48:27,964 - IA-Zar-Proxy - INFO - mining.subscribe enviado: {"id": null, "method": "mining.subscribe", "params": ["IA-ZarProxy/6.22.2", null]}

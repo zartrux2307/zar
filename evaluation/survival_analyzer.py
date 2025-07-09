@@ -5,174 +5,275 @@ import os
 import json
 import seaborn as sns
 import logging
-import socket
+import sys
+from datetime import datetime
 from lifelines import KaplanMeierFitter, CoxPHFitter
 from lifelines.utils import concordance_index
-from iazar.utils.feature_utils import COLUMNS
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from iazar.utils.nonce_loader import NonceLoader
 
-# Columnas estándar globales
-COLUMNS = ["nonce", "entropy", "uniqueness", "zero_density", "pattern_score", "is_valid"]
-
-def leer_nonces_csv(path):
-    """Lee un CSV de nonces y garantiza estructura/cabecera estándar."""
-    try:
-        logger.info(f"Intentando leer: {os.path.abspath(path)}")
-        if not os.path.exists(path):
-            pd.DataFrame(columns=COLUMNS).to_csv(path, index=False)
-            return pd.DataFrame(columns=COLUMNS)
-        df = pd.read_csv(path)
-        missing = [col for col in COLUMNS if col not in df.columns]
-        for col in missing:
-            df[col] = 0
-        df = df[COLUMNS]
-        df = df.dropna()  # Opcional, borra filas incompletas
-        return df
-    except Exception as e:
-        logger.exception(f"Error al leer CSV: {e}")
-        raise
-
-# Similar error handling for other functions (guardar_nonces_csv, leer_nonces_json, etc.)
+# Configuración avanzada de logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("survival_analysis.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger("SurvivalAnalyzer")
 
 class SurvivalAnalyzer:
-    def __init__(self):
-        pass
-
-    def fit_kaplan_meier(self, durations, event_observed):
-        kmf = KaplanMeierFitter()
-        kmf.fit(durations, event_observed, label='Kaplan-Meier Estimate')
-        return kmf
-
-    def fit_cox_ph(self, durations, event_observed, covariates):
-        # Ensure covariate columns are strings
-        covariates = covariates.rename(columns=str)
+    def __init__(self, config=None):
+        self.loader = NonceLoader(config=config)
+        self.data_path = os.path.join(self.loader.training_dir, "nonce_training_data.csv")
+        self.results_dir = os.path.join(self.loader.data_dir, "survival_results")
+        os.makedirs(self.results_dir, exist_ok=True)
         
-        df = pd.DataFrame({'duration': durations, 'event': event_observed})
-        df = df.join(covariates)
+        # Columnas requeridas para análisis
+        self.REQUIRED_COLUMNS = ['nonce', 'entropy', 'uniqueness', 
+                                'zero_density', 'pattern_score', 'is_valid']
+        self.DURATION_COL = 'duration'
+        self.EVENT_COL = 'event'
+
+    def _load_data(self) -> pd.DataFrame:
+        """Carga datos con manejo robusto de errores y verificación de estructura"""
+        logger.info(f"Cargando datos desde: {self.data_path}")
         
-        cph = CoxPHFitter()
-        cph.fit(df, duration_col='duration', event_col='event')
-        return cph
-
-    def plot_survival_function(self, kmf, title="Curva de Supervivencia"):
-        kmf.plot(figsize=(10, 6))
-        plt.title(title)
-        plt.xlabel("Tiempo")
-        plt.ylabel("Probabilidad de Supervivencia")
-        plt.grid(True)
-        plt.show()
-
-    def plot_partial_effects_on_outcome(self, cph, covariate, values, baseline_covariates=None, title="Efectos Parciales sobre el Outcome"):
-        covariate = str(covariate)  # Ensure string type
+        if not os.path.exists(self.data_path):
+            logger.error(f"Archivo de datos no encontrado: {self.data_path}")
+            return pd.DataFrame()
         
-        # Convert values to list if needed
-        if not isinstance(values, list):
-            values = values.tolist() if hasattr(values, 'tolist') else list(values)
-            
-        ax = cph.plot_partial_effects_on_outcome(
-            covariates=covariate,
-            values=values,
-            cmap='coolwarm'
-        )
-        plt.title(title)
-        plt.xlabel("Tiempo")
-        plt.ylabel("Probabilidad de Supervivencia")
-        plt.grid(True)
-        plt.show()
-
-    def analyze_survival(self, data, duration_col, event_col, covariates=None):
         try:
-            durations = data[duration_col]
-            event_observed = data[event_col]
-
-            kmf = self.fit_kaplan_meier(durations, event_observed)
-            self.plot_survival_function(kmf, title=f"Curva de Supervivencia de {duration_col}")
-
-            results = {
-                'kaplan_meier_model': kmf,
-                'kaplan_meier_summary': kmf.survival_function_
-            }
-
-            if covariates is not None:
-                cph = self.fit_cox_ph(durations, event_observed, data[covariates])
-                
-                # Compute baseline covariates (mean values)
-                baseline_covariates = data[covariates].mean().to_dict()
-                
-                for covariate in covariates:
-                    # Convert covariate to string explicitly
-                    covariate_str = str(covariate)
+            # Cargar datos
+            df = pd.read_csv(self.data_path, on_bad_lines='warn')
+            
+            # Verificar columnas requeridas
+            missing_cols = [col for col in self.REQUIRED_COLUMNS if col not in df.columns]
+            if missing_cols:
+                logger.warning(f"Columnas faltantes: {', '.join(missing_cols)}")
+                for col in missing_cols:
+                    df[col] = 0  # Valor por defecto
                     
-                    self.plot_partial_effects_on_outcome(
-                        cph,
-                        covariate=covariate_str,
-                        values=[
-                            data[covariate_str].quantile(0.25),
-                            data[covariate_str].median(),
-                            data[covariate_str].quantile(0.75)
-                        ],
-                        baseline_covariates=baseline_covariates,
-                        title=f"Efectos Parciales de {covariate_str}"
-                    )
-                    
-                concordance_idx = concordance_index(
-                    durations, 
-                    cph.predict_partial_hazard(data[covariates]), 
-                    event_observed
-                )
+            # Crear columnas sintéticas si no existen
+            if self.DURATION_COL not in df.columns:
+                logger.info(f"Creando columna sintética: {self.DURATION_COL}")
+                df[self.DURATION_COL] = np.random.randint(1, 100, size=len(df))
                 
-                results.update({
-                    'cox_ph_model': cph,
-                    'cox_ph_summary': cph.summary,
-                    'concordance_index': concordance_idx
-                })
-
-            return results
+            if self.EVENT_COL not in df.columns:
+                logger.info(f"Creando columna sintética: {self.EVENT_COL}")
+                df[self.EVENT_COL] = np.random.choice([0, 1], size=len(df))
+            
+            # Convertir todas las columnas a formato string para consistencia
+            df = df.rename(columns={c: str(c) for c in df.columns})
+            
+            logger.info(f"Datos cargados: {len(df)} registros, {len(df.columns)} columnas")
+            return df
             
         except Exception as e:
-            logger.exception(f"Error en análisis de supervivencia: {e}")
-            raise
+            logger.exception(f"Error crítico cargando datos: {str(e)}")
+            return pd.DataFrame()
 
-# Network connection helper (example)
-def safe_connect(host, port):
-    try:
-        # Increased timeout to 30 seconds
-        sock = socket.create_connection((host, port), timeout=30)
-        logger.info(f"Conexión exitosa a {host}:{port}")
-        return sock
-    except socket.error as e:
-        logger.exception(f"Error de conexión: {e}")
-        raise
+    def fit_kaplan_meier(self, durations, event_observed, label='Kaplan-Meier Estimate'):
+        """Ajusta el modelo Kaplan-Meier con manejo de errores"""
+        try:
+            kmf = KaplanMeierFitter()
+            kmf.fit(durations, event_observed, label=label)
+            logger.info("Modelo Kaplan-Meier ajustado exitosamente")
+            return kmf
+        except Exception as e:
+            logger.exception(f"Error ajustando Kaplan-Meier: {str(e)}")
+            return None
 
-if __name__ == "__main__":
-    try:
-        # Debug current working directory
-        logger.info(f"Directorio actual: {os.path.abspath('.')}")
+    def fit_cox_ph(self, df, duration_col, event_col, covariates):
+        """Ajusta el modelo Cox Proportional Hazards con validación de datos"""
+        try:
+            # Preparar dataframe para análisis
+            analysis_df = df[[duration_col, event_col] + covariates].copy()
+            analysis_df = analysis_df.dropna()
+            
+            if len(analysis_df) < 10:
+                logger.error("Insuficientes datos para modelo Cox PH")
+                return None
+                
+            cph = CoxPHFitter()
+            cph.fit(analysis_df, duration_col=duration_col, event_col=event_col)
+            
+            # Calcular índice de concordancia
+            concordance = concordance_index(
+                analysis_df[duration_col],
+                -cph.predict_partial_hazard(analysis_df[covariates]),  # Nota: signo negativo
+                analysis_df[event_col]
+            )
+            
+            logger.info(f"Modelo Cox PH ajustado. Concordance Index: {concordance:.4f}")
+            return cph, concordance
+            
+        except Exception as e:
+            logger.exception(f"Error ajustando modelo Cox PH: {str(e)}")
+            return None, 0.0
+
+    def plot_survival_function(self, kmf, title="Curva de Supervivencia", save_plot=True):
+        """Genera y guarda gráfico de función de supervivencia"""
+        if kmf is None:
+            logger.error("No se puede graficar: modelo Kaplan-Meier no válido")
+            return None
+            
+        plt.figure(figsize=(10, 6))
+        kmf.plot()
+        plt.title(title)
+        plt.xlabel("Tiempo")
+        plt.ylabel("Probabilidad de Supervivencia")
+        plt.grid(True)
         
-        data_path = 'C:/zarturxia/src/iazar/data/nonce_training_data.csv'
-        logger.info(f"Intentando cargar datos de: {os.path.abspath(data_path)}")
-        
-        df = pd.read_csv(data_path)
-        df['duration'] = np.random.randint(1, 100, size=len(df))
-        df['event'] = np.random.choice([0, 1], size=len(df))
+        if save_plot:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            plot_path = os.path.join(self.results_dir, f"kaplan_meier_{timestamp}.png")
+            plt.savefig(plot_path, dpi=150)
+            plt.close()
+            logger.info(f"Gráfico Kaplan-Meier guardado en: {plot_path}")
+            return plot_path
+        else:
+            plt.show()
+            return None
 
-        covariates = ['nonce', 'entropy', 'uniqueness', 'zero_density', 'pattern_score', 'is_valid']
-        
-        # Convert all covariate columns to string type
-        df = df.rename(columns={c: str(c) for c in covariates})
-        covariates = [str(c) for c in covariates]
+    def plot_partial_effects(self, cph, covariate, values, title="Efectos Parciales", save_plot=True):
+        """Visualiza efectos parciales de una covariable"""
+        if cph is None:
+            logger.error("No se puede graficar: modelo Cox PH no válido")
+            return None
+            
+        try:
+            plt.figure(figsize=(10, 6))
+            cph.plot_partial_effects_on_outcome(
+                covariates=covariate,
+                values=values,
+                cmap='coolwarm'
+            )
+            plt.title(title)
+            plt.xlabel("Tiempo")
+            plt.ylabel("Probabilidad de Supervivencia")
+            plt.grid(True)
+            
+            if save_plot:
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                plot_path = os.path.join(self.results_dir, f"partial_effect_{covariate}_{timestamp}.png")
+                plt.savefig(plot_path, dpi=150)
+                plt.close()
+                logger.info(f"Gráfico de efectos parciales guardado en: {plot_path}")
+                return plot_path
+            else:
+                plt.show()
+                return None
+                
+        except Exception as e:
+            logger.exception(f"Error graficando efectos parciales: {str(e)}")
+            return None
 
-        survival_analyzer = SurvivalAnalyzer()
-        results = survival_analyzer.analyze_survival(
-            df, 
-            duration_col='duration', 
-            event_col='event', 
-            covariates=covariates
+    def analyze_survival(self, covariates=None):
+        """Ejecuta análisis completo de supervivencia"""
+        logger.info("="*60)
+        logger.info("INICIANDO ANÁLISIS DE SUPERVIVENCIA")
+        logger.info("="*60)
+        
+        # Paso 1: Cargar datos
+        data = self._load_data()
+        if data.empty:
+            logger.error("No se pudieron cargar datos. Abortando análisis.")
+            return None
+            
+        # Paso 2: Verificar columnas críticas
+        critical_cols = [self.DURATION_COL, self.EVENT_COL]
+        missing_critical = [col for col in critical_cols if col not in data.columns]
+        
+        if missing_critical:
+            logger.error(f"Columnas críticas faltantes: {', '.join(missing_critical)}")
+            return None
+        
+        # Determinar covariables si no se proporcionan
+        if covariates is None:
+            covariates = [col for col in self.REQUIRED_COLUMNS if col in data.columns]
+            logger.info(f"Usando covariables automáticas: {', '.join(covariates)}")
+        
+        # Paso 3: Ajustar modelo Kaplan-Meier
+        logger.info("Ajustando modelo Kaplan-Meier...")
+        kmf = self.fit_kaplan_meier(
+            data[self.DURATION_COL],
+            data[self.EVENT_COL]
+        )
+        km_plot_path = self.plot_survival_function(
+            kmf,
+            title="Curva de Supervivencia de Nonces"
         )
         
-        logger.info(f"Análisis completado: Concordance Index={results.get('concordance_index', 'N/A')}")
+        # Paso 4: Ajustar modelo Cox PH
+        cph = None
+        concordance = 0.0
+        partial_effect_paths = {}
+        
+        if covariates:
+            logger.info("Ajustando modelo Cox Proportional Hazards...")
+            cph, concordance = self.fit_cox_ph(
+                data,
+                duration_col=self.DURATION_COL,
+                event_col=self.EVENT_COL,
+                covariates=covariates
+            )
+            
+            # Graficar efectos parciales para cada covariable
+            if cph:
+                for covariate in covariates:
+                    values = [
+                        data[covariate].quantile(0.25),
+                        data[covariate].median(),
+                        data[covariate].quantile(0.75)
+                    ]
+                    path = self.plot_partial_effects(
+                        cph,
+                        covariate,
+                        values,
+                        title=f"Efecto de {covariate} en Supervivencia"
+                    )
+                    if path:
+                        partial_effect_paths[covariate] = path
+        
+        # Paso 5: Guardar resultados
+        results = {
+            "timestamp": datetime.now().isoformat(),
+            "data_source": self.data_path,
+            "duration_column": self.DURATION_COL,
+            "event_column": self.EVENT_COL,
+            "covariates": covariates,
+            "kaplan_meier_plot": km_plot_path,
+            "cox_ph_concordance": concordance,
+            "partial_effect_plots": partial_effect_paths,
+            "record_count": len(data)
+        }
+        
+        results_path = os.path.join(self.results_dir, f"survival_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+        with open(results_path, 'w') as f:
+            json.dump(results, f, indent=2)
+            
+        logger.info(f"Resultados completos guardados en: {results_path}")
+        logger.info("="*60)
+        logger.info("ANÁLISIS COMPLETADO EXITOSAMENTE")
+        logger.info("="*60)
+        
+        return results
+
+def main():
+    try:
+        # Inicializar analizador
+        analyzer = SurvivalAnalyzer()
+        
+        # Ejecutar análisis
+        results = analyzer.analyze_survival()
+        
+        return 0 if results else 1
         
     except Exception as e:
-        logger.exception(f"Error en ejecución principal: {e}")
+        logger.exception(f"Error fatal en el análisis: {str(e)}")
+        return 2
+
+if __name__ == "__main__":
+    exit_code = main()
+    sys.exit(exit_code)

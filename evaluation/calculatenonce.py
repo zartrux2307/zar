@@ -8,67 +8,10 @@ from datetime import datetime
 from typing import Dict, List, Tuple, Optional
 import os
 import json
-from iazar.utils.feature_utils import calc_nonce_features, guardar_nonces_csv, COLUMNS
+import sys
+from iazar.utils.nonce_loader import NonceLoader
 
-# Columnas estándar globales
-COLUMNS = ["nonce", "entropy", "uniqueness", "zero_density", "pattern_score", "is_valid"]
-
-def leer_nonces_csv(path):
-    """Lee un CSV de nonces y garantiza estructura/cabecera estándar."""
-    if not os.path.exists(path):
-        pd.DataFrame(columns=COLUMNS).to_csv(path, index=False)
-        return pd.DataFrame(columns=COLUMNS)
-    df = pd.read_csv(path)
-    missing = [col for col in COLUMNS if col not in df.columns]
-    for col in missing:
-        df[col] = 0
-    df = df[COLUMNS]
-    df = df.dropna()  # Opcional, borra filas incompletas
-    return df
-
-def guardar_nonces_csv(df, path):
-    """Guarda un DataFrame de nonces con la cabecera y orden estándar."""
-    if not set(COLUMNS).issubset(df.columns):
-        for col in COLUMNS:
-            if col not in df.columns:
-                df[col] = 0
-    df = df[COLUMNS]
-    df.to_csv(path, index=False)
-
-def leer_nonces_json(path):
-    """Lee un JSON de nonces como lista de dicts."""
-    if not os.path.exists(path):
-        with open(path, 'w') as f:
-            json.dump([], f)
-        return []
-    with open(path, 'r') as f:
-        data = json.load(f)
-    # Completa campos faltantes
-    for item in data:
-        for col in COLUMNS:
-            if col not in item:
-                item[col] = 0
-    return data
-
-def guardar_nonces_json(lista, path):
-    """Guarda una lista de dicts como JSON de nonces."""
-    with open(path, 'w') as f:
-        json.dump(lista, f, indent=2)
-
-# Utilidades para blobs binarios
-def hexstr_to_bytes(blob_hex):
-    return bytes.fromhex(blob_hex) if isinstance(blob_hex, str) else blob_hex
-
-def bytes_to_hexstr(blob_bytes):
-    return blob_bytes.hex() if isinstance(blob_bytes, (bytes, bytearray)) else blob_bytes
-
-# Ejemplo de uso:
-# df = leer_nonces_csv("ruta.csv")
-# guardar_nonces_csv(df, "nueva_ruta.csv")
-# nonces = leer_nonces_json("ruta.json")
-# guardar_nonces_json(nonces, "nueva_ruta.json")
-
-# Configuración profesional
+# Configuración profesional de logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -77,21 +20,41 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("NonceAnalyzer")
 
 class DataLoader:
     """Carga y prepara datos desde archivos CSV locales"""
     REQUIRED_COLUMNS = ['nonce', 'timestamp']
     
-    def __init__(self, file_path: str):
-        self.file_path = file_path
+    def __init__(self, config=None):
+        self.loader = NonceLoader(config=config)
+        self.data_path = os.path.join(self.loader.training_dir, "nonce_training_data.csv")
+        self.results_dir = os.path.join(self.loader.data_dir, "analysis_results")
+        os.makedirs(self.results_dir, exist_ok=True)
         self.df = None
         
     def load_and_prepare(self) -> pd.DataFrame:
-        """Carga datos y realiza limpieza básica"""
+        """Carga datos y realiza limpieza básica con verificación de existencia"""
+        logger.info(f"Intentando cargar datos desde: {self.data_path}")
+        
+        if not os.path.exists(self.data_path):
+            logger.error(f"Archivo de datos no encontrado: {self.data_path}")
+            raise FileNotFoundError(f"Archivo de datos no encontrado: {self.data_path}")
+        
         try:
-            # Cargar datos
-            self.df = pd.read_csv(self.file_path)
+            # Detectar tamaño para estrategia de lectura
+            file_size = os.path.getsize(self.data_path)
+            logger.info(f"Tamaño del archivo: {file_size / (1024*1024):.2f} MB")
+            
+            if file_size > 50 * 1024 * 1024:  # > 50 MB
+                logger.info("Archivo grande, usando lectura por chunks")
+                chunks = []
+                for chunk in pd.read_csv(self.data_path, chunksize=10000, 
+                                        on_bad_lines='warn', encoding='utf-8'):
+                    chunks.append(chunk)
+                self.df = pd.concat(chunks, ignore_index=True)
+            else:
+                self.df = pd.read_csv(self.data_path, on_bad_lines='warn', encoding='utf-8')
             
             # Validar estructura
             missing_cols = [col for col in self.REQUIRED_COLUMNS if col not in self.df.columns]
@@ -106,17 +69,26 @@ class DataLoader:
                 try:
                     self.df['timestamp'] = pd.to_datetime(self.df['timestamp'], unit='s')
                 except:
-                    self.df['timestamp'] = pd.to_datetime(self.df['timestamp'])
+                    try:
+                        self.df['timestamp'] = pd.to_datetime(self.df['timestamp'])
+                    except Exception as e:
+                        logger.warning(f"No se pudo convertir timestamp: {str(e)}")
+                        self.df['timestamp'] = datetime.now()
             
             # Limpieza básica
+            initial_count = len(self.df)
             self.df = self.df.dropna(subset=['nonce', 'timestamp'])
             self.df = self.df[self.df['nonce'] <= 2**32]
+            cleaned_count = initial_count - len(self.df)
             
-            logger.info(f"Datos cargados exitosamente: {self.df.shape[0]} registros")
+            if cleaned_count > 0:
+                logger.info(f"Limpieza: eliminados {cleaned_count} registros inválidos")
+            
+            logger.info(f"Datos cargados exitosamente: {self.df.shape[0]} registros válidos")
             return self.df.copy()
         
         except Exception as e:
-            logger.error(f"Error cargando datos: {str(e)}")
+            logger.exception(f"Error crítico cargando datos: {str(e)}")
             raise
 
 class NonceAnalyzer:
@@ -128,8 +100,9 @@ class NonceAnalyzer:
         'high_range': (4_294_000_000, MAX_NONCE)
     }
     
-    def __init__(self, df: pd.DataFrame):
+    def __init__(self, df: pd.DataFrame, results_dir: str):
         self.df = df
+        self.results_dir = results_dir
         self.validate_data()
         
     def validate_data(self):
@@ -155,7 +128,7 @@ class NonceAnalyzer:
         for strategy, (low, high) in self.STRATEGY_THRESHOLDS.items():
             mask = (self.df['nonce'] >= low) & (self.df['nonce'] <= high)
             count = len(self.df[mask])
-            pct = (count / total_blocks) * 100
+            pct = (count / total_blocks) * 100 if total_blocks > 0 else 0
             results[f'pct_{strategy}'] = pct
             
             # Estadísticas por rango
@@ -167,18 +140,22 @@ class NonceAnalyzer:
                 results[f'{strategy}_max'] = subset.max()
             else:
                 logger.warning(f"No se encontraron datos en el rango: {strategy}")
+                results[f'{strategy}_mean'] = 0
+                results[f'{strategy}_std'] = 0
+                results[f'{strategy}_min'] = 0
+                results[f'{strategy}_max'] = 0
         
         # Análisis de densidad avanzado
-        results['kurtosis'] = stats.kurtosis(self.df['nonce'])
-        results['skew'] = stats.skew(self.df['nonce'])
-        results['entropy'] = self.calculate_entropy()
+        results['kurtosis'] = stats.kurtosis(self.df['nonce']) if len(self.df) > 3 else 0
+        results['skew'] = stats.skew(self.df['nonce']) if len(self.df) > 3 else 0
+        results['entropy'] = self.calculate_entropy() if len(self.df) > 1 else 0
         
-        logger.info(f"Distribución calculada: {results}")
+        logger.info(f"Distribución calculada con {len(self.df)} bloques")
         return results
     
     def calculate_entropy(self) -> float:
         """Calcula la entropía de la distribución de nonces"""
-        hist, _ = np.histogram(self.df['nonce'], bins=1000)
+        hist, _ = np.histogram(self.df['nonce'], bins=min(1000, len(self.df)))
         prob = hist / hist.sum()
         return -np.sum(prob * np.log2(prob + 1e-10))
     
@@ -186,6 +163,15 @@ class NonceAnalyzer:
         """Detección avanzada de clusters usando KDE"""
         from sklearn.neighbors import KernelDensity
         from sklearn.cluster import DBSCAN
+        
+        if len(self.df) < 100:
+            logger.warning("Insuficientes datos para detección de clusters")
+            return {
+                'cluster_labels': [],
+                'n_clusters': 0,
+                'kde_score': 0,
+                'sample_size': 0
+            }
         
         # Usar una muestra si el dataset es muy grande
         sample_size = min(10000, len(self.df))
@@ -199,7 +185,7 @@ class NonceAnalyzer:
         kde.fit(log_nonces)
         
         # Identificación de clusters
-        clustering = DBSCAN(eps=0.3, min_samples=10).fit(log_nonces)
+        clustering = DBSCAN(eps=0.3, min_samples=min(10, sample_size//100)).fit(log_nonces)
         labels = clustering.labels_
         n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
         
@@ -212,11 +198,15 @@ class NonceAnalyzer:
     
     def plot_distribution(self, output_file: str = "nonce_distribution.png"):
         """Visualización profesional con múltiples vistas"""
+        if self.df.empty:
+            logger.error("No hay datos para generar gráficos")
+            return
+            
         plt.figure(figsize=(15, 10))
         
         # Histograma principal
         plt.subplot(2, 2, 1)
-        plt.hist(self.df['nonce'], bins=1000, alpha=0.7, color='royalblue', log=True)
+        plt.hist(self.df['nonce'], bins=min(1000, len(self.df)), alpha=0.7, color='royalblue', log=True)
         plt.axvline(x=2.15e9, color='red', linestyle='--', label='Punto medio (2.15e9)')
         plt.axvline(x=4.294e9, color='green', linestyle='--', label='Máximo (4.294e9)')
         plt.title('Distribución de Nonces', fontsize=14)
@@ -227,18 +217,23 @@ class NonceAnalyzer:
         
         # Gráfico de densidad KDE
         plt.subplot(2, 2, 2)
-        from sklearn.neighbors import KernelDensity
-        sample = self.df['nonce'].sample(min(5000, len(self.df)), random_state=42)
-        kde = KernelDensity(bandwidth=0.01, kernel='gaussian')
-        kde.fit(np.log1p(sample.values).reshape(-1, 1))
-        
-        x = np.linspace(0, self.MAX_NONCE, 1000)
-        log_dens = kde.score_samples(np.log1p(x).reshape(-1, 1))
-        
-        plt.fill_between(x, np.exp(log_dens), alpha=0.5)
-        plt.title('Densidad de Probabilidad (KDE)', fontsize=14)
-        plt.xlabel('Nonce')
-        plt.ylabel('Densidad')
+        if len(self.df) > 100:
+            from sklearn.neighbors import KernelDensity
+            sample = self.df['nonce'].sample(min(5000, len(self.df)), random_state=42)
+            kde = KernelDensity(bandwidth=0.01, kernel='gaussian')
+            kde.fit(np.log1p(sample.values).reshape(-1, 1))
+            
+            x = np.linspace(0, self.MAX_NONCE, 1000)
+            log_dens = kde.score_samples(np.log1p(x).reshape(-1, 1))
+            
+            plt.fill_between(x, np.exp(log_dens), alpha=0.5)
+            plt.title('Densidad de Probabilidad (KDE)', fontsize=14)
+            plt.xlabel('Nonce')
+            plt.ylabel('Densidad')
+        else:
+            plt.text(0.5, 0.5, "Insuficientes datos para KDE", 
+                     ha='center', va='center', fontsize=12)
+            plt.title('Densidad de Probabilidad (KDE)', fontsize=14)
         
         # Boxplot por estrategia
         plt.subplot(2, 2, 3)
@@ -249,10 +244,16 @@ class NonceAnalyzer:
             if len(subset) > 0:
                 strategies.append(strategy)
                 values.append(subset)
-        plt.boxplot(values, labels=strategies, showfliers=False)
-        plt.title('Distribución por Estrategia', fontsize=14)
-        plt.ylabel('Valor Nonce')
-        plt.yscale('log')
+        
+        if values:
+            plt.boxplot(values, labels=strategies, showfliers=False)
+            plt.title('Distribución por Estrategia', fontsize=14)
+            plt.ylabel('Valor Nonce')
+            plt.yscale('log')
+        else:
+            plt.text(0.5, 0.5, "No hay datos para estrategias", 
+                     ha='center', va='center', fontsize=12)
+            plt.title('Distribución por Estrategia', fontsize=14)
         
         # Serie temporal (si hay suficientes datos)
         plt.subplot(2, 2, 4)
@@ -269,11 +270,14 @@ class NonceAnalyzer:
             plt.ylabel('Nonce')
         
         plt.tight_layout()
-        plt.savefig(output_file, dpi=300)
-        logger.info(f"Gráfico guardado en {output_file}")
+        
+        output_path = os.path.join(self.results_dir, output_file)
+        plt.savefig(output_path, dpi=300)
+        plt.close()
+        logger.info(f"Gráfico guardado en {output_path}")
         
         # Guardar datos procesados
-        self.save_processed_data(output_file.replace('.png', '_data.csv'))
+        self.save_processed_data(output_path.replace('.png', '_data.csv'))
     
     def save_processed_data(self, output_path: str):
         """Guarda datos procesados para análisis posterior"""
@@ -289,18 +293,36 @@ class NonceAnalyzer:
         """Ejecuta el análisis completo"""
         logger.info(f"Iniciando análisis con {len(self.df)} bloques")
         
-        # Paso 1: Calcular estadísticas
-        stats = self.calculate_distribution()
-        
-        # Paso 2: Detectar clusters
-        cluster_info = self.detect_clusters()
-        
-        # Paso 3: Visualización
-        self.plot_distribution()
-        
-        # Paso 4: Reporte
-        report = f"""
+        try:
+            # Paso 1: Calcular estadísticas
+            stats = self.calculate_distribution()
+            
+            # Paso 2: Detectar clusters
+            cluster_info = self.detect_clusters()
+            
+            # Paso 3: Visualización
+            self.plot_distribution()
+            
+            # Paso 4: Generar reporte
+            report = self.generate_report(stats, cluster_info)
+            
+            # Guardar reporte en archivo
+            report_path = os.path.join(self.results_dir, "nonce_analysis_report.txt")
+            with open(report_path, "w") as f:
+                f.write(report)
+                
+            logger.info(f"Reporte guardado en {report_path}")
+            return stats
+            
+        except Exception as e:
+            logger.exception(f"Error durante el análisis: {str(e)}")
+            return None
+
+    def generate_report(self, stats: Dict, cluster_info: Dict) -> str:
+        """Genera un reporte detallado de análisis"""
+        return f"""
         ===== ANÁLISIS PROFESIONAL DE NONCES =====
+        Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         Bloques analizados: {len(self.df)}
         Rango temporal: {self.df['timestamp'].min().date()} - {self.df['timestamp'].max().date()}
         
@@ -325,34 +347,46 @@ class NonceAnalyzer:
         La distribución muestra patrones claros de estrategias de minería según el estudio "Utter Noncesense".
         La entropía de {stats['entropy']:.4f} sugiere {'baja aleatoriedad' if stats['entropy'] < 8.0 else 'alta aleatoriedad'} en la distribución.
         """
-        logger.info(report)
-        
-        # Guardar reporte en archivo
-        with open("nonce_analysis_report.txt", "w") as f:
-            f.write(report)
-            
-        return stats
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description='Análisis profesional de distribución de nonces en Monero')
-    parser.add_argument('--input', type=str, default='C:/zarturxia/src/iazar/data/nonce_training_data.csv', 
-                        help='Ruta al archivo CSV con los datos de entrenamiento')
-    parser.add_argument('--output', type=str, default='results', 
-                        help='Directorio de salida para resultados')
+    parser.add_argument('--config', type=str, default='ia_config',
+                        help='Nombre de la configuración a usar')
     args = parser.parse_args()
 
-    # Crear directorio de salida si no existe
-    os.makedirs(args.output, exist_ok=True)
-    
     try:
+        logger.info("="*60)
+        logger.info("INICIANDO ANÁLISIS DE DISTRIBUCIÓN DE NONCES")
+        logger.info("="*60)
+        
+        # Inicializar cargador de datos
+        data_loader = DataLoader(config=args.config)
+        
         # Cargar datos
-        loader = DataLoader(args.input)
-        df = loader.load_and_prepare()
+        logger.info("Cargando datos de entrenamiento...")
+        df = data_loader.load_and_prepare()
         
         # Analizar datos
-        analyzer = NonceAnalyzer(df)
-        analyzer.run_analysis()
+        logger.info("Iniciando análisis estadístico...")
+        analyzer = NonceAnalyzer(df, data_loader.results_dir)
+        results = analyzer.run_analysis()
         
-        logger.info("Análisis completado exitosamente")
+        if results:
+            logger.info("Análisis completado exitosamente")
+            logger.info(f"Resultados guardados en: {data_loader.results_dir}")
+        else:
+            logger.error("El análisis no pudo completarse correctamente")
+        
+        logger.info("="*60)
+        logger.info("PROCESO FINALIZADO")
+        logger.info("="*60)
+        
+        return 0 if results else 1
+        
     except Exception as e:
-        logger.error(f"Error en el análisis: {str(e)}")
+        logger.exception(f"Error fatal en el proceso principal: {str(e)}")
+        return 2
+
+if __name__ == "__main__":
+    exit_code = main()
+    sys.exit(exit_code)
