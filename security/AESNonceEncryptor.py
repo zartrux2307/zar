@@ -1,5 +1,6 @@
 from cryptography.fernet import Fernet
 
+
 class AESNonceEncryptor:
     def __init__(self, key=None):
         self.key = key or Fernet.generate_key()

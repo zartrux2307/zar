@@ -1,17 +1,26 @@
-import os
+# iazar/training/train_model_randomforest.py
 import joblib
 import logging
 import pandas as pd
 import numpy as np
+import os
 import sys
+
+import json
 from pathlib import Path
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import mean_squared_error, r2_score
 from iazar.utils.config_manager import get_ia_config
 from iazar.utils.data_preprocessing import NonceDataPreprocessor
 from iazar.utils.feature_utils import COLUMNS
 
+
+# Establecer el directorio del proyecto
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+os.chdir(PROJECT_DIR)
 # Configuración avanzada de logging
 logging.basicConfig(
     level=logging.INFO,
@@ -23,195 +32,148 @@ logging.basicConfig(
 )
 logger = logging.getLogger("ModelTraining")
 
-def load_and_validate_data(data_path: Path) -> pd.DataFrame:
-    """Carga y valida el conjunto de datos con verificaciones exhaustivas"""
-    logger.info(f"Validando archivo de datos: {data_path}")
+def load_real_winner_data(data_path: Path) -> pd.DataFrame:
+    """Carga datos reales de bloques ganadores con validación estricta"""
+    logger.info(f"Cargando datos reales de bloques ganadores: {data_path}")
     
-    # Verificar existencia del archivo
     if not data_path.exists():
-        logger.error(f"Archivo de datos no encontrado: {data_path}")
         raise FileNotFoundError(f"Archivo de datos no encontrado: {data_path}")
     
-    # Verificar extensión del archivo
-    if data_path.suffix not in ['.csv', '.parquet']:
-        logger.error(f"Formato de archivo no soportado: {data_path.suffix}")
-        raise ValueError(f"Formato de archivo no soportado: {data_path.suffix}")
-    
     try:
-        # Cargar datos según formato
-        if data_path.suffix == '.csv':
-            df = pd.read_csv(data_path)
-        else:  # .parquet
-            df = pd.read_parquet(data_path)
-            
-        logger.info(f"Datos cargados: {df.shape[0]} muestras, {df.shape[1]} características")
+        # Cargar datos
+        df = pd.read_csv(data_path)
         
-        # Verificar columnas requeridas
-        required_cols = set(COLUMNS)
+        # Validación crítica de datos
+        required_cols = set(COLUMNS + ['nonce'])
         missing_cols = required_cols - set(df.columns)
         if missing_cols:
-            logger.error(f"Columnas requeridas faltantes: {', '.join(missing_cols)}")
             raise ValueError(f"Columnas requeridas faltantes: {missing_cols}")
-            
-        # Verificar valores faltantes
-        missing_values = df.isnull().sum().sum()
-        if missing_values > 0:
-            logger.warning(f"Se encontraron {missing_values} valores faltantes - Imputando...")
-            df = df.fillna(df.mean(numeric_only=True))
-            
-        # Verificar distribución de clases
-        if 'is_valid' in df.columns:
-            class_dist = df['is_valid'].value_counts(normalize=True)
-            logger.info(f"📊 Distribución de clases: Válidos={class_dist.get(1, 0):.2%}, Inválidos={class_dist.get(0, 0):.2%}")
-            
-            if class_dist.get(1, 0) < 0.1 or class_dist.get(0, 0) < 0.1:
-                logger.warning("⚠️ Desbalance de clases significativo - Considerar técnicas de balanceo")
         
+        # Verificar que hay suficientes datos
+        if len(df) < 1000:
+            raise ValueError(f"Datos insuficientes: solo {len(df)} registros")
+        
+        # Verificar distribución de nonces
+        nonce_stats = df['nonce'].describe()
+        logger.info(f"Estadísticas de nonces: {nonce_stats.to_dict()}")
+        
+        # Verificar que no sean todos cero o constantes
+        if nonce_stats['std'] < 1:
+            raise ValueError("Nonces constantes o casi constantes")
+            
         return df
         
     except Exception as e:
-        logger.exception(f"Error al cargar datos: {str(e)}")
+        logger.exception("Error cargando datos reales")
         raise
 
-def preprocess_data(df: pd.DataFrame) -> tuple:
-    """Realiza preprocesamiento avanzado de los datos"""
-    logger.info("🔧 Iniciando preprocesamiento de datos...")
+def train_real_model(X, y, config: dict):
+    """Entrena modelo con datos reales y validación rigurosa"""
+    logger.info("Entrenando modelo con datos reales...")
     
     try:
-        preprocessor = NonceDataPreprocessor()
-        
-        # Conservar etiquetas antes del preprocesamiento
-        if 'is_valid' in df.columns:
-            y = df['is_valid'].values
-        else:
-            logger.warning("Columna 'is_valid' no encontrada - Generando etiquetas sintéticas")
-            y = np.random.randint(0, 2, size=len(df))
-        
-        # Preprocesar características
-        X = preprocessor.preprocess(df)
-        
-        # Validar formato de salida
-        if not isinstance(X, (pd.DataFrame, np.ndarray)):
-            raise TypeError("El preprocesador debe devolver DataFrame o ndarray")
-            
-        if isinstance(X, pd.DataFrame):
-            logger.info(f"📋 Características después de preprocesamiento: {X.columns.tolist()}")
-        
-        logger.info(f"Preprocesamiento completado. Dimensiones: {X.shape}")
-        return X, y
-        
-    except Exception as e:
-        logger.exception(f"Error en preprocesamiento: {str(e)}")
-        raise
-
-def train_random_forest(X, y, config: dict):
-    """Entrena y evalúa un modelo RandomForest con validación robusta"""
-    logger.info("Iniciando entrenamiento de RandomForest...")
-    
-    try:
-        # Dividir datos en entrenamiento y prueba
+        # Dividir datos (80/20)
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y, 
-            test_size=config.get("test_size", 0.2),
-            stratify=y,
+            X, y,
+            test_size=0.2,
             random_state=42
         )
-        
-        logger.info(f"Datos divididos: Entrenamiento={X_train.shape[0]}, Prueba={X_test.shape[0]}")
-        
+
         # Configurar modelo
         model_params = {
-            "n_estimators": config.get("n_estimators", 100),
-            "max_depth": config.get("max_depth", None),
-            "min_samples_split": config.get("min_samples_split", 2),
-            "min_samples_leaf": config.get("min_samples_leaf", 1),
-            "max_features": config.get("max_features", "sqrt"),
-            "bootstrap": config.get("bootstrap", True),
+            "n_estimators": config.get("n_estimators", 200),
+            "max_depth": config.get("max_depth", 20),
+            "min_samples_split": config.get("min_samples_split", 5),
+            "min_samples_leaf": config.get("min_samples_leaf", 2),
+            "max_features": config.get("max_features", 0.8),
+            "bootstrap": True,
             "n_jobs": -1,
             "random_state": 42,
             "verbose": 1
         }
-        
-        model = RandomForestClassifier(**model_params)
-        
-        # Entrenar modelo
+
+        model = RandomForestRegressor(**model_params)
         model.fit(X_train, y_train)
         logger.info("Entrenamiento completado")
-        
-        # Evaluar modelo
+
+        # Validación de rendimiento
         train_preds = model.predict(X_train)
         test_preds = model.predict(X_test)
-        
-        train_acc = accuracy_score(y_train, train_preds)
-        test_acc = accuracy_score(y_test, test_preds)
-        
-        logger.info(f"Precisión - Entrenamiento: {train_acc:.4f}, Prueba: {test_acc:.4f}")
-        logger.info("\nReporte de clasificación:\n" + classification_report(y_test, test_preds))
-        
-        # Feature importance
-        if hasattr(model, "feature_importances_"):
-            if isinstance(X, pd.DataFrame):
-                feature_names = X.columns
-            else:
-                feature_names = [f"feature_{i}" for i in range(X.shape[1])]
-                
-            importances = pd.Series(model.feature_importances_, index=feature_names)
-            top_features = importances.sort_values(ascending=False).head(10)
-            logger.info("Top 10 características más importantes:\n" + top_features.to_string())
-        
+
+        train_mse = mean_squared_error(y_train, train_preds)
+        test_mse = mean_squared_error(y_test, test_preds)
+        r2 = r2_score(y_test, test_preds)
+
+        logger.info(f"MSE - Entrenamiento: {train_mse:.4f}, Prueba: {test_mse:.4f}")
+        logger.info(f"R² Score: {r2:.4f}")
+
+        # Validación de importancia de características
+        importances = model.feature_importances_
+        if np.max(importances) < 0.1:
+            logger.warning("Importancia máxima de características muy baja")
+            
+        # Validación de árboles
+        if len(model.estimators_) < model_params["n_estimators"]:
+            raise RuntimeError(f"Faltan estimadores: {len(model.estimators_)}/{model_params['n_estimators']}")
+
         return model
         
     except Exception as e:
-        logger.exception(f"Error en entrenamiento: {str(e)}")
+        logger.exception("Error entrenando modelo real")
         raise
 
 def main():
     try:
-        logger.info("Iniciando entrenamiento de modelo RandomForest")
-        
+        logger.info("=== ENTRENAMIENTO DE MODELO REAL CON DATOS DE BLOQUES GANADORES ===")
+
         # 1. Obtener configuración
         config = get_ia_config()
         model_config = config.get("model", {})
         data_config = config.get("data_paths", {})
-        
+
         # 2. Preparar rutas
-        model_output_path = Path(model_config.get("path", "models/random_forest_model.joblib"))
-        data_path = Path(data_config.get("successful_nonces", "data/processed/nonces.csv"))
-        
+        model_output_path = Path(model_config.get("path", "src/iazar/models/rf_nonce_model.joblib"))
+        real_data_path = Path(data_config.get("winner_blocks", "src/iazar/data/winner_blocks.csv"))
+
         model_output_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # 3. Cargar y validar datos
-        df = load_and_validate_data(data_path)
+
+        # 3. Cargar datos reales
+        df = load_real_winner_data(real_data_path)
         
         # 4. Preprocesar datos
-        X, y = preprocess_data(df)
-        
-        # 5. Entrenar modelo
-        model = train_random_forest(X, y, model_config)
-        
+        preprocessor = NonceDataPreprocessor()
+        X = preprocessor.preprocess(df)
+        y = df['nonce'].values
+
+        # 5. Entrenar modelo con validación
+        model = train_real_model(X, y, model_config)
+
         # 6. Guardar modelo
         joblib.dump(model, model_output_path)
         logger.info(f"Modelo guardado en {model_output_path}")
-        
-        # 7. Guardar metadatos
+
+        # 7. Guardar metadatos de validación
         metadata = {
-            "data_path": str(data_path),
-            "data_shape": X.shape,
-            "model_type": "RandomForest",
             "training_date": pd.Timestamp.now().isoformat(),
-            "features": list(X.columns) if isinstance(X, pd.DataFrame) else [],
-            "classes": list(np.unique(y))
+            "data_source": str(real_data_path),
+            "data_samples": len(df),
+            "features": list(X.columns),
+            "feature_importances": dict(zip(X.columns, model.feature_importances_)),
+            "performance": {
+                "r2_score": r2_score(y, model.predict(X)),
+                "mse": mean_squared_error(y, model.predict(X))
+            }
         }
-        
+
         metadata_path = model_output_path.with_suffix(".metadata.json")
         with open(metadata_path, "w") as f:
             json.dump(metadata, f, indent=2)
-            
-        logger.info(f"📝 Metadatos guardados en {metadata_path}")
-        logger.info("🎉 Entrenamiento completado exitosamente!")
-        
-    except Exception as e:
-        logger.exception("Error crítico en el proceso de entrenamiento")
+
+        logger.info(f"Metadatos guardados en {metadata_path}")
+        logger.info("✅ Entrenamiento completado con éxito!")
+
+    except Exception:
+        logger.exception("❌ Error crítico en el entrenamiento")
         sys.exit(1)
 
 if __name__ == "__main__":

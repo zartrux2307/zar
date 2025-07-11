@@ -1,6 +1,6 @@
 """
-Módulo avanzado de gestión de configuración para Zartrux-Miner
-Incluye validación de esquemas, cifrado, sobreescritura por variables de entorno y sincronización remota
+Módulo avanzado de gestión de configuración con locking robusto
+para acceso concurrente seguro y prevención de corrupción
 """
 
 import os
@@ -13,8 +13,11 @@ from typing import Dict, Any, Optional
 from pathlib import Path
 from dotenv import load_dotenv
 from cryptography.fernet import Fernet
-from iazar.utils.feature_utils import COLUMNS
+from filelock import FileLock, Timeout
 
+
+config = initialize_system_config()
+print(config["shm"]["name"])  # Ejemplo de acceso
 # Import absoluto (universal, NO relativo)
 from iazar.security.AESNonceEncryptor import AESNonceEncryptor
 
@@ -23,7 +26,20 @@ logger = logging.getLogger('ZartruxConfigManager')
 
 class ConfigValidationError(Exception):
     """Excepción personalizada para errores de validación de configuración"""
-    pass
+
+class LockManager:
+    """Gestor centralizado de locks para archivos de configuración"""
+    _locks: Dict[str, FileLock] = {}
+    
+    @classmethod
+    def get_lock(cls, file_path: Path) -> FileLock:
+        """Obtiene o crea un lock para un archivo específico"""
+        lock_key = str(file_path.resolve())
+        
+        if lock_key not in cls._locks:
+            cls._locks[lock_key] = FileLock(f"{lock_key}.lock", timeout=10)
+        
+        return cls._locks[lock_key]
 
 class ConfigManager:
     _instance = None
@@ -33,6 +49,36 @@ class ConfigManager:
 
     # Esquemas base para validación (actualizados)
     BASE_SCHEMAS = {
+        'global_config': {
+            "type": "object",
+            "properties": {
+                "shm": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"},
+                        "size": {"type": "integer", "minimum": 1024}
+                    },
+                    "required": ["name", "size"]
+                },
+                "stratum": {
+                    "type": "object",
+                    "properties": {
+                        "pool_host": {"type": "string"},
+                        "pool_port": {"type": "integer", "minimum": 1, "maximum": 65535}
+                    },
+                    "required": ["pool_host", "pool_port"]
+                },
+                "logging": {
+                    "type": "object",
+                    "properties": {
+                        "level": {"type": "string", "enum": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]},
+                        "format": {"type": "string"}
+                    },
+                    "required": ["level", "format"]
+                }
+            },
+            "required": ["shm", "stratum", "logging"]
+        },
         'ia_config': {
             "type": "object",
             "properties": {
@@ -45,7 +91,7 @@ class ConfigManager:
                         "nonce_training_data_path": {"type": "string"}
                     },
                     "required": [
-                        "successful_nonces", 
+                        "successful_nonces",
                         "nonce_hashes",
                         "injected_nonces",
                         "nonce_training_data_path"
@@ -137,7 +183,7 @@ class ConfigManager:
             Path(os.getcwd()) / 'data',                          # ./data
             Path(os.getcwd()) / 'iazar' / 'data'                 # ./iazar/data
         ]
-        
+
         for config_dir in possible_dirs:
             if config_dir.exists():
                 self.config_dir = config_dir
@@ -148,12 +194,18 @@ class ConfigManager:
             self.config_dir.mkdir(exist_ok=True)
             logger.warning(f"Creando directorio de configuración: {self.config_dir}")
 
+        # Crear directorio de backups
+        (self.config_dir / "backups").mkdir(exist_ok=True)
+        
         self._load_encryption_key()
         self._load_all_schemas()
-        
-        # Generar configuraciones esenciales si faltan
-        for config_name in ['shared_memory', 'ia_config']:
-            self.generate_default_config(config_name)
+
+        # Generar configuraciones esenciales si faltan con locking
+        for config_name in ['global_config', 'shared_memory', 'ia_config']:
+            try:
+                self.generate_default_config(config_name)
+            except Exception as e:
+                logger.error(f"Error generando configuración {config_name}: {str(e)}")
 
     def _load_encryption_key(self):
         key = os.getenv('CONFIG_ENCRYPTION_KEY')
@@ -193,7 +245,7 @@ class ConfigManager:
                 except json.JSONDecodeError:
                     config[key] = os.environ[env_key]
                 logger.debug(f"Override aplicado: {env_key} = {config[key]}")
-        
+
         # Manejo especial para segmentos de memoria compartida
         if prefix == "SHARED_MEMORY" and "SEGMENTS" in os.environ:
             try:
@@ -205,6 +257,13 @@ class ConfigManager:
             except json.JSONDecodeError:
                 logger.warning("Formato inválido en variable SEGMENTS")
                 
+        # Manejo especial para configuración de logging
+        if prefix == "GLOBAL_CONFIG" and "LOGGING_LEVEL" in os.environ:
+            level = os.environ["LOGGING_LEVEL"].upper()
+            if level in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
+                config["logging"]["level"] = level
+                logger.debug(f"Override aplicado a LOGGING_LEVEL = {level}")
+
         return config
 
     def _validate_config(self, config: Dict, schema_name: str) -> bool:
@@ -225,104 +284,165 @@ class ConfigManager:
         config_path = self.config_dir / f"{config_name}.json"
         encrypted_path = self.config_dir / f"{config_name}.enc"
 
+        # Obtener lock para el archivo de configuración
+        lock = LockManager.get_lock(config_path if not encrypted_path.exists() else encrypted_path)
+        
         try:
-            if encrypted_path.exists():
-                with open(encrypted_path, 'rb') as f:
-                    config_data = self._decrypt_config(f.read())
-            else:
-                if not config_path.exists():
-                    # Intentar generar si no existe
-                    self.generate_default_config(config_name)
-                
-                with open(config_path) as f:
-                    try:
-                        config_data = json.load(f)
-                    except json.JSONDecodeError as e:
-                        # Manejar archivo JSON corrupto
-                        logger.error(f"Error de sintaxis en {config_path}: {e}")
-                        # Crear respaldo del archivo corrupto
-                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                        backup_path = config_path.with_name(f"{config_name}_corrupt_{timestamp}.json")
-                        config_path.rename(backup_path)
-                        logger.warning(f"Archivo corrupto movido a: {backup_path}")
-                        # Regenerar configuración
-                        self.generate_default_config(config_name)
-                        # Recargar configuración
-                        return self.get_config(config_name, refresh=True)
-
-            self._validate_config(config_data, config_name)
-            config_data = self._apply_environment_overrides(config_data, config_name.upper())
-            
-            self._configs[config_name] = config_data
-            logger.info(f"Configuración {config_name} cargada y validada")
-            return config_data
-
-        except FileNotFoundError:
-            logger.error(f"Archivo de configuración {config_name} no encontrado")
-            # Intentar generar si no existe
-            self.generate_default_config(config_name)
-            return self.get_config(config_name, refresh=True)
+            with lock:
+                return self._load_config_under_lock(config_name, config_path, encrypted_path)
+        except Timeout:
+            logger.error(f"Timeout obteniendo lock para {config_name}")
+            raise
         except Exception as e:
             logger.error(f"Error cargando {config_name}: {str(e)}")
             raise
 
-    def generate_default_config(self, config_name: str):
-        default_configs = {
-            'ia_config': {
-                'data_paths': {
-                    'successful_nonces': 'src/iazar/data/nonces_exitosos.csv',
-                    'nonce_hashes': 'src/iazar/data/nonce_hashes.bin',
-                    'injected_nonces': 'src/iazar/logs/injected.csv',
-                    'nonce_training_data_path': 'src/iazar/data/nonce_training_data.csv'
+    def _load_config_under_lock(self, config_name, config_path, encrypted_path):
+        """Carga la configuración bajo protección de lock"""
+        if encrypted_path.exists():
+            with open(encrypted_path, 'rb') as f:
+                config_data = self._decrypt_config(f.read())
+        else:
+            if not config_path.exists():
+                # Generar bajo el mismo lock
+                self._generate_default_under_lock(config_name, config_path)
+                
+            try:
+                with open(config_path) as f:
+                    config_data = json.load(f)
+            except json.JSONDecodeError as e:
+                logger.error(f"Error de sintaxis en {config_path}: {e}")
+                # Crear respaldo del archivo corrupto con lock
+                self._backup_corrupt_file(config_path)
+                # Regenerar configuración bajo el mismo lock
+                self._generate_default_under_lock(config_name, config_path)
+                # Recargar configuración
+                return self.get_config(config_name, refresh=True)
+
+        self._validate_config(config_data, config_name)
+        config_data = self._apply_environment_overrides(config_data, config_name.upper())
+        self._configs[config_name] = config_data
+        logger.info(f"Configuración {config_name} cargada y validada")
+        return config_data
+
+    def _backup_corrupt_file(self, file_path: Path):
+        """Crea un backup de un archivo corrupto con timestamp"""
+        backup_dir = self.config_dir / "backups"
+        backup_dir.mkdir(exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = backup_dir / f"{file_path.stem}_corrupt_{timestamp}{file_path.suffix}"
+        
+        try:
+            file_path.rename(backup_path)
+            logger.warning(f"Archivo corrupto movido a: {backup_path}")
+        except Exception as e:
+            logger.error(f"No se pudo crear backup: {str(e)}")
+
+    def _generate_default_under_lock(self, config_name: str, config_path: Path):
+        """Genera configuración por defecto bajo protección de lock"""
+        try:
+            default_configs = {
+                'global_config': {
+                    "shm": {
+                        "name": "zar_shared_mem",
+                        "size": 4096
+                    },
+                    "stratum": {
+                        "pool_host": "pool.hashvault.pro",
+                        "pool_port": 443
+                    },
+                    "logging": {
+                        "level": "INFO",
+                        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                    }
                 },
-                'processing_params': {
-                    'temporal_window': 60,
-                    'entropy_window': 100,
-                    'candidate_count': 10000,
-                    'top_candidates': 300,
-                    'polling_interval': 0.01
+                'ia_config': {
+                    'data_paths': {
+                        'successful_nonces': 'src/iazar/data/nonces_exitosos.csv',
+                        'nonce_hashes': 'src/iazar/data/nonce_hashes.bin',
+                        'injected_nonces': 'src/iazar/logs/injected.csv',
+                        'nonce_training_data_path': 'src/iazar/data/nonce_training_data.csv'
+                    },
+                    'processing_params': {
+                        'temporal_window': 60,
+                        'entropy_window': 100,
+                        'candidate_count': 10000,
+                        'top_candidates': 300,
+                        'polling_interval': 0.01
+                    },
+                    'shared_memory': {
+                        'name': 'zartrux_shared',
+                        'enabled': True
+                    }
+                },
+                'hub_config': {
+                    'hub_endpoint': 'tcp://hub.zartrux.mining:5555',
+                    'sync_interval': 30,
+                    'max_nodes': 100,
+                    'shm_sync': False
+                },
+                'miner_config': {
+                    'pool_address': 'pool.hashvault.pro:443',
+                    'wallet': 
+                    '44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc',
+                    'threads': os.cpu_count() or 4,  # Valor por defecto si no se detectan cores
+                    'mode': 'hybrid',
+                    'ia_enabled': True,
+                    'ia_timeout': 0.5
                 },
                 'shared_memory': {
                     'name': 'zartrux_shared',
-                    'enabled': True
-                }
-            },
-            'hub_config': {
-                'hub_endpoint': 'tcp://hub.zartrux.mining:5555',
-                'sync_interval': 30,
-                'max_nodes': 100,
-                'shm_sync': False
-            },
-            'miner_config': {
-                'pool_address': 'pool.hashvault.pro:443',
-                'wallet': '44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc',
-                'threads': os.cpu_count() or 4,  # Valor por defecto si no se detectan cores
-                'mode': 'hybrid',
-                'ia_enabled': True,
-                'ia_timeout': 0.5
-            },
-            'shared_memory': {
-                'name': 'zartrux_shared',
-                'enabled': True,
-                'size': 4096,
-                'polling_interval': 0.001,
-                'timeout': 1.0,
-                'segments': {
-                    'blob': 152,
-                    'target': 8,
-                    'seed': 32,
-                    'status': 1,
-                    'nonce': 4
+                    'enabled': True,
+                    'size': 4096,
+                    'polling_interval': 0.001,
+                    'timeout': 1.0,
+                    'segments': {
+                        'blob': 152,
+                        'target': 8,
+                        'seed': 32,
+                        'status': 1,
+                        'nonce': 4
+                    }
                 }
             }
-        }
-        
-        config_path = self.config_dir / f"{config_name}.json"
-        if not config_path.exists():
+            
             default_config = default_configs.get(config_name, {})
             with open(config_path, 'w') as f:
                 json.dump(default_config, f, indent=2)
             logger.info(f"Configuración por defecto generada para {config_name} en {config_path}")
+            
+            # Crear backup automático
+            self._create_config_backup(config_path)
+        except Exception as e:
+            logger.error(f"Error generando configuración {config_name}: {str(e)}")
+            raise
+
+    def _create_config_backup(self, config_path: Path):
+        """Crea un backup de la configuración con timestamp"""
+        backup_dir = self.config_dir / "backups"
+        backup_dir.mkdir(exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = backup_dir / f"{config_path.stem}_{timestamp}{config_path.suffix}"
+        
+        try:
+            with open(config_path, 'r') as src, open(backup_path, 'w') as dst:
+                dst.write(src.read())
+            logger.info(f"Backup de configuración creado: {backup_path}")
+        except Exception as e:
+            logger.error(f"Error creando backup: {str(e)}")
+
+    def generate_default_config(self, config_name: str):
+        """Versión pública con locking para generar configuración"""
+        config_path = self.config_dir / f"{config_name}.json"
+        lock = LockManager.get_lock(config_path)
+        
+        try:
+            with lock:
+                self._generate_default_under_lock(config_name, config_path)
+        except Timeout:
+            logger.error(f"Timeout generando configuración {config_name}")
 
     def update_remote_config(self, config_name: str, new_config: Dict):
         """Sincronización remota de configuraciones (implementación futura)"""
@@ -338,18 +458,18 @@ class ConfigManager:
     def get_shm_config(self) -> Dict[str, Any]:
         """Obtiene configuración específica de memoria compartida"""
         return self.get_config('shared_memory')
-    
+
     def get_ia_params(self) -> Dict[str, Any]:
         """Obtiene parámetros específicos de IA"""
         ia_config = self.get_config('ia_config')
         return ia_config.get('processing_params', {})
-    
+
     def get_shm_segment_size(self, segment_name: str) -> int:
         """Obtiene el tamaño configurado para un segmento específico"""
         shm_config = self.get_shm_config()
         segments = shm_config.get('segments', {})
         return segments.get(segment_name, 0)
-    
+
     def get_config_value(self, section: str, key: str, default=None) -> Any:
         """Obtiene un valor de configuración con soporte para rutas anidadas"""
         try:
@@ -367,6 +487,22 @@ class ConfigManager:
             logger.debug(f"Error obteniendo {section}.{key}: {str(e)}")
             return default
 
+    # ===== MÉTODOS PARA GLOBAL CONFIG =====
+    def get_logging_config(self) -> Dict[str, Any]:
+        """Obtiene configuración específica de logging"""
+        global_config = self.get_config('global_config')
+        return global_config.get('logging', {})
+
+    def get_stratum_config(self) -> Dict[str, Any]:
+        """Obtiene configuración específica de stratum"""
+        global_config = self.get_config('global_config')
+        return global_config.get('stratum', {})
+
+    def get_shm_global_config(self) -> Dict[str, Any]:
+        """Obtiene configuración global de memoria compartida"""
+        global_config = self.get_config('global_config')
+        return global_config.get('shm', {})
+
 # ==== ALIAS COMPATIBLES PARA IMPORTS ====
 
 def get_ia_config() -> Dict[str, Any]:
@@ -380,6 +516,10 @@ def get_hub_config() -> Dict[str, Any]:
 def get_miner_config() -> Dict[str, Any]:
     """Alias para configuración de minero"""
     return ConfigManager().get_config('miner_config')
+
+def get_global_config() -> Dict[str, Any]:
+    """Alias para configuración global"""
+    return ConfigManager().get_config('global_config')
 
 def get_config(config_name: str) -> Dict[str, Any]:
     """Alias genérico para obtener configuración por nombre"""
@@ -396,3 +536,22 @@ def get_ia_params() -> Dict[str, Any]:
 def get_config_value(section: str, key: str, default=None) -> Any:
     """Alias público para acceso a valores de configuración anidados"""
     return ConfigManager().get_config_value(section, key, default)
+
+# ===== NUEVOS ALIAS PARA GLOBAL CONFIG =====
+def get_logging_config() -> Dict[str, Any]:
+    """Alias para configuración de logging"""
+    return ConfigManager().get_logging_config()
+
+def get_stratum_config() -> Dict[str, Any]:
+    """Alias para configuración de stratum"""
+    return ConfigManager().get_stratum_config()
+
+def get_shm_global_config() -> Dict[str, Any]:
+    """Alias para configuración global de memoria compartida"""
+    return ConfigManager().get_shm_global_config()
+
+def initialize_system_config(config_path: str = "config.json") -> Dict[str, Any]:
+    """Alias para inicializar/obtener configuración del sistema"""
+    return ConfigManager().get_config('global_config')  
+
+

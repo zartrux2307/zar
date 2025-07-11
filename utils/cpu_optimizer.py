@@ -1,7 +1,8 @@
 import psutil
 import time
 import os
-from .avx_optimizer import enable_avx_optimizations
+from iazar.utils.avx_optimizer import enable_avx_optimizations
+
 
 class CPUMonitor:
     def __init__(self):
@@ -37,7 +38,7 @@ class CPUMonitor:
         current_time = time.time()
         if current_time - self.last_adjustment < 30:  # Ajustar cada 30s
             return
-            
+
         self.last_adjustment = current_time
         temp = self.get_cpu_temperature()
         usage = self.get_cpu_usage()
@@ -51,7 +52,7 @@ class CPUMonitor:
         elif usage < 50 and self.threads < psutil.cpu_count(logical=False):
             self.threads += 1
             print(f"Low CPU usage. Increasing threads to {self.threads}")
-        
+
         # Aplicar optimizaciones AVX si están disponibles
         if self.enable_avx:
             enable_avx_optimizations()

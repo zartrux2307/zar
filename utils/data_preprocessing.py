@@ -17,11 +17,13 @@ if version.parse(sklearn.__version__) >= version.parse("1.2"):
 else:
     categorical_transformer = OneHotEncoder(handle_unknown='ignore', sparse=False)
 
+
 class NonceDataPreprocessor:
     """
     Preprocesador de datos de nonces para el sistema Zartrux IA Mining.
     Soporta: carga, limpieza, cálculo de features, encoding y pipeline de sklearn.
     """
+
     def __init__(self):
         self.config = get_ia_config()
         self.data_paths = self.config.get('data_paths', {})
@@ -40,7 +42,7 @@ class NonceDataPreprocessor:
             ('training_data', 'nonce_training_data.csv'),
             ('preprocessed', 'nonce_preprocessed.csv')
         ]
-        
+
         for key, default_filename in files_to_try:
             # Primero intenta con la ruta configurada
             config_path = self.data_paths.get(key)
@@ -52,7 +54,7 @@ class NonceDataPreprocessor:
                     continue  # Si se carga, pasamos al siguiente
                 except Exception as e:
                     print(f"[Zartrux][data_preprocessing] Error cargando {key} ({config_path}): {e}")
-            
+
             # Fallback: intenta en el directorio de datos por defecto
             try:
                 fallback_path = os.path.join(self.loader.data_dir, default_filename)
@@ -65,7 +67,7 @@ class NonceDataPreprocessor:
         if dfs:
             df_nonces = pd.concat(dfs, ignore_index=True)
         else:
-            print("[Zartrux][data_preprocessing] ⚠️ No se encontró ningún archivo de nonces, devolviendo DataFrame vacío.")
+            print("[Zartrux][data_preprocessing]No se encontró ningún archivo de nonces, devolviendo DataFrame vacío.")
             df_nonces = pd.DataFrame()
         return df_nonces
 

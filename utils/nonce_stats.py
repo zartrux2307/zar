@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from iazar.utils.feature_utils import calc_nonce_features, guardar_nonces_csv, COLUMNS
+
 
 class NonceStats:
     """
@@ -49,6 +49,8 @@ class NonceStats:
         }
 
 # ---- FIX PARA LEGACY ----
+
+
 def calculate_nonce_stats(values):
     """
     Función global para análisis estadístico de nonces.

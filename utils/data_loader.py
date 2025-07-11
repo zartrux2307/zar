@@ -13,11 +13,12 @@ import datetime
 import logging
 from typing import Union
 from iazar.utils.config_manager import ConfigManager
-from iazar.utils.feature_utils import calc_nonce_features, guardar_nonces_csv, COLUMNS
+from iazar.utils.feature_utils import guardar_nonces_csv, COLUMNS
 
 
 # Columnas estándar globales
 COLUMNS = ["nonce", "entropy", "uniqueness", "zero_density", "pattern_score", "is_valid"]
+
 
 def leer_nonces_csv(path):
     """Lee un CSV de nonces y garantiza estructura/cabecera estándar."""
@@ -32,6 +33,7 @@ def leer_nonces_csv(path):
     df = df.dropna()  # Opcional, borra filas incompletas
     return df
 
+
 def guardar_nonces_csv(df, path):
     """Guarda un DataFrame de nonces con la cabecera y orden estándar."""
     if not set(COLUMNS).issubset(df.columns):
@@ -40,6 +42,7 @@ def guardar_nonces_csv(df, path):
                 df[col] = 0
     df = df[COLUMNS]
     df.to_csv(path, index=False)
+
 
 def leer_nonces_json(path):
     """Lee un JSON de nonces como lista de dicts."""
@@ -56,14 +59,18 @@ def leer_nonces_json(path):
                 item[col] = 0
     return data
 
+
 def guardar_nonces_json(lista, path):
     """Guarda una lista de dicts como JSON de nonces."""
     with open(path, 'w') as f:
         json.dump(lista, f, indent=2)
 
 # Utilidades para blobs binarios
+
+
 def hexstr_to_bytes(blob_hex):
     return bytes.fromhex(blob_hex) if isinstance(blob_hex, str) else blob_hex
+
 
 def bytes_to_hexstr(blob_bytes):
     return blob_bytes.hex() if isinstance(blob_bytes, (bytes, bytearray)) else blob_bytes
@@ -74,9 +81,11 @@ def bytes_to_hexstr(blob_bytes):
 # nonces = leer_nonces_json("ruta.json")
 # guardar_nonces_json(nonces, "nueva_ruta.json")
 
+
 # Configurar logger
 logger = logging.getLogger('NonceLoader')
 logger.setLevel(logging.WARNING)  # Solo mostrar warnings y errores
+
 
 class NonceLoader:
     def __init__(self, config: Union[dict, ConfigManager, str] = None, base_dir: str = None):
@@ -95,7 +104,7 @@ class NonceLoader:
             self.config = ConfigManager().get_config(config)
         else:
             self.config = ConfigManager().get_config('ia_config')
-        
+
         # Manejo robusto de rutas de datos
         self.data_dir = self.config.get('paths', {}).get('data_dir', 'C:/zarturxia/src/iazar/data')
         if not os.path.exists(self.data_dir):
@@ -143,12 +152,12 @@ class NonceLoader:
         if not os.path.exists(full_dir):
             logger.warning(f"Directorio de logs no encontrado: {full_dir}")
             return pd.DataFrame()  # Retornar dataframe vacío
-            
+
         file_paths = glob.glob(os.path.join(full_dir, file_extension))
         if not file_paths:
             logger.warning(f"No se encontraron archivos {file_extension} en {log_dir}")
             return pd.DataFrame()  # Retornar dataframe vacío
-            
+
         dfs = []
         for file_path in file_paths:
             ext = os.path.splitext(file_path)[1].lower()
@@ -164,15 +173,15 @@ class NonceLoader:
                 else:
                     logger.warning(f"Formato de archivo no soportado: {file_path}")
                     continue
-                
+
                 if not df.empty:
                     dfs.append(df)
             except Exception as e:
                 logger.error(f"Error procesando archivo {file_path}: {str(e)}")
-        
+
         if not dfs:
             return pd.DataFrame()  # Retornar dataframe vacío
-            
+
         return pd.concat(dfs, ignore_index=True)
 
     def load_data(self, data_path, data_format='csv', **kwargs):
@@ -188,7 +197,7 @@ class NonceLoader:
         if not os.path.exists(abs_path):
             logger.warning(f"Archivo/directorio no encontrado: {abs_path}")
             return pd.DataFrame()  # Retornar dataframe vacío
-            
+
         if os.path.isfile(abs_path):
             if data_format == 'csv':
                 return self.load_csv(abs_path, **kwargs)
@@ -209,20 +218,24 @@ class NonceLoader:
 
 # === Funciones auxiliares ===
 
+
 def load_nonce_data(filepath: str):
     """Carga nonces desde un archivo de texto plano."""
     if not os.path.exists(filepath):
         logger.warning(f"Archivo de nonces no encontrado: {filepath}")
         return []
-        
+
     with open(filepath, 'r') as f:
         return [line.strip() for line in f if line.strip()]
+
 
 def log_injection(nonce, status="INJECTED"):
     print(f"[{datetime.datetime.now()}] {status}: {nonce}")
 
+
 def log_successful_nonce(nonce, confidence):
     print(f"[{datetime.datetime.now()}] SUCCESS: {nonce} (confidence: {confidence:.2f})")
+
 
 if __name__ == "__main__":
     # Test real: carga desde la carpeta oficial de datos definida en config

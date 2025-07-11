@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
+
 class featureEngineer:
     def __init__(self, df):
         self.df = df.copy()
@@ -22,12 +23,14 @@ class featureEngineer:
         return self.df
 
 # ✅ FUNCIÓN GLOBAL requerida por IA
+
+
 def extract_features(blob: str, nonce: str) -> list[float]:
     """
     Extrae features simples: longitud, entropía, conteo de dígitos, letras hex, etc.
     """
-    entropy = lambda s: -(pd.Series(list(s)).value_counts(normalize=True) * 
-                          np.log2(pd.Series(list(s)).value_counts(normalize=True))).sum()
+    def entropy(s): return -(pd.Series(list(s)).value_counts(normalize=True) *
+                             np.log2(pd.Series(list(s)).value_counts(normalize=True))).sum()
 
     def hex_ratio(s, chars):
         return sum(1 for c in s if c in chars) / len(s) if s else 0

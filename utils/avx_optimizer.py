@@ -1,10 +1,11 @@
 import cpuinfo
 import os
 
+
 def enable_avx_optimizations():
     cpu_info = cpuinfo.get_cpu_info()
     flags = cpu_info['flags']
-    
+
     if 'avx2' in flags:
         os.environ['RANDOMX_FORCE_AVX2'] = '1'
         print("AVX2 optimizations enabled")
