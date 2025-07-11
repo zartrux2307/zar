@@ -1,13 +1,17 @@
 import logging
 import threading
 import time
-from typing import Optional
-
-from iazar.bridge.shared_memory_manager import  SharedMemoryManager
+import os
+import sys
+from iazar.bridge.shared_memory_manager import SharedMemoryManager
 from iazar.core.randomx_handler import RandomXHandler
 from iazar.utils.config_manager import get_ia_config
 
 logger = logging.getLogger("JobSync")
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+os.chdir(PROJECT_DIR)
 
 class JobSync:
     def __init__(self, stratum_adapter):
@@ -17,14 +21,14 @@ class JobSync:
         self.job_lock = threading.Lock()
         self.is_running = True
         self.config = get_ia_config()
-        
+
         # Configuración de memoria compartida
         shm_config = {
             "prefix": self.config.get("shm_name", "zartrux_shared"),
             "create": False  # Conectarse a memoria existente
         }
         self.shm = SharedMemoryManager(**shm_config)
-        
+
         # Estadísticas y configuración
         self.ia_enabled = self.config.get("ia_enabled", True)
         self.ia_timeout = self.config.get("ia_timeout", 1.0)  # segundos
@@ -44,7 +48,7 @@ class JobSync:
         # Enviar trabajo a IA si está habilitada
         nonce = None
         ia_success = False
-        
+
         if self.ia_enabled:
             # Verificar si la IA está lista para recibir trabajo
             if self.shm.is_ready_for_job():
@@ -56,11 +60,11 @@ class JobSync:
                     "seed_hash": job.seed_hash,
                     "height": getattr(job, 'height', 0)
                 }
-                
+
                 # Enviar trabajo a IA
                 self.shm.set_job(job_data)
                 logger.debug(f"📤 Trabajo enviado a IA: {job.id}")
-                
+
                 # Esperar solución con timeout configurable
                 start_time = time.time()
                 while time.time() - start_time < self.ia_timeout:
@@ -73,19 +77,19 @@ class JobSync:
                             logger.info(f"✅ Nonce IA válido recibido: 0x{nonce:08x}")
                             break
                     time.sleep(0.01)  # Polling de 10ms
-                
+
                 # Resetear estado si se usó solución
                 if ia_success:
                     self.shm.reset()
-        
+
         self.ia_total_attempts += 1
-        
+
         # Fallback a minería tradicional si IA no proporcionó solución
         if not ia_success:
             if self.ia_enabled:
                 logger.warning("⏳ Timeout IA, usando minería tradicional")
             nonce = self.miner.generate_random_nonce()
-        
+
         # Procesar minería
         try:
             result_hash = self.miner.mine(job, nonce)

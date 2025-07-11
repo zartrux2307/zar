@@ -1,10 +1,16 @@
-import os
 import joblib
 import numpy as np
 from pathlib import Path
 from iazar.utils.feature_engineer import extract_features
 from iazar.utils.config_manager import get_ia_config
+import os
+import sys
 
+# Establecer el directorio del proyecto
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+os.chdir(PROJECT_DIR)
 
 class Config:
     MODEL_PATH = Path("iazar/models/rf_nonce_model.joblib")

@@ -1,323 +1,296 @@
 import os
-import json
+import sys
+import time
 import logging
-import logging.handlers
+import hashlib
+import socket
+import ssl
+import json
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Any
-import hashlib
-import time
-import struct
-import numpy as np
-import pandas as pd
+from filelock import FileLock
+from iazar.utils.shared_memory_manager import SharedMemoryManager
+from iazar.utils.config_manager import ConfigManager
+from logging.handlers import RotatingFileHandler
+from monero.hash import cn_fast_hash  # Importar desde monero-python
 
-# Importar el gestor de memoria compartida
-from iazar.bridge.shared_memory_manager import SharedMemoryManager
-from iazar.utils.feature_utils import COLUMNS
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+os.chdir(PROJECT_DIR)
 
-# --- CONFIGURACIÓN MEJORADA ---
-DATA_DIR = Path("src/iazar/data")
-INJECTION_LOG = DATA_DIR / "inyectados.log"
-NONCES_CSV = DATA_DIR / "nonces_exitosos.csv"
-BACKUP_DIR = DATA_DIR / "backups"
+# Configuración centralizada de logging
+logger = logging.getLogger('nonce_injector')
+logger.setLevel(logging.DEBUG)
 
-# Configuración de memoria compartida
-SHM_NAME = "zartrux_shared"
-SEGMENT_NAME = "ia_candidates"
-POLLING_INTERVAL = 0.5  # Segundos
-TIMEOUT = 30  # Segundos para esperar datos
+# Formateador
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-# --- LOGGING PROFESIONAL ---
 def setup_logging():
-    """Configura logging avanzado con rotación y niveles diferenciados"""
-    logger = logging.getLogger("NonceInjector")
-    logger.setLevel(logging.DEBUG)
-    
-    # Formato estándar
-    log_format = logging.Formatter(
-        '[%(asctime)s][%(levelname)8s][%(module)15s:%(lineno)3d] %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    
-    # Handler para archivo (con rotación)
-    file_handler = logging.handlers.RotatingFileHandler(
-        str(INJECTION_LOG),
-        maxBytes=10*1024*1024,  # 10 MB
-        backupCount=5,
-        encoding='utf-8'
-    )
-    file_handler.setFormatter(log_format)
-    file_handler.setLevel(logging.INFO)
-    
     # Handler para consola
     console_handler = logging.StreamHandler()
-    console_handler.setFormatter(log_format)
-    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
     
-    logger.addHandler(file_handler)
+    # Handler para archivo con rotación
+    logs_dir = Path("logs")
+    logs_dir.mkdir(exist_ok=True)
+    file_handler = RotatingFileHandler(
+        logs_dir / "nonce_injector.log",
+        maxBytes=5*1024*1024,  # 5 MB
+        backupCount=3
+    )
+    file_handler.setFormatter(formatter)
+    
     logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
     return logger
 
 logger = setup_logging()
 
-def ensure_directories():
-    """Crea los directorios necesarios si no existen"""
-    for directory in [DATA_DIR, BACKUP_DIR]:
-        directory.mkdir(parents=True, exist_ok=True)
-    logger.debug("Directorios de datos verificados")
-
-def create_backup(file_path: Path):
-    """Crea un backup con timestamp del archivo"""
-    if not file_path.exists():
-        return
-        
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_name = f"{file_path.stem}_{timestamp}{file_path.suffix}"
-    backup_path = BACKUP_DIR / backup_name
-    
-    try:
-        with open(file_path, 'rb') as src, open(backup_path, 'wb') as dst:
-            dst.write(src.read())
-        logger.info(f"Backup creado: {backup_path}")
-    except Exception as e:
-        logger.error(f"Error al crear backup: {e}")
-
-def validate_nonce_dict(nonce_dict: Dict) -> bool:
-    """Valida exhaustivamente un diccionario de nonce"""
-    # Verificar presencia de todas las columnas requeridas
-    if not all(col in nonce_dict for col in COLUMNS):
-        missing = [col for col in COLUMNS if col not in nonce_dict]
-        logger.warning(f"Campos faltantes: {missing}")
-        return False
-    
-    # Validar tipo de nonce
-    if not isinstance(nonce_dict.get('nonce'), int):
-        logger.warning("Nonce debe ser entero")
-        return False
-    
-    # Validar rango de nonce (0 a 2^32-1)
-    nonce = nonce_dict['nonce']
-    if nonce < 0 or nonce > 4294967295:
-        logger.warning(f"Nonce fuera de rango: {nonce}")
-        return False
-    
-    # Validación adicional de tipos
-    for col, value in nonce_dict.items():
-        if col.startswith('feature_') and not isinstance(value, (int, float)):
-            logger.warning(f"Tipo inválido para {col}: {type(value)}")
-            return False
-    
-    return True
-
-def calculate_dict_hash(nonce_dict: Dict) -> str:
-    """Calcula hash MD5 de un diccionario para detección de cambios"""
-    return hashlib.md5(json.dumps(nonce_dict, sort_keys=True).encode('utf-8')).hexdigest()
-
-def guardar_nonces_csv(df: pd.DataFrame, csv_path: Path):
-    """Guarda un DataFrame en un archivo CSV con configuraciones óptimas"""
-    try:
-        # Guardar en archivo temporal primero
-        temp_path = csv_path.with_suffix('.tmp')
-        df.to_csv(temp_path, index=False)
-        
-        # Reemplazar el archivo original de forma atómica
-        os.replace(temp_path, csv_path)
-        logger.info(f"Datos guardados en {csv_path}")
-    except Exception as e:
-        logger.error(f"Error al guardar CSV: {e}")
-        # Intentar eliminar el temporal si existe
-        if temp_path.exists():
-            try:
-                temp_path.unlink()
-            except:
-                pass
-
-def get_nonces_from_shm(shm_manager: SharedMemoryManager) -> List[Dict]:
-    """Obtiene nonces desde la memoria compartida"""
-    try:
-        # Verificar si hay datos disponibles
-        if not shm_manager.segment_exists(SEGMENT_NAME):
-            logger.debug("Segmento de candidatos IA no encontrado")
-            return []
-        
-        # Leer datos binarios
-        data = shm_manager.read_segment(SEGMENT_NAME)
-        if not data:
-            logger.debug("No hay datos en el segmento")
-            return []
-        
-        # Convertir datos binarios a lista de diccionarios
-        nonces = []
-        pos = 0
-        count = struct.unpack('I', data[pos:pos+4])[0]
-        pos += 4
-        
-        for _ in range(count):
-            # Leer tamaño del nonce
-            nonce_size = struct.unpack('I', data[pos:pos+4])[0]
-            pos += 4
-            
-            # Leer datos del nonce
-            nonce_data = data[pos:pos+nonce_size]
-            pos += nonce_size
-            
-            # Decodificar JSON
-            try:
-                nonce_dict = json.loads(nonce_data.decode('utf-8'))
-                nonces.append(nonce_dict)
-            except json.JSONDecodeError:
-                logger.error("Error decodificando nonce JSON")
-        
-        logger.info(f"Obtenidos {len(nonces)} candidatos desde SHM")
-        return nonces
-    
-    except Exception as e:
-        logger.error(f"Error leyendo SHM: {str(e)}")
-        return []
-
-def clear_shm_segment(shm_manager: SharedMemoryManager):
-    """Limpia el segmento de memoria compartida"""
-    try:
-        shm_manager.write_segment(SEGMENT_NAME, b'')
-        logger.info("Segmento SHM limpiado")
-    except Exception as e:
-        logger.error(f"Error limpiando SHM: {str(e)}")
-
-def inject_nonces(nonces: List[Dict], csv_path: Path):
-    """Proceso principal de inyección con optimización de memoria"""
-    if not nonces:
-        logger.warning("No hay nonces para inyectar.")
-        return
-    
-    # Filtrar y validar nonces
-    valid_nonces = []
-    seen_hashes = set()
-    
-    for nonce_dict in nonces:
-        if not validate_nonce_dict(nonce_dict):
-            continue
-            
-        # Detectar duplicados usando hash del contenido
-        nonce_hash = calculate_dict_hash(nonce_dict)
-        if nonce_hash in seen_hashes:
-            logger.debug(f"Duplicado detectado: nonce {nonce_dict['nonce']}")
-            continue
-            
-        seen_hashes.add(nonce_hash)
-        valid_nonces.append(nonce_dict)
-    
-    if not valid_nonces:
-        logger.error("Ningún nonce válido después de la validación")
-        return
-    
-    logger.info(f"{len(valid_nonces)} nonces válidos para inyectar")
-
-    try:
-        # Cargar datos existentes con chunks si el archivo es grande
-        existing_df = pd.DataFrame()
-        if csv_path.exists():
-            # Estimación de tamaño para uso de chunks
-            file_size = csv_path.stat().st_size
-            use_chunks = file_size > 10 * 1024 * 1024  # >10MB
-            
-            if use_chunks:
-                logger.info("Usando carga por chunks para archivo grande")
-                chunks = []
-                for chunk in pd.read_csv(csv_path, chunksize=10000):
-                    chunks.append(chunk)
-                existing_df = pd.concat(chunks, ignore_index=True)
-            else:
-                existing_df = pd.read_csv(csv_path)
-    
-        # Combinar con nuevos datos
-        new_df = pd.DataFrame(valid_nonces, columns=COLUMNS)
-        combined_df = pd.concat([existing_df, new_df], ignore_index=True)
-        
-        # Eliminar duplicados manteniendo la última aparición
-        pre_dedup_count = len(combined_df)
-        combined_df.drop_duplicates(subset=["nonce"], keep='last', inplace=True)
-        dup_count = pre_dedup_count - len(combined_df)
-        
-        if dup_count > 0:
-            logger.info(f"Eliminados {dup_count} duplicados")
-        
-        # Guardar el archivo CSV
-        guardar_nonces_csv(combined_df, csv_path)
-        logger.info(f"CSV actualizado con éxito. Total registros: {len(combined_df)}")
-        
-        # Registrar en log individual
-        for nonce in valid_nonces:
-            logger.info(f"[NONCE_INJECTED] {nonce}")
-        
-    except Exception as e:
-        logger.error(f"Error crítico durante la inyección: {e}")
-        raise
-
-def wait_for_ia_candidates(shm_manager: SharedMemoryManager):
-    """Espera activamente por nuevos candidatos de IA"""
-    logger.info("Esperando candidatos desde IA...")
-    start_time = time.time()
-    
-    while time.time() - start_time < TIMEOUT:
-        # Verificar si hay datos disponibles
-        if shm_manager.segment_exists(SEGMENT_NAME) and shm_manager.get_segment_size(SEGMENT_NAME) > 4:
-            data = shm_manager.read_segment(SEGMENT_NAME)
-            if data and len(data) > 4:
-                count = struct.unpack('I', data[:4])[0]
-                if count > 0:
-                    logger.info(f"Detectados {count} candidatos IA")
-                    return True
-        
-        time.sleep(POLLING_INTERVAL)
-    
-    logger.warning("Timeout esperando candidatos IA")
-    return False
-
-def main():
-    ensure_directories()
-    logger.info("=== Inicio de inyección de nonces ===")
-    
-    # Crear backup preventivo
-    if NONCES_CSV.exists():
-        create_backup(NONCES_CSV)
-    
-    # Conectar a memoria compartida
-    try:
-        shm_manager = SharedMemoryManager(SHM_NAME)
-        shm_manager.connect()
-        logger.info(f"Conectado a memoria compartida: {SHM_NAME}")
-        
-        # Esperar por nuevos candidatos
-        if wait_for_ia_candidates(shm_manager):
-            # Obtener nonces desde SHM
-            nonces = get_nonces_from_shm(shm_manager)
-            
-            if nonces:
-                # Procesar nonces
-                inject_nonces(nonces, NONCES_CSV)
-                
-                # Limpiar segmento SHM
-                clear_shm_segment(shm_manager)
-            else:
-                logger.warning("No se encontraron nonces válidos para inyectar")
-        else:
-            logger.warning("No se recibieron candidatos dentro del tiempo de espera")
-            
-    except Exception as e:
-        logger.critical(f"Error fatal en comunicación SHM: {e}")
-    finally:
+class NonceInjector:
+    def __init__(self):
         try:
-            shm_manager.disconnect()
-        except:
-            pass
+            self.config = ConfigManager.get_config()
+            self.shm_config = self.config['shm']
+            self.data_config = self.config['data']
+            self.pool_config = self.config.get('pool', {})
+            
+            # Configuración de memoria compartida
+            self.shm = SharedMemoryManager(
+                segment_name=self.shm_config['output_segment'],
+                segment_size=8  # Tamaño para un entero de 64 bits
+            )
+            
+            # Configuración de rutas de datos
+            self.data_dir = Path(self.data_config['base_path'])
+            self.nonces_csv = self.data_dir / self.data_config['successful_nonces_file']
+            self.backup_dir = self.data_dir / "backups"
+            
+            # Crear directorios si no existen
+            self.data_dir.mkdir(parents=True, exist_ok=True)
+            self.backup_dir.mkdir(exist_ok=True)
+            
+            logger.info("Inyector de nonces inicializado correctamente")
+            
+        except Exception as e:
+            logger.critical(f"Error de inicialización: {str(e)}")
+            raise
+
+    def create_backup(self):
+        """Crea un backup del archivo CSV existente"""
+        if not self.nonces_csv.exists():
+            return
+            
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_name = f"{self.nonces_csv.stem}_{timestamp}{self.nonces_csv.suffix}"
+        backup_path = self.backup_dir / backup_name
+        
+        try:
+            with open(self.nonces_csv, 'rb') as src, open(backup_path, 'wb') as dst:
+                dst.write(src.read())
+            logger.info(f"Backup creado: {backup_path}")
+            return True
+        except Exception as e:
+            logger.error(f"Error creando backup: {str(e)}")
+            return False
+
+    def inject_nonce(self, nonce: int):
+        """Inyecta un nonce al pool Hashvault usando TLS"""
+        try:
+            # Validación básica del nonce
+            if not (0 <= nonce <= 0xFFFFFFFF):
+                logger.error(f"Nonce inválido: {nonce} (fuera de rango)")
+                return False
+            
+            # Configuración específica para Hashvault
+            host_port = self.pool_config.get('url', 'pool.hashvault.pro:443')
+            host, port = host_port.split(':')
+            port = int(port)
+            user = self.pool_config.get('user', '')
+            password = self.pool_config.get('pass', 'x')
+            tls_fingerprint = self.pool_config.get('tls-fingerprint', '')
+            
+            # Crear contexto SSL con verificación de fingerprint
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            
+            # Configurar socket TLS
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                # Configurar timeout
+                sock.settimeout(15)
+                
+                # Envolver en contexto TLS
+                with context.wrap_socket(sock, server_hostname=host) as tls_sock:
+                    tls_sock.connect((host, port))
+                    
+                    # Autenticación
+                    auth_msg = json.dumps({
+                        "method": "login",
+                        "params": {
+                            "login": user,
+                            "pass": password,
+                            "agent": "IAzar/1.0"
+                        },
+                        "id": 1
+                    }) + "\n"
+                    
+                    tls_sock.sendall(auth_msg.encode())
+                    auth_response = tls_sock.recv(4096).decode()
+                    
+                    if '"error"' in auth_response:
+                        logger.error(f"Error de autenticación: {auth_response}")
+                        return False
+                    
+                    # Obtener job actual
+                    try:
+                        auth_json = json.loads(auth_response)
+                        job_data = auth_json['result']['job']
+                    except (KeyError, json.JSONDecodeError) as e:
+                        logger.error(f"Respuesta de trabajo inválida del pool: {e}")
+                        return False
+                    
+                    job_id = job_data['id']
+                    blob = job_data['blob']
+                    target = job_data['target']
+                    
+                    # Preparar mensaje de submit
+                    submit_msg = json.dumps({
+                        "method": "submit",
+                        "params": {
+                            "id": job_id,
+                            "job_id": job_id,
+                            "nonce": f"{nonce:08x}",  # 8 dígitos hexadecimales
+                            "result": self.calculate_result(blob, nonce)
+                        },
+                        "id": 2
+                    }) + "\n"
+                    
+                    # Enviar nonce
+                    tls_sock.sendall(submit_msg.encode())
+                    response = tls_sock.recv(4096).decode()
+                    
+                    if '"result": true' in response:
+                        logger.info(f"✅ Nonce aceptado: {nonce}")
+                        self.log_successful_nonce(nonce)
+                        return True
+                    elif '"error"' in response:
+                        error_msg = json.loads(response).get('error', {}).get('message', '')
+                        logger.warning(f"❌ Error del pool: {error_msg}")
+                        return False
+                    else:
+                        logger.warning(f"❌ Nonce rechazado: {response}")
+                        return False
+                    
+        except socket.timeout:
+            logger.error("Timeout al conectar con el pool")
+            return False
+        except ConnectionRefusedError:
+            logger.error("Conexión rechazada por el pool")
+            return False
+        except Exception as e:
+            logger.error(f"Error inyectando nonce: {str(e)}", exc_info=True)
+            return False
+
+    def calculate_result(self, blob: str, nonce: int) -> str:
+        """Calcula el resultado del trabajo para Hashvault"""
+        try:
+            # Normalizar blob (156 caracteres = 78 bytes)
+            if len(blob) > 156:
+                blob = blob[:156]
+            elif len(blob) < 156:
+                blob = blob.ljust(156, '0')
+            
+            # Insertar nonce en la posición correcta (bytes 39-43)
+            nonce_hex = f"{nonce:08x}"
+            blob_with_nonce = blob[:78] + nonce_hex + blob[86:]
+            
+            # Convertir a bytes
+            blob_bytes = bytes.fromhex(blob_with_nonce)
+            
+            # Calcular hash CryptoNight usando monero-python
+            return cn_fast_hash(blob_bytes).hex()
+        except Exception as e:
+            logger.error(f"Error calculando resultado: {str(e)}")
+            raise
+
+    def log_successful_nonce(self, nonce: int):
+        """Registra nonces exitosos en CSV con manejo seguro"""
+        try:
+            # Bloquear archivo durante escritura
+            lock_path = self.nonces_csv.with_suffix('.lock')
+            with FileLock(lock_path):
+                # Leer datos existentes
+                existing = []
+                if self.nonces_csv.exists():
+                    with open(self.nonces_csv, 'r') as f:
+                        existing = f.read().splitlines()
+                
+                # Añadir nuevo nonce con timestamp
+                timestamp = datetime.now().isoformat()
+                new_entry = f"{timestamp},{nonce}"
+                
+                # Escribir todos los datos
+                with open(self.nonces_csv, 'a') as f:
+                    if not existing:
+                        f.write("timestamp,nonce\n")
+                    f.write(f"{new_entry}\n")
+                
+                logger.debug(f"Nonce registrado: {nonce}")
+                
+        except Exception as e:
+            logger.error(f"Error registrando nonce: {str(e)}")
+
+    def run(self):
+        """Bucle principal de inyección de nonces"""
+        logger.info("Iniciando servicio de inyección de nonces...")
+        last_backup_time = time.time()
+        
+        try:
+            while True:
+                try:
+                    # Leer nonce desde memoria compartida
+                    nonce = self.shm.read_data(timeout=1.0)
+                    
+                    if nonce is None:
+                        # Crear backup periódico cada hora
+                        if time.time() - last_backup_time > 3600:
+                            if self.nonces_csv.exists():
+                                if self.create_backup():
+                                    last_backup_time = time.time()
+                        continue
+                    
+                    # Intentar inyectar el nonce
+                    self.inject_nonce(nonce)
+                    
+                except KeyboardInterrupt:
+                    logger.info("Interrupción recibida, terminando...")
+                    break
+                except Exception as e:
+                    logger.error(f"Error en bucle principal: {str(e)}")
+                    time.sleep(1)
+                    
+        finally:
+            logger.info("Servicio de inyección detenido")
 
 if __name__ == "__main__":
-    start_time = time.time()
-    
     try:
-        main()
+        # Bloquear ejecución para evitar múltiples instancias
+        lock = FileLock("/tmp/nonce_injector.lock", timeout=1)
+        
+        with lock:
+            logger.info("🔒 Adquirido lock de ejecución única")
+            injector = NonceInjector()
+            
+            # Crear backup inicial si existe el archivo
+            if injector.nonces_csv.exists():
+                injector.create_backup()
+                
+            injector.run()
+            
+    except TimeoutError:
+        logger.error("Ya hay una instancia en ejecución. Saliendo...")
     except Exception as e:
-        logger.exception("Error no manejado en el proceso principal")
+        logger.critical(f"Error no manejado: {str(e)}", exc_info=True)
     finally:
-        duration = time.time() - start_time
-        logger.info(f"Proceso completado en {duration:.2f} segundos")
+        logger.info("Proceso terminado")

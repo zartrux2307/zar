@@ -1,4 +1,28 @@
 {
+    "shm": {
+        "prefix": "zartrux_shared",
+        "job_segment": "job",
+        "solution_segment": "solution",
+        "output_segment": "output",
+        "segment_size": 1024
+    },
+    "data": {
+        "base_path": "data",
+        "successful_nonces_file": "successful_nonces.csv",
+        "training_dir": "training_data"
+    },
+    "pool": {
+        "url": "pool.hashvault.pro:443",
+        "user": "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc",
+        "pass": "x",
+        "tls-fingerprint": ""
+    },
+    "proxy": {
+        "miner_port": 3333,
+        "pool_host": "pool.hashvault.pro",
+        "pool_port": 443,
+        "wallet_address": "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc"
+    },
     "shared_memory": {
         "enabled": true,
         "name": "zartrux_shared",

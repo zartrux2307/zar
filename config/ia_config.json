@@ -1,103 +1,19 @@
 {
-  "version": "1.4.0",
-  "system": {
-    "name": "IA-Zar-Proxy",
-    "log_level": "INFO",
-    "max_threads": 8,
-    "use_gpu": false,
-    "gpu_id": 0,
-    "logging_format": "[%(asctime)s] %(levelname)s - %(module)s:%(lineno)d - %(message)s"
-  },
-  "paths": {
-    "model_dir": "src/iazar/models/",
-    "log_dir": "src/iazar/logs/",
-    "data_dir": "src/iazar/data/",
-    "cache_dir": "src/iazar/cache/",
-    "training_dir": "src/iazar/training/",
-    "vmem_dir": "src/iazar/vmem/"
-  },
-  "entropy_analysis": {
-    "enabled": true,
-    "min_entropy": 3.5,
-    "min_uniqueness": 0.8,
-    "min_zero_density": 0.05,
-    "use_entropy_filter": true,
-    "log_dropped_nonces": true,
-    "entropy_window": 100
-  },
-  "injection_policy": {
-    "mode": "filtered",
-    "max_nonces": 512,
-    "injection_interval": 2.0,
-    "fallback_mode": "raw",
-    "quality_threshold": 0.85
-  },
-  "model": {
-    "type": "joblib",
-    "path": "src/iazar/models/rf_nonce_model.joblib",
-    "input_features": ["entropy", "uniqueness", "zero_density", "pattern_score"],
-    "feature_scaling": true,
-    "retrain_interval": 86400
-  },
-  "monitoring": {
-    "enable_console_monitor": true,
-    "enable_mlflow": false,
-    "log_to_file": true,
-    "performance_metrics_interval": 60,
-    "mlflow_config": {
-      "tracking_uri": "http://localhost:5000",
-      "experiment_name": "IA-Zar"
-    }
-  },
-  "proxy": {
-    "host": "127.0.0.1",
-    "port": 3333,
-    "zmq_enabled": true,
-    "zmq_port": 5555,
-    "job_poll_interval": 0.05,
-    "response_timeout": 3.0
-  },
-  "vmem": {
-    "enabled": true,
-    "vmem_file": "src/iazar/vmem/nonces.bin",
-    "max_blocks": 10000,
-    "rotation_enabled": true,
-    "rotation_strategy": "lfu"
-  },
   "data_paths": {
     "successful_nonces": "src/iazar/data/nonces_exitosos.csv",
     "nonce_hashes": "src/iazar/data/nonce_hashes.bin",
     "injected_nonces": "src/iazar/logs/injected.csv",
-    "training_data": "src/iazar/data/nonce_training_data.csv",
-    "feature_stats": "src/iazar/data/feature_statistics.json"
+    "nonce_training_data_path": "src/iazar/data/nonce_training_data.csv"
   },
-  "critical_processes": [
-    "core/mining_core.py",
-    "bridge/shared_memory_manager.py",
-    "analytics/entropy_tools.py"
-  ]
-}
   "processing_params": {
     "temporal_window": 60,
+    "entropy_window": 100,
     "candidate_count": 10000,
     "top_candidates": 300,
-    "polling_interval": 0.01,
-    "batch_size": 512,
-    "preprocessing_threads": 2
+    "polling_interval": 0.01
   },
   "shared_memory": {
     "name": "zartrux_shared",
-    "enabled": true,
-    "sync_timeout": 2.0
-  },
-  "training": {
-    "enabled": true,
-    "interval_hours": 24,
-    "max_samples": 1000000,
-    "validation_split": 0.2,
-    "feature_engineering": {
-      "polynomial_features": true,
-      "interaction_terms": true
-    }
+    "enabled": true
   }
 }

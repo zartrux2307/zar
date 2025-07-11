@@ -1,0 +1,14 @@
+{
+  "shm": {
+    "name": "zar_shared_mem",
+    "size": 4096
+  },
+  "stratum": {
+    "pool_host": "pool.hashvault.pro",
+    "pool_port": 443
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  }
+}

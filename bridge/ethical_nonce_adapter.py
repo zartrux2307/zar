@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+
 import pandas as pd
 import logging
 import hashlib
@@ -10,15 +12,19 @@ from functools import lru_cache
 from logging.handlers import RotatingFileHandler
 
 from iazar.evaluation.entropy_analysis import EntropyAnalysis
-from iazar.evaluation import NonceQualityFilter
+from iazar.evaluation.nonce_quality_filter import NonceQualityFilter
+
 from iazar.evaluation.correlation_analysis import CorrelationAnalyzer
 from iazar.utils.hex_validator import HexNonceValidator
-from iazar.utils.config_manager import ConfigManager
-from iazar.utils.feature_utils import calc_nonce_features, guardar_nonces_csv, COLUMNS
-
+from iazar.utils.feature_utils import guardar_nonces_csv, COLUMNS
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+os.chdir(PROJECT_DIR)
 
 # Columnas estándar globales
 COLUMNS = ["nonce", "entropy", "uniqueness", "zero_density", "pattern_score", "is_valid"]
+
 
 def leer_nonces_csv(path):
     """Lee un CSV de nonces y garantiza estructura/cabecera estándar."""
@@ -33,6 +39,7 @@ def leer_nonces_csv(path):
     df = df.dropna()  # Opcional, borra filas incompletas
     return df
 
+
 def guardar_nonces_csv(df, path):
     """Guarda un DataFrame de nonces con la cabecera y orden estándar."""
     if not set(COLUMNS).issubset(df.columns):
@@ -41,6 +48,7 @@ def guardar_nonces_csv(df, path):
                 df[col] = 0
     df = df[COLUMNS]
     df.to_csv(path, index=False)
+
 
 def leer_nonces_json(path):
     """Lee un JSON de nonces como lista de dicts."""
@@ -57,14 +65,18 @@ def leer_nonces_json(path):
                 item[col] = 0
     return data
 
+
 def guardar_nonces_json(lista, path):
     """Guarda una lista de dicts como JSON de nonces."""
     with open(path, 'w') as f:
         json.dump(lista, f, indent=2)
 
 # Utilidades para blobs binarios
+
+
 def hexstr_to_bytes(blob_hex):
     return bytes.fromhex(blob_hex) if isinstance(blob_hex, str) else blob_hex
+
 
 def bytes_to_hexstr(blob_bytes):
     return blob_bytes.hex() if isinstance(blob_bytes, (bytes, bytearray)) else blob_bytes
@@ -76,6 +88,8 @@ def bytes_to_hexstr(blob_bytes):
 # guardar_nonces_json(nonces, "nueva_ruta.json")
 
 # Configuración
+
+
 @dataclass
 class EthicsConfig:
     INPUT_PATH: Path = Path("iazar/bridge/nonces_ready.json")
@@ -87,6 +101,7 @@ class EthicsConfig:
     LOG_BACKUP_COUNT: int = 5
     NONCE_MIN_LENGTH: int = 8
     NONCE_MAX_LENGTH: int = 64
+
 
 # Configuración de logging estructurado
 logging.basicConfig(
@@ -104,18 +119,20 @@ logging.basicConfig(
 )
 logger = logging.getLogger("EthicsProcessor")
 
+
 class EthicsProcessingError(Exception):
     """Base exception for ethics processing errors"""
-    pass
+
 
 class InvalidNonceFormatError(EthicsProcessingError):
     """Raised when a nonce has invalid format"""
-    pass
+
 
 class EthicalNonceAdapter:
     """
     Procesador/adaptador principal para filtrar nonces bajo criterios éticos.
     """
+
     def __init__(self, config: EthicsConfig = EthicsConfig()):
         self.config = config
         self.validator = HexNonceValidator(
@@ -150,7 +167,7 @@ class EthicalNonceAdapter:
     def _calculate_metrics(self, nonce: str) -> Dict[str, float]:
         """Calcula métricas éticas clave para un nonce"""
         try:
-            byte_values = [int(nonce[i:i+2], 16) for i in range(0, len(nonce), 2)]
+            byte_values = [int(nonce[i:i + 2], 16) for i in range(0, len(nonce), 2)]
             return {
                 "entropy": EntropyAnalysis.shannon_entropy(nonce),
                 "correlation": CorrelationAnalyzer.autocorrelacion(byte_values),
@@ -236,6 +253,7 @@ class EthicalNonceAdapter:
         except Exception as e:
             logger.critical(f"Error no controlado: {str(e)}", exc_info=True)
             raise EthicsProcessingError("Fallo crítico en pipeline") from e
+
 
 # Exportación explícita para import *
 __all__ = ["EthicalNonceAdapter"]
