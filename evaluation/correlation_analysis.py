@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import os
+import sys
+
 
 try:
     import seaborn as sns
@@ -10,10 +12,18 @@ except ImportError:
     HAS_PLOTTING = False
 
 import json
-from iazar.utils.feature_utils import calc_nonce_features, guardar_nonces_csv, COLUMNS
+from iazar.utils.feature_utils import guardar_nonces_csv, COLUMNS
+import os
 
+
+# Establecer el directorio del proyecto
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+os.chdir(PROJECT_DIR)
 # Columnas estándar globales
 COLUMNS = ["nonce", "entropy", "uniqueness", "zero_density", "pattern_score", "is_valid"]
+
 
 def leer_nonces_csv(path):
     """Lee un CSV de nonces y garantiza estructura/cabecera estándar."""
@@ -28,6 +38,7 @@ def leer_nonces_csv(path):
     df = df.dropna()  # Opcional, borra filas incompletas
     return df
 
+
 def guardar_nonces_csv(df, path):
     """Guarda un DataFrame de nonces con la cabecera y orden estándar."""
     if not set(COLUMNS).issubset(df.columns):
@@ -36,6 +47,7 @@ def guardar_nonces_csv(df, path):
                 df[col] = 0
     df = df[COLUMNS]
     df.to_csv(path, index=False)
+
 
 def leer_nonces_json(path):
     """Lee un JSON de nonces como lista de dicts."""
@@ -52,14 +64,18 @@ def leer_nonces_json(path):
                 item[col] = 0
     return data
 
+
 def guardar_nonces_json(lista, path):
     """Guarda una lista de dicts como JSON de nonces."""
     with open(path, 'w') as f:
         json.dump(lista, f, indent=2)
 
 # Utilidades para blobs binarios
+
+
 def hexstr_to_bytes(blob_hex):
     return bytes.fromhex(blob_hex) if isinstance(blob_hex, str) else blob_hex
+
 
 def bytes_to_hexstr(blob_bytes):
     return blob_bytes.hex() if isinstance(blob_bytes, (bytes, bytearray)) else blob_bytes
@@ -70,6 +86,7 @@ def bytes_to_hexstr(blob_bytes):
 # nonces = leer_nonces_json("ruta.json")
 # guardar_nonces_json(nonces, "nueva_ruta.json")
 
+
 class CorrelationAnalyzer:
     """
     Analizador avanzado de correlaciones para datos mineros y de IA.
@@ -78,7 +95,11 @@ class CorrelationAnalyzer:
     facilitando el acceso a otros módulos del sistema.
     """
 
-    def __init__(self, df: pd.DataFrame, log_dir: str = '../../logs/reports/', filename: str = 'correlation_matrix.csv'):
+    def __init__(
+            self,
+            df: pd.DataFrame,
+            log_dir: str = '../../logs/reports/',
+            filename: str = 'correlation_matrix.csv'):
         self.df = df
         self.corr_matrix = None
         self.method = None
