@@ -1,80 +1,97 @@
 import os
 import pandas as pd
-import numpy as np
-import json
-from iazar.utils.feature_utils import calc_nonce_features, guardar_nonces_csv, COLUMNS
+import logging
+from datetime import datetime
+from iazar.utils.config_manager import ConfigManager
+from iazar.utils.logging_config import setup_logging
 
-# Columnas estándar globales
-COLUMNS = ["nonce", "entropy", "uniqueness", "zero_density", "pattern_score", "is_valid"]
+# Configuración inicial
+setup_logging()
+logger = logging.getLogger(__name__)
+config_manager = ConfigManager()
 
-def leer_nonces_csv(path):
-    """Lee un CSV de nonces y garantiza estructura/cabecera estándar."""
-    if not os.path.exists(path):
-        pd.DataFrame(columns=COLUMNS).to_csv(path, index=False)
-        return pd.DataFrame(columns=COLUMNS)
-    df = pd.read_csv(path)
-    missing = [col for col in COLUMNS if col not in df.columns]
-    for col in missing:
-        df[col] = 0
-    df = df[COLUMNS]
-    df = df.dropna()  # Opcional, borra filas incompletas
-    return df
-
-def guardar_nonces_csv(df, path):
-    """Guarda un DataFrame de nonces con la cabecera y orden estándar."""
-    if not set(COLUMNS).issubset(df.columns):
-        for col in COLUMNS:
-            if col not in df.columns:
-                df[col] = 0
-    df = df[COLUMNS]
-    df.to_csv(path, index=False)
-
-def leer_nonces_json(path):
-    """Lee un JSON de nonces como lista de dicts."""
-    if not os.path.exists(path):
-        with open(path, 'w') as f:
-            json.dump([], f)
+def generate_core_datasets():
+    """
+    Genera datasets esenciales si no existen o están vacíos
+    """
+    try:
+        # Obtener rutas de configuración
+        data_dir = config_manager.get_path('data_dir')
+        training_dir = config_manager.get_path('training_data_dir')
+        os.makedirs(training_dir, exist_ok=True)
+        
+        # Archivos esenciales con sus estructuras
+        REQUIRED_FILES = {
+            'winner_blocks.csv': pd.DataFrame(columns=[
+                'block_hash', 'nonce', 'timestamp', 'difficulty', 'miner_address'
+            ]),
+            'nonce_training_data.csv': pd.DataFrame(columns=[
+                'nonce_hex', 'entropy', 'zero_density', 'pattern_score', 
+                'timestamp', 'block_height', 'is_valid'
+            ]),
+            'nonces_exitosos.csv': pd.DataFrame(columns=[
+                'nonce_hex', 'timestamp', 'block_hash', 'miner_id', 'difficulty'
+            ])
+        }
+        
+        generated_files = []
+        
+        for file_name, df_template in REQUIRED_FILES.items():
+            file_path = os.path.join(training_dir, file_name)
+            
+            # Crear archivo si no existe o está vacío
+            if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
+                # Añadir datos de ejemplo para evitar DataFrames vacíos
+                sample_data = df_template.copy()
+                if not sample_data.empty:
+                    n_columns = len(sample_data.columns)
+                    sample_data.loc[0] = ['0'*64] + [0.0] * (n_columns - 1)
+                
+                sample_data.to_csv(file_path, index=False)
+                logger.info(f"✅ Archivo {file_name} generado: {file_path}")
+                generated_files.append(file_path)
+            else:
+                logger.info(f"ℹ️ Archivo ya existe: {file_path}")
+        
+        return generated_files
+    
+    except Exception as e:
+        logger.error(f"❌ Error generando datasets: {str(e)}", exc_info=True)
         return []
-    with open(path, 'r') as f:
-        data = json.load(f)
-    # Completa campos faltantes
-    for item in data:
-        for col in COLUMNS:
-            if col not in item:
-                item[col] = 0
-    return data
 
-def guardar_nonces_json(lista, path):
-    """Guarda una lista de dicts como JSON de nonces."""
-    with open(path, 'w') as f:
-        json.dump(lista, f, indent=2)
+def generate_placeholder_data(file_path, columns):
+    """Genera datos de placeholder para un archivo específico"""
+    try:
+        df = pd.DataFrame(columns=columns)
+        df.loc[0] = ['0'*64 if 'hash' in col.lower() else 0.0 for col in columns]
+        df.to_csv(file_path, index=False)
+        return True
+    except Exception as e:
+        logger.error(f"Error generando placeholder: {str(e)}")
+        return False
 
-# Utilidades para blobs binarios
-def hexstr_to_bytes(blob_hex):
-    return bytes.fromhex(blob_hex) if isinstance(blob_hex, str) else blob_hex
+def main():
+    """Función principal"""
+    logger.info("="*50)
+    logger.info(" INICIANDO GENERACIÓN DE DATOS INICIALES ")
+    logger.info("="*50)
+    
+    # Generar datasets esenciales
+    generated = generate_core_datasets()
+    
+    # Verificar archivos adicionales
+    ESSENTIAL_FILES = [
+        ('nonce_hashes.bin', None),  # Archivo binario, no manejado aquí
+        ('lmdb_index.idx', None)
+    ]
+    
+    for file_name, _ in ESSENTIAL_FILES:
+        file_path = os.path.join(config_manager.get_path('data_dir'), file_name)
+        if not os.path.exists(file_path):
+            logger.warning(f"⚠️ Archivo esencial no encontrado: {file_path}")
+    
+    logger.info(f"🚀 Proceso completado. Archivos generados: {len(generated)}")
+    return generated
 
-def bytes_to_hexstr(blob_bytes):
-    return blob_bytes.hex() if isinstance(blob_bytes, (bytes, bytearray)) else blob_bytes
-
-# Ejemplo de uso:
-# df = leer_nonces_csv("ruta.csv")
-# guardar_nonces_csv(df, "nueva_ruta.csv")
-# nonces = leer_nonces_json("ruta.json")
-# guardar_nonces_json(nonces, "nueva_ruta.json")
-
-DATA_DIR = "src/iazar/data/"
-os.makedirs(DATA_DIR, exist_ok=True)
-
-# Crear datos de ejemplo con tipo correcto
-data = {
-    "nonce": np.random.randint(0, 2**32, 1000, dtype=np.uint32),  # Corregido
-    "entropy": np.random.uniform(2.5, 4.0, 1000),
-    "uniqueness": np.random.uniform(0.7, 0.95, 1000),
-    "zero_density": np.random.uniform(0.03, 0.07, 1000),
-    "pattern_score": np.random.uniform(0.6, 0.9, 1000),
-    "is_valid": np.random.choice([0, 1], 1000)
-}
-
-df = pd.DataFrame(data)
-df.to_csv(os.path.join(DATA_DIR, "nonce_training_data.csv"), index=False)
-print("✅ Datos iniciales creados en:", os.path.join(DATA_DIR, "nonce_training_data.csv"))
+if __name__ == "__main__":
+    main()

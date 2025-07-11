@@ -1,6 +1,7 @@
 import binascii
 from iazar.utils.randomx_wrapper import compute_randomx_hash
 
+
 class HashValidator:
     @staticmethod
     def hex_to_bytes(hex_str: str) -> bytes:

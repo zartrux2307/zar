@@ -3,6 +3,7 @@ difficulty_manager.py - Gestión de dificultad de bloque Monero para IA-Zartrux.
 Sin dependencias externas ni lógica dummy.
 """
 
+
 class DifficultyManager:
     @staticmethod
     def target_from_difficulty(difficulty: int) -> int:

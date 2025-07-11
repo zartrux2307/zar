@@ -1,3 +1,4 @@
-nonce,entropy,uniqueness,zero_density,pattern_score,is_valid
-0,0,0,0,0,0
-0,0,0,0,0,0
+block_number,miner,nonce,difficulty,timestamp
+1000000,miner1,123456,1000000,1625097600
+1000001,miner2,654321,1000001,1625097601
+1000002,miner3,987654,1000002,1625097602
