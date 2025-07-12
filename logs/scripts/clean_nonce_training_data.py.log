@@ -1,0 +1,43 @@
+2025-07-10 01:45:18,115 - INFO - Usando directorio de configuración: C:\zarturxia\src\iazar\config
+2025-07-10 01:45:18,115 - INFO - Clave de cifrado de configuración cargada desde entorno
+2025-07-10 01:45:18,121 - ERROR - Error de sintaxis en C:\zarturxia\src\iazar\config\ia_config.json: Extra data: line 80 column 3 (char 2159)
+2025-07-10 01:45:18,130 - ERROR - Error cargando ia_config: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\ia_config.json' -> 'C:\\zarturxia\\src\\iazar\\config\\ia_config_corrupt_20250710_014518.json'
+2025-07-10 01:45:18,140 - ERROR - Error fatal durante la limpieza:
+Traceback (most recent call last):
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 276, in get_config
+    config_data = json.load(f)
+  File "C:\Python313\Lib\json\__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "C:\Python313\Lib\json\__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "C:\Python313\Lib\json\decoder.py", line 348, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 80 column 3 (char 2159)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\zarturxia\src\iazar\data\clean_nonce_training_data.py", line 253, in <module>
+    clean_duplicates()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\zarturxia\src\iazar\data\clean_nonce_training_data.py", line 179, in clean_duplicates
+    paths = initialize_paths()
+  File "C:\zarturxia\src\iazar\data\clean_nonce_training_data.py", line 34, in initialize_paths
+    loader = NonceLoader()
+  File "C:\zarturxia\src\iazar\utils\nonce_loader.py", line 28, in __init__
+    self._init_config(config)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\zarturxia\src\iazar\utils\nonce_loader.py", line 40, in _init_config
+    self.config = ConfigManager().get_config('ia_config')
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\zarturxia\src\iazar\utils\config_manager.py", line 283, in get_config
+    config_path.rename(backup_path)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Python313\Lib\pathlib\_local.py", line 767, in rename
+    os.rename(self, target)
+    ~~~~~~~~~^^^^^^^^^^^^^^
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\zarturxia\\src\\iazar\\config\\ia_config.json' -> 'C:\\zarturxia\\src\\iazar\\config\\ia_config_corrupt_20250710_014518.json'

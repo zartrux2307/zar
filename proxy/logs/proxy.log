@@ -2643,3 +2643,95 @@
 2025-07-11 22:45:08,879 - IA-Zar-Proxy - INFO - Starting proxy main loop
 2025-07-11 22:45:19,940 - IA-Zar-Proxy - INFO - Job received: ca1c976c-5b87-43eb-9176-ce1a4b5647bd
 2025-07-11 22:45:19,941 - IA-Zar-Proxy - INFO - New job: ca1c976c-5b87-43eb-9176-ce1a4b5647bd
+2025-07-11 23:47:55,994 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Starting IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-11 23:47:55,995 - IA-Zar-Proxy - INFO - Initializing shared memory: job='zartrux_shared_job', solution='zartrux_shared_solution'
+2025-07-11 23:47:55,995 - IA-Zar-Proxy - INFO - Connected to existing job shared memory: zartrux_shared_job
+2025-07-11 23:47:55,996 - IA-Zar-Proxy - INFO - Connected to existing solution shared memory: zartrux_shared_solution
+2025-07-11 23:47:56,329 - IA-Zar-Proxy - INFO - Connected to pool, session ID: 75c3b674-0268-4d42-99e3-fd09060c856a
+2025-07-11 23:47:56,330 - IA-Zar-Proxy - INFO - Proxy started on port 3333
+2025-07-11 23:47:56,330 - IA-Zar-Proxy - INFO - Starting proxy main loop
+2025-07-11 23:47:56,330 - IA-Zar-Proxy - INFO - Miner listener started on port 3333
+2025-07-11 23:48:04,158 - IA-Zar-Proxy - INFO - Job received: d1c8a05d-d834-4c5d-a046-f76f4e9f8138
+2025-07-11 23:48:04,158 - IA-Zar-Proxy - INFO - New job: d1c8a05d-d834-4c5d-a046-f76f4e9f8138
+2025-07-12 00:06:27,164 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Starting IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-12 00:06:27,165 - IA-Zar-Proxy - INFO - Initializing shared memory: job='zartrux_shared_job', solution='zartrux_shared_solution'
+2025-07-12 00:06:27,165 - IA-Zar-Proxy - INFO - Connected to existing job shared memory: zartrux_shared_job
+2025-07-12 00:06:27,166 - IA-Zar-Proxy - INFO - Connected to existing solution shared memory: zartrux_shared_solution
+2025-07-12 00:06:27,464 - IA-Zar-Proxy - INFO - Connected to pool, session ID: eeb0f432-6c81-461c-9298-6278ae0f670a
+2025-07-12 00:06:27,465 - IA-Zar-Proxy - INFO - Proxy started on port 3333
+2025-07-12 00:06:27,465 - IA-Zar-Proxy - INFO - Starting proxy main loop
+2025-07-12 00:06:27,465 - IA-Zar-Proxy - INFO - Miner listener started on port 3333
+2025-07-12 00:06:38,107 - IA-Zar-Proxy - INFO - Job received: fc435759-d669-4956-b302-bb6961023a94
+2025-07-12 00:06:38,107 - IA-Zar-Proxy - INFO - New job: fc435759-d669-4956-b302-bb6961023a94
+2025-07-12 02:25:20,710 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Starting IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-12 02:25:20,711 - IA-Zar-Proxy - INFO - Initializing shared memory: job='zartrux_shared_job', solution='zartrux_shared_solution'
+2025-07-12 02:25:20,711 - IA-Zar-Proxy - INFO - Connected to existing job shared memory: zartrux_shared_job
+2025-07-12 02:25:20,712 - IA-Zar-Proxy - INFO - Connected to existing solution shared memory: zartrux_shared_solution
+2025-07-12 02:25:21,046 - IA-Zar-Proxy - INFO - Connected to pool, session ID: 5c5e6d03-c113-4ccd-8045-cbd6c9685b97
+2025-07-12 02:25:21,047 - IA-Zar-Proxy - INFO - Proxy started on port 3333
+2025-07-12 02:25:21,047 - IA-Zar-Proxy - INFO - Miner listener started on port 3333
+2025-07-12 02:25:21,048 - IA-Zar-Proxy - INFO - Starting proxy main loop
+2025-07-12 02:25:32,263 - IA-Zar-Proxy - INFO - Job received: 7bee4e17-6a50-4a3f-a0cd-cfa0dbfc5e9b
+2025-07-12 02:25:32,263 - IA-Zar-Proxy - INFO - New job: 7bee4e17-6a50-4a3f-a0cd-cfa0dbfc5e9b
+2025-07-12 02:34:55,979 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Starting IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-12 02:34:55,980 - IA-Zar-Proxy - INFO - Initializing shared memory: job='zartrux_shared_job', solution='zartrux_shared_solution'
+2025-07-12 02:34:55,980 - IA-Zar-Proxy - INFO - Connected to existing job shared memory: zartrux_shared_job
+2025-07-12 02:34:55,981 - IA-Zar-Proxy - INFO - Connected to existing solution shared memory: zartrux_shared_solution
+2025-07-12 02:34:56,332 - IA-Zar-Proxy - INFO - Connected to pool, session ID: b6a31f83-1e2a-4acb-a530-1fbdf9f88a6e
+2025-07-12 02:34:56,333 - IA-Zar-Proxy - INFO - Proxy started on port 3333
+2025-07-12 02:34:56,333 - IA-Zar-Proxy - INFO - Miner listener started on port 3333
+2025-07-12 02:34:56,334 - IA-Zar-Proxy - INFO - Starting proxy main loop
+2025-07-12 02:35:04,133 - IA-Zar-Proxy - INFO - Job received: ab5275fc-5f44-486c-b0fa-486bf56d93e3
+2025-07-12 02:35:04,133 - IA-Zar-Proxy - INFO - New job: ab5275fc-5f44-486c-b0fa-486bf56d93e3
+2025-07-12 02:41:10,082 - IA-Zar-Proxy - INFO - 
+    ======================================
+    Starting IA-Zar Proxy
+    Wallet: 44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc
+    Pool: pool.hashvault.pro:443
+    SHM Prefix: zartrux_shared
+    ======================================
+    
+2025-07-12 02:41:10,083 - IA-Zar-Proxy - INFO - Initializing shared memory: job='zartrux_shared_job', solution='zartrux_shared_solution'
+2025-07-12 02:41:10,083 - IA-Zar-Proxy - INFO - Connected to existing job shared memory: zartrux_shared_job
+2025-07-12 02:41:10,083 - IA-Zar-Proxy - INFO - Connected to existing solution shared memory: zartrux_shared_solution
+2025-07-12 02:41:13,399 - IA-Zar-Proxy - INFO - Connected to pool, session ID: 8b4fdf33-7c4f-4b12-a647-ff8f3679135b
+2025-07-12 02:41:13,400 - IA-Zar-Proxy - INFO - Proxy started on port 3333
+2025-07-12 02:41:13,400 - IA-Zar-Proxy - INFO - Starting proxy main loop
+2025-07-12 02:41:13,401 - IA-Zar-Proxy - INFO - Miner listener started on port 3333
+2025-07-12 02:41:26,507 - IA-Zar-Proxy - INFO - Job received: a0cae6e9-3e2d-4c44-9760-963cbf7c862f
+2025-07-12 02:41:26,507 - IA-Zar-Proxy - INFO - New job: a0cae6e9-3e2d-4c44-9760-963cbf7c862f
+2025-07-12 02:44:35,469 - IA-Zar-Proxy - INFO - New miner connected: ('127.0.0.1', 57025)
+2025-07-12 02:44:35,469 - IA-Zar-Proxy - WARNING - Unsupported method from ('127.0.0.1', 57025): login
+2025-07-12 02:45:36,103 - IA-Zar-Proxy - WARNING - Unsupported method from ('127.0.0.1', 57025): keepalived
+2025-07-12 02:46:36,710 - IA-Zar-Proxy - WARNING - Unsupported method from ('127.0.0.1', 57025): keepalived
+2025-07-12 02:47:37,082 - IA-Zar-Proxy - WARNING - Unsupported method from ('127.0.0.1', 57025): keepalived
+2025-07-12 02:48:37,604 - IA-Zar-Proxy - WARNING - Unsupported method from ('127.0.0.1', 57025): keepalived
+2025-07-12 02:49:38,090 - IA-Zar-Proxy - WARNING - Unsupported method from ('127.0.0.1', 57025): keepalived
