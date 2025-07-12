@@ -1,0 +1,20 @@
+2025-07-11 13:11:40,404 [INFO] === VALIDACIÓN DE DATOS REALES Y LIMPIEZA DE DUMMY ===
+2025-07-11 13:11:40,420 [INFO] Backup realizado: C:\zarturxia\data\backups\nonce_training_data_20250711.bak.csv
+2025-07-11 13:11:40,421 [INFO] Backup realizado: C:\zarturxia\data\backups\nonces_exitosos_20250711.bak.csv
+2025-07-11 13:11:40,423 [INFO] Backup realizado: C:\zarturxia\data\backups\iazar_model.pkl
+2025-07-11 13:11:40,423 [ERROR] ❌ Falta o está vacío: C:\zarturxia\data\nonce_hashes.bin
+2025-07-11 13:11:40,423 [ERROR] ❌ Faltan archivos de datos reales. REGENERA datos o detén el sistema.
+2025-07-11 13:14:34,432 [INFO] === VALIDACIÓN AVANZADA DE DATOS REALES Y LIMPIEZA ===
+2025-07-11 13:14:34,436 [ERROR] ❌ FALTA o está vacío: C:\zarturxia\data\nonce_hashes.bin
+2025-07-11 13:14:34,436 [ERROR] 
+❌ FALTAN archivos críticos: 1
+2025-07-11 13:14:34,436 [ERROR]     FALTANTE: C:\zarturxia\data\nonce_hashes.bin
+2025-07-11 13:14:34,437 [ERROR] 
+DETÉN el sistema y REGENERA los archivos faltantes o tus datos NO son válidos para minería real.
+2025-07-11 13:19:47,069 [INFO] === VALIDACIÓN AVANZADA DE DATOS REALES Y LIMPIEZA ===
+2025-07-11 13:19:47,072 [ERROR] ❌ FALTA o está vacío: C:\zarturxia\data\nonce_hashes.bin
+2025-07-11 13:19:47,072 [ERROR] 
+❌ FALTAN archivos críticos: 1
+2025-07-11 13:19:47,073 [ERROR]     FALTANTE: C:\zarturxia\data\nonce_hashes.bin
+2025-07-11 13:19:47,075 [ERROR] 
+DETÉN el sistema y REGENERA los archivos faltantes o tus datos NO son válidos para minería real.

@@ -1,4 +1,3 @@
-# src/iazar/__init__.py
-from . import utils
-from . import proxy
-from . import bridge
+# src/__init__.py
+"""Módulos principales del sistema de minería IA"""
+# Vacío – correcto si solo se necesita declarar como paquete.
