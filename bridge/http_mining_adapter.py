@@ -4,7 +4,7 @@ import logging
 import ssl
 import socket
 from typing import Tuple, Optional
-from monero.hash import cn_fast_hash  # Importación clave para CryptoNight
+from monero import crypto # Importación clave para CryptoNight
 
 logger = logging.getLogger(__name__)
 

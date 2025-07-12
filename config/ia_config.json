@@ -4,6 +4,7 @@
     "nonce_hashes": "src/iazar/data/nonce_hashes.bin",
     "injected_nonces": "src/iazar/logs/injected.csv",
     "nonce_training_data_path": "src/iazar/data/nonce_training_data.csv"
+
   },
   "processing_params": {
     "temporal_window": 60,

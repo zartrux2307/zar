@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from filelock import FileLock
-from iazar.utils.shared_memory_manager import SharedMemoryManager
+from iazar.bridge.shared_memory_manager import SharedMemoryManager
 from iazar.utils.config_manager import ConfigManager
 from logging.handlers import RotatingFileHandler
 from monero.hash import cn_fast_hash  # Importar desde monero-python

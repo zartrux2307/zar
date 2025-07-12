@@ -1,3 +1,14 @@
+"ia_integration": {
+    "enabled": true,
+    "kl_divergence": {
+        "threshold_jsd": 0.15,
+        "window_size": 1000,
+        "step": 500
+    },
+    "injection_threshold": 0.92
+}
+
+
 {
   "mode": "pool",
   "cpu": {

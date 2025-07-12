@@ -1,4 +1,4 @@
-{
+
     "shm": {
         "prefix": "zartrux_shared",
         "job_segment": "job",
@@ -10,7 +10,8 @@
         "base_path": "data",
         "successful_nonces_file": "successful_nonces.csv",
         "training_dir": "training_data"
-    },
+    }
+}
     "pool": {
         "url": "pool.hashvault.pro:443",
         "user": "44crWF5Y7gWDLCwhNSH7cbAbCPT6xScpCRFMMYhbCpFijJVUpPwze39GbvRRR1GsRZCvNMKZpU4sPT8bqRY3FY29Loyx1zc",

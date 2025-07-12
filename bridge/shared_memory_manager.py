@@ -18,17 +18,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 class SharedMemoryManager:
-
-    def __init__(self, name: str, size: int):
-    self.name = name
-    self.size = size
-    
-    # Manejo especial para Windows
-    if platform.system() == 'Windows':
-        self.file_path = f"C:\\Windows\\Temp\\{name}.shm"
-    else:
-        self.file_path = f"/dev/shm/{name}"
-    
     def __init__(self, segment_name: str, segment_size: int = 8):
         """
         Gestor de memoria compartida multiplataforma
@@ -132,18 +121,36 @@ class SharedMemoryManager:
     def close(self):
         """Libera todos los recursos de manera segura"""
         try:
+            # Cerrar memoria mapeada si existe
             if self.mapped_memory:
-                self.mapped_memory.flush()
-                self.mapped_memory.close()
-                logger.debug(f"Memoria mapeada cerrada: {self.segment_name}")
-                
+                try:
+                    self.mapped_memory.flush()
+                    self.mapped_memory.close()
+                    logger.debug(f"Memoria mapeada cerrada: {self.segment_name}")
+                except ValueError as ve:
+                    # Ya cerrado
+                    logger.debug(f"Memoria ya cerrada: {str(ve)}")
+                except Exception as e:
+                    logger.error(f"Error cerrando memoria: {str(e)}")
+                finally:
+                    self.mapped_memory = None
+                    
+            # Cerrar archivo si existe
             if self.file:
-                self.file.close()
-                logger.debug(f"Archivo cerrado: {self.file_path}")
-                
-            logger.info(f"Recursos liberados para {self.segment_name}")
+                try:
+                    self.file.close()
+                    logger.debug(f"Archivo cerrado: {self.file_path}")
+                except OSError as oe:
+                    # Ya cerrado
+                    logger.debug(f"Archivo ya cerrado: {str(oe)}")
+                except Exception as e:
+                    logger.error(f"Error cerrando archivo: {str(e)}")
+                finally:
+                    self.file = None
+                    
+            logger.info(f"Recursos liberados correctamente para {self.segment_name}")
         except Exception as e:
-            logger.error(f"Error cerrando recursos: {str(e)}")
+            logger.error(f"Error inesperado cerrando recursos: {str(e)}")
             
     def __del__(self):
         self.close()

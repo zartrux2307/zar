@@ -4,7 +4,7 @@ import os
 import struct
 import logging
 from iazar.core.randomx_handler import RandomXHandler
-from iazar.bridge.stratum_adapter import StratumClient
+from iazar.bridge.stratum_adapter import StratumAdapter as StratumClient
 from iazar.utils.cpu_optimizer import CPUMonitor
 from iazar.bridge.ia_mining_bridge import IAMiningBridge
 from iazar.utils.config_manager import ConfigManager
